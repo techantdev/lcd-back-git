@@ -1,5 +1,5 @@
 // const path = require('path');
-const express = require('express');
+const express = require("express");
 // const morgan = require('morgan');
 // const rateLimit = require('express-rate-limit');
 // const helmet = require('helmet');
@@ -9,13 +9,30 @@ const express = require('express');
 // const cookieParser = require('cookie-parser');
 // const bodyParser = require('body-parser');
 // const compression = require('compression');
-const cors = require('cors');
+const cors = require("cors");
 
 // Se hace el import de las rutas, una por cada entidad.
 
 // const AppError = require('./utils/appError');
 // const globalErrorHandler = require('./controllers/errorController');
-const catalogGradeRouter = require('./routes/catalogGradeRoutes');
+const academicYearRouter = require("./routes/academicYearRoutes");
+const catalogAchievementIndicatorRouter = require("./routes/catalogAchievementIndicatorRoutes");
+const catalogAchievementRouter = require("./routes/catalogAchievementRoutes");
+const catalogAreaRouter = require("./routes/catalogAreaRoutes");
+const catalogGradeRouter = require("./routes/catalogGradeRoutes");
+const catalogRolesRouter = require("./routes/catalogRolesRoutes");
+const catalogSubjectRouter = require("./routes/catalogSubjectRoutes");
+const catalogSubTopicRouter = require("./routes/catalogSubTopicRoutes");
+const catalogTopicRouter = require("./routes/catalogTopicRoutes");
+const catalogUnitRouter = require("./routes/catalogUnitRoutes");
+const courseRouter = require("./routes/courseRoutes");
+const schoolRouter = require("./routes/schoolRoutes");
+const teacherRouter = require("./routes/teacherRoutes");
+const trackerRouter = require("./routes/trackerRoutes");
+const userRouter = require("./routes/userRoutes");
+const yearAreaRouter = require("./routes/yearAreaRoutes");
+const yearGradeRouter = require("./routes/yearGradeRoutes");
+const YearSubjectRouter = require("./routes/YearSubjectRoutes");
 // const userRouter = require('./routes/userRoutes');
 // const reviewRouter = require('./routes/reviewRoutes');
 // const bookingRouter = require('./routes/bookingRoutes');
@@ -39,7 +56,7 @@ app.use(cors());
 //   origin: 'https://www.natours.com'
 // }))
 
-app.options('*', cors());
+app.options("*", cors());
 // app.options('/api/v1/tours/:id', cors());
 
 // Serving static files
@@ -65,8 +82,8 @@ app.options('*', cors());
 // app.post('/webhook-checkout', bodyParser.raw({ type: 'application/json' }), bookingController.webhookCheckout);
 
 // // Body parser, reading data from body into req.body
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 // app.use(cookieParser());
 
 // // Data sanitization against NoSQL query injection
@@ -93,7 +110,27 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // 3) ROUTES
 // Crear una ruta por cada entidad
-app.use('/api/v1/catalog-grade', catalogGradeRouter);
+app.use("/api/v1/academic-year", academicYearRouter);
+app.use(
+  "/api/v1/catalog-achievement-indicator",
+  catalogAchievementIndicatorRouter
+);
+app.use("/api/v1/catalog-achievement", catalogAchievementRouter);
+app.use("/api/v1/catalog-area", catalogAreaRouter);
+app.use("/api/v1/catalog-grade", catalogGradeRouter);
+app.use("/api/v1/catalog-roles", catalogRolesRouter);
+app.use("/api/v1/catalog-subject", catalogSubjectRouter);
+app.use("/api/v1/catalog-sub-topic", catalogSubTopicRouter);
+app.use("/api/v1/catalog-topic", catalogTopicRouter);
+app.use("/api/v1/catalog-unit", catalogUnitRouter);
+app.use("/api/v1/course", courseRouter);
+app.use("/api/v1/school", schoolRouter);
+app.use("/api/v1/teacher", teacherRouter);
+app.use("/api/v1/tracker", trackerRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/year-area", yearAreaRouter);
+app.use("/api/v1/year-grade", yearGradeRouter);
+app.use("/api/v1/year-subject", YearSubjectRouter);
 
 // app.all('*', (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
