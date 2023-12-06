@@ -1,0 +1,19 @@
+{
+  "name": "lcd-backend-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git-codecommit.us-east-2.amazonaws.com/v1/repos/lcd-backend-project"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
