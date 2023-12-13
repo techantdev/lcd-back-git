@@ -6,6 +6,6 @@ const updateCatalogGrade = require('./updateCatalogGrade');
 const { catchAsync } = require('../../middleware/middleware');
 
 exports.createCatalogGrade = catchAsync(req => createCatalogGrade());
-exports.deleteCatalogGrade = null;
-exports.getCatalogGrade = null;
-exports.updateCatalogGrade = null;
+exports.deleteCatalogGrade = catchAsync(req => deleteCatalogGrade());
+exports.getCatalogGrade = catchAsync(req => getCatalogGrade());
+exports.updateCatalogGrade = catchAsync(req => updateCatalogGrade());
