@@ -1,11 +1,11 @@
-const createCatalogUnit = require('./createCatalogUnit');
-const deleteCatalogUnit = require('./deleteCatalogUnit');
-const getCatalogUnit = require('./getCatalogUnit');
-const updateCatalogUnit = require('./updateCatalogUnit');
+import createCatalogUnitMethod from './createCatalogUnit';
+import deleteCatalogUnitMethod from './deleteCatalogUnit';
+import getCatalogUnitMethod from './getCatalogUnit';
+import updateCatalogUnitMethod from './updateCatalogUnit';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogUnit = catchAsync(req => createCatalogUnit());
-export const deleteCatalogUnit = catchAsync(req => deleteCatalogUnit());
-export const getCatalogUnit = catchAsync(req => getCatalogUnit());
-export const updateCatalogUnit = catchAsync(req => updateCatalogUnit());
+export const createCatalogUnit = catchAsync(req => createCatalogUnitMethod());
+export const deleteCatalogUnit = catchAsync(req => deleteCatalogUnitMethod());
+export const getCatalogUnit = catchAsync(req => getCatalogUnitMethod());
+export const updateCatalogUnit = catchAsync(req => updateCatalogUnitMethod());

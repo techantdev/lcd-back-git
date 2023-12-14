@@ -1,5 +1,5 @@
-const getYearArea = require('./getYearArea');
+import getYearAreaMethod from './getYearArea';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const getYearArea = catchAsync(req => getYearArea());
+export const getYearArea = catchAsync(req => getYearAreaMethod());

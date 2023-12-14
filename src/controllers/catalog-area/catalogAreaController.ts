@@ -1,11 +1,11 @@
-const createCatalogArea = require('./createCatalogArea');
-const deleteCatalogArea = require('./deleteCatalogArea');
-const getCatalogArea = require('./getCatalogArea');
-const updateCatalogArea = require('./updateCatalogArea');
+import createCatalogAreaMethod from './createCatalogArea';
+import deleteCatalogAreaMethod from './deleteCatalogArea';
+import getCatalogAreaMethod from './getCatalogArea';
+import updateCatalogAreaMethod from './updateCatalogArea';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogArea = catchAsync(req => createCatalogArea());
-export const deleteCatalogArea = catchAsync(req => deleteCatalogArea());
-export const getCatalogArea = catchAsync(req => getCatalogArea());
-export const updateCatalogArea = catchAsync(req => updateCatalogArea());
+export const createCatalogArea = catchAsync(req => createCatalogAreaMethod());
+export const deleteCatalogArea = catchAsync(req => deleteCatalogAreaMethod());
+export const getCatalogArea = catchAsync(req => getCatalogAreaMethod());
+export const updateCatalogArea = catchAsync(req => updateCatalogAreaMethod());

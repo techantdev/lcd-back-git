@@ -1,11 +1,11 @@
-const createCatalogAchievement = require('./createCatalogAchievement');
-const deleteCatalogAchievement = require('./deleteCatalogAchievement');
-const getCatalogAchievement = require('./getCatalogAchievement');
-const updateCatalogAchievement = require('./updateCatalogAchievement');
+import createCatalogAchievementMethod from './createCatalogAchievement';
+import deleteCatalogAchievementMethod from './deleteCatalogAchievement';
+import getCatalogAchievementMethod from'./getCatalogAchievement';
+import updateCatalogAchievementMethod from'./updateCatalogAchievement';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogAchievement = catchAsync(req => createCatalogAchievement());
-export const deleteCatalogAchievement = catchAsync(req => deleteCatalogAchievement());
-export const getCatalogAchievement = catchAsync(req => getCatalogAchievement());
-export const updateCatalogAchievement = catchAsync(req => updateCatalogAchievement());
+export const createCatalogAchievement = catchAsync(req => createCatalogAchievementMethod());
+export const deleteCatalogAchievement = catchAsync(req => deleteCatalogAchievementMethod());
+export const getCatalogAchievement = catchAsync(req => getCatalogAchievementMethod());
+export const updateCatalogAchievement = catchAsync(req => updateCatalogAchievementMethod());

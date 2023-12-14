@@ -1,13 +1,13 @@
-const createCatalogSubject = require('./createCatalogSubject');
-const deleteCatalogSubject = require('./deleteCatalogSubject');
-const getCatalogSubject = require('./getCatalogSubject');
-const updateCatalogSubject = require('./updateCatalogSubject');
-const assignGradeCatalogSubject = require('./assignGradeCatalogSubject');
+import createCatalogSubjectMethod from './createCatalogSubject';
+import deleteCatalogSubjectMethod from './deleteCatalogSubject';
+import getCatalogSubjectMethod from './getCatalogSubject';
+import updateCatalogSubjectMethod from './updateCatalogSubject';
+import assignGradeCatalogSubjectMethod from './assignGradeCatalogSubject';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogSubject = catchAsync(req => createCatalogSubject());
-export const deleteCatalogSubject = catchAsync(req => deleteCatalogSubject());
-export const getCatalogSubject = catchAsync(req => getCatalogSubject());
-export const updateCatalogSubject = catchAsync(req => updateCatalogSubject());
-export const assignGradeCatalogSubject = catchAsync(REQ => assignGradeCatalogSubject());
+export const createCatalogSubject = catchAsync(req => createCatalogSubjectMethod());
+export const deleteCatalogSubject = catchAsync(req => deleteCatalogSubjectMethod());
+export const getCatalogSubject = catchAsync(req => getCatalogSubjectMethod());
+export const updateCatalogSubject = catchAsync(req => updateCatalogSubjectMethod());
+export const assignGradeCatalogSubject = catchAsync(req => assignGradeCatalogSubjectMethod());

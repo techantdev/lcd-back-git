@@ -1,7 +1,7 @@
-const getTracker = require('./getTracker');
-const updateTracker = require('./updateTracker');
+import getTrackerMethod from './getTracker';
+import updateTrackerMethod from './updateTracker';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const getTracker = catchAsync(req => getTracker());
-export const updateTracker = catchAsync(req => updateTracker());
+export const getTracker = catchAsync(req => getTrackerMethod());
+export const updateTracker = catchAsync(req => updateTrackerMethod());

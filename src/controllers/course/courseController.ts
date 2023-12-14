@@ -1,13 +1,13 @@
-const createCourse = require('./createCourse');
-const deleteCourse = require('./deleteCourse');
-const getCourse = require('./getCourse');
-const getTeacherCourse = require('./getTeacherCourse');
-const updateCourse = require('./updateCourse');
+import createCourseMethod from './createCourse';
+import deleteCourseMethod from './deleteCourse';
+import getCourseMethod from './getCourse';
+import getTeacherCourseMethod from './getTeacherCourse';
+import updateCourseMethod from './updateCourse';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCourse = catchAsync(req => createCourse());
-export const deleteCourse = catchAsync(req => deleteCourse());
-export const getCourse = catchAsync(req => getCourse());
-export const getTeacherCourse = catchAsync(req => getTeacherCourse());
-export const updateCourse = catchAsync(req => updateCourse());
+export const createCourse = catchAsync(req => createCourseMethod());
+export const deleteCourse = catchAsync(req => deleteCourseMethod());
+export const getCourse = catchAsync(req => getCourseMethod());
+export const getTeacherCourse = catchAsync(req => getTeacherCourseMethod());
+export const updateCourse = catchAsync(req => updateCourseMethod());

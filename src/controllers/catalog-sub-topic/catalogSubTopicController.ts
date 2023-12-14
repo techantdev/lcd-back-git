@@ -1,11 +1,11 @@
-const createCatalogSubTopic = require('./createCatalogSubTopic');
-const deleteCatalogSubTopic = require('./deleteCatalogSubTopic');
-const getCatalogSubTopic = require('./getCatalogSubTopic');
-const updateCatalogSubTopic = require('./updateCatalogSubTopic');
+import createCatalogSubTopicMethod from './createCatalogSubTopic';
+import deleteCatalogSubTopicMethod from './deleteCatalogSubTopic';
+import getCatalogSubTopicMethod from './getCatalogSubTopic';
+import updateCatalogSubTopicMethod from './updateCatalogSubTopic';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogSubTopic = catchAsync(req => createCatalogSubTopic());
-export const deleteCatalogSubTopic = catchAsync(req => deleteCatalogSubTopic());
-export const getCatalogSubTopic = catchAsync(req => getCatalogSubTopic());
-export const updateCatalogSubTopic = catchAsync(req => updateCatalogSubTopic());
+export const createCatalogSubTopic = catchAsync(req => createCatalogSubTopicMethod());
+export const deleteCatalogSubTopic = catchAsync(req => deleteCatalogSubTopicMethod());
+export const getCatalogSubTopic = catchAsync(req => getCatalogSubTopicMethod());
+export const updateCatalogSubTopic = catchAsync(req => updateCatalogSubTopicMethod());

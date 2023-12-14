@@ -1,5 +1,5 @@
-const getUser = require('./getUser');
+import getUserMethod from './getUser';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const getUser = catchAsync(req => getUser());
+export const getUser = catchAsync(req => getUserMethod());

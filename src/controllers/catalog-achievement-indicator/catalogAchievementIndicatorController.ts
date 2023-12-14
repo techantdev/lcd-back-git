@@ -1,11 +1,11 @@
-const createCatalogAchievementIndicator = require('./createCatalogAchievementIndicator');
-const deleteCatalogAchievementIndicator = require('./deleteCatalogAchievementIndicator');
-const getCatalogAchievementIndicator = require('./getCatalogAchievementIndicator');
-const updateCatalogAchievementIndicator = require('./updateCatalogAchievementIndicator');
+import createCatalogAchievementIndicatorMethod from './createCatalogAchievementIndicator';
+import deleteCatalogAchievementIndicatorMethod from './deleteCatalogAchievementIndicator';
+import getCatalogAchievementIndicatorMethod from './getCatalogAchievementIndicator';
+import updateCatalogAchievementIndicatorMethod from './updateCatalogAchievementIndicator';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogAchievementIndicator = catchAsync(req => createCatalogAchievementIndicator());
-export const deleteCatalogAchievementIndicator = catchAsync(req => deleteCatalogAchievementIndicator());
-export const getCatalogAchievementIndicator = catchAsync(req => getCatalogAchievementIndicator());
-export const updateCatalogAchievementIndicator = catchAsync(req => updateCatalogAchievementIndicator());
+export const createCatalogAchievementIndicator = catchAsync(req => createCatalogAchievementIndicatorMethod());
+export const deleteCatalogAchievementIndicator = catchAsync(req => deleteCatalogAchievementIndicatorMethod());
+export const getCatalogAchievementIndicator = catchAsync(req => getCatalogAchievementIndicatorMethod());
+export const updateCatalogAchievementIndicator = catchAsync(req => updateCatalogAchievementIndicatorMethod());

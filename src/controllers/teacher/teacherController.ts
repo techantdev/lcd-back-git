@@ -1,11 +1,11 @@
-const createTeacher = require('./createTeacher');
-const deleteTeacher = require('./deleteTeacher');
-const getTeacher = require('./getTeacher');
-const updateTeacher = require('./updateTeacher');
+import createTeacherMethod from './createTeacher';
+import deleteTeacherMethod from './deleteTeacher';
+import getTeacherMethod from './getTeacher';
+import updateTeacherMethod from './updateTeacher';
 
-const { catchAsync } = require('../../middleware/middleware');
+import { catchAsync } from '../../middleware/middleware';
 
-export const createTeacher = catchAsync(req => createTeacher());
-export const deleteTeacher = catchAsync(req => deleteTeacher());
-export const getTeacher = catchAsync(req => getTeacher());
-export const updateTeacher = catchAsync(req => updateTeacher());
+export const createTeacher = catchAsync(req => createTeacherMethod());
+export const deleteTeacher = catchAsync(req => deleteTeacherMethod());
+export const getTeacher = catchAsync(req => getTeacherMethod());
+export const updateTeacher = catchAsync(req => updateTeacherMethod());
