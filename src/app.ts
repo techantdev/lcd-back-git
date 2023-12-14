@@ -1,43 +1,43 @@
 // const path = require('path');
-const express = require('express');
-// const morgan = require('morgan');
-// const rateLimit = require('express-rate-limit');
-// const helmet = require('helmet');
-// const mongoSanitize = require('express-mongo-sanitize');
-// const xss = require('xss-clean');
-// const hpp = require('hpp');
-// const cookieParser = require('cookie-parser');
-// const bodyParser = require('body-parser');
-// const compression = require('compression');
-const cors = require('cors');
+import express from 'express';
+// const morgan from 'morgan'
+// const rateLimit from 'express-rate-limit'
+// const helmet from 'helmet'
+// const mongoSanitize from 'express-mongo-sanitize'
+// const xss from 'xss-clean'
+// const hpp from 'hpp'
+// const cookieParser from 'cookie-parser'
+// const bodyParser from 'body-parser'
+// const compression from 'compression'
+import cors from 'cors';
 
 // Se hace el import de las rutas, una por cada entidad.
 
-// const AppError = require('./utils/appError');
-// const globalErrorHandler = require('./controllers/errorController');
-const academicYearRouter = require('./routes/academicYearRoutes');
-const catalogAchievementIndicatorRouter = require('./routes/catalogAchievementIndicatorRoutes');
-const catalogAchievementRouter = require('./routes/catalogAchievementRoutes');
-const catalogAreaRouter = require('./routes/catalogAreaRoutes');
-const catalogGradeRouter = require('./routes/catalogGradeRoutes');
-const catalogRolesRouter = require('./routes/catalogRolesRoutes');
-const catalogSubjectRouter = require('./routes/catalogSubjectRoutes');
-const catalogSubTopicRouter = require('./routes/catalogSubTopicRoutes');
-const catalogTopicRouter = require('./routes/catalogTopicRoutes');
-const catalogUnitRouter = require('./routes/catalogUnitRoutes');
-const courseRouter = require('./routes/courseRoutes');
-const schoolRouter = require('./routes/schoolRoutes');
-const teacherRouter = require('./routes/teacherRoutes');
-const trackerRouter = require('./routes/trackerRoutes');
-const userRouter = require('./routes/userRoutes');
-const yearAreaRouter = require('./routes/yearAreaRoutes');
-const yearGradeRouter = require('./routes/yearGradeRoutes');
-const YearSubjectRouter = require('./routes/YearSubjectRoutes');
-// const userRouter = require('./routes/userRoutes');
-// const reviewRouter = require('./routes/reviewRoutes');
-// const bookingRouter = require('./routes/bookingRoutes');
-// const bookingController = require('./controllers/bookingController');
-// const viewRouter = require('./routes/viewRoutes');
+// const AppError from './utils/appError'
+// const globalErrorHandler from './controllers/errorController'
+import academicYearRouter from './routes/academicYearRoutes';
+import catalogAchievementIndicatorRouter from './routes/catalogAchievementIndicatorRoutes';
+import catalogAchievementRouter from './routes/catalogAchievementRoutes';
+import catalogAreaRouter from './routes/catalogAreaRoutes';
+import catalogGradeRouter from './routes/catalogGradeRoutes';
+import catalogRolesRouter from './routes/catalogRolesRoutes';
+import catalogSubjectRouter from './routes/catalogSubjectRoutes';
+import catalogSubTopicRouter from './routes/catalogSubTopicRoutes';
+import catalogTopicRouter from './routes/catalogTopicRoutes';
+import catalogUnitRouter from './routes/catalogUnitRoutes';
+import courseRouter from './routes/courseRoutes';
+import schoolRouter from './routes/schoolRoutes';
+import teacherRouter from './routes/teacherRoutes';
+import trackerRouter from './routes/trackerRoutes';
+import userRouter from './routes/userRoutes';
+import yearAreaRouter from './routes/yearAreaRoutes';
+import yearGradeRouter from './routes/yearGradeRoutes';
+import YearSubjectRouter from './routes/YearSubjectRoutes';
+// const userRouter from './routes/userRoutes'
+// const reviewRouter from './routes/reviewRoutes'
+// const bookingRouter from './routes/bookingRoutes'
+// const bookingController from './controllers/bookingController'
+// const viewRouter from './routes/viewRoutes'
 
 // Start express app
 const app = express();

@@ -3,5 +3,5 @@ import updateTrackerMethod from './updateTracker';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const getTracker = catchAsync(req => getTrackerMethod());
-export const updateTracker = catchAsync(req => updateTrackerMethod());
+export const getTracker = catchAsync((req: Request) => getTrackerMethod());
+export const updateTracker = catchAsync((req: Request) => updateTrackerMethod());

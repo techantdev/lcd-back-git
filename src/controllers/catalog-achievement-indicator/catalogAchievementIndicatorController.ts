@@ -5,7 +5,7 @@ import updateCatalogAchievementIndicatorMethod from './updateCatalogAchievementI
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogAchievementIndicator = catchAsync(req => createCatalogAchievementIndicatorMethod());
-export const deleteCatalogAchievementIndicator = catchAsync(req => deleteCatalogAchievementIndicatorMethod());
-export const getCatalogAchievementIndicator = catchAsync(req => getCatalogAchievementIndicatorMethod());
-export const updateCatalogAchievementIndicator = catchAsync(req => updateCatalogAchievementIndicatorMethod());
+export const createCatalogAchievementIndicator = catchAsync((req: Request) => createCatalogAchievementIndicatorMethod());
+export const deleteCatalogAchievementIndicator = catchAsync((req: Request) => deleteCatalogAchievementIndicatorMethod());
+export const getCatalogAchievementIndicator = catchAsync((req: Request) => getCatalogAchievementIndicatorMethod());
+export const updateCatalogAchievementIndicator = catchAsync((req: Request) => updateCatalogAchievementIndicatorMethod());

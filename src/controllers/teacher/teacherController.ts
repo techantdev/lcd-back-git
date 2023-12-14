@@ -5,7 +5,7 @@ import updateTeacherMethod from './updateTeacher';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createTeacher = catchAsync(req => createTeacherMethod());
-export const deleteTeacher = catchAsync(req => deleteTeacherMethod());
-export const getTeacher = catchAsync(req => getTeacherMethod());
-export const updateTeacher = catchAsync(req => updateTeacherMethod());
+export const createTeacher = catchAsync((req: Request) => createTeacherMethod());
+export const deleteTeacher = catchAsync((req: Request) => deleteTeacherMethod());
+export const getTeacher = catchAsync((req: Request) => getTeacherMethod());
+export const updateTeacher = catchAsync((req: Request) => updateTeacherMethod());

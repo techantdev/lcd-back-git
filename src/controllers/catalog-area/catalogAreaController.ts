@@ -5,7 +5,7 @@ import updateCatalogAreaMethod from './updateCatalogArea';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogArea = catchAsync(req => createCatalogAreaMethod());
-export const deleteCatalogArea = catchAsync(req => deleteCatalogAreaMethod());
-export const getCatalogArea = catchAsync(req => getCatalogAreaMethod());
-export const updateCatalogArea = catchAsync(req => updateCatalogAreaMethod());
+export const createCatalogArea = catchAsync((req: Request) => createCatalogAreaMethod());
+export const deleteCatalogArea = catchAsync((req: Request) => deleteCatalogAreaMethod());
+export const getCatalogArea = catchAsync((req: Request) => getCatalogAreaMethod());
+export const updateCatalogArea = catchAsync((req: Request) => updateCatalogAreaMethod());
