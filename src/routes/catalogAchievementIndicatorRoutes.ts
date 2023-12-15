@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const catalogAchievementIndicatorController = require('./../controllers/catalog-achievement-indicator/catalogAchievementIndicatorController');
 
 const router = express.Router();

@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const trackerController = require('./../controllers/tracker/trackerController');
 
 const router = express.Router();

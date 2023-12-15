@@ -1,10 +1,10 @@
-const express = require('express');
-const academicYearController = require('./../controllers/academic-year/academicYearController');
+import express from 'express';
+import { getAcademicYear, createAcademicYear, updateAcademicYear } from './../controllers/academic-year/academicYearController';
 
 const router = express.Router();
 
-router.route('').get(academicYearController.getAcademicYear).post(academicYearController.createAcademicYear);
+router.route('').get(getAcademicYear).post(createAcademicYear);
 
-router.route('/:academicYearId').patch(academicYearController.updateAcademicYear);
+router.route('/:academicYearId').patch(updateAcademicYear);
 
 export default router;

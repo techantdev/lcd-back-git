@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const catalogSubjectController = require('./../controllers/catalog-subject/catalogSubjectController');
 
 const router = express.Router();

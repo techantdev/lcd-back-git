@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 // const academicYearController = require('./../controllers/academic-year/academicYearController');
 
 const router = express.Router();

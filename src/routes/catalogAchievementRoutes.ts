@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const catalogAchievementController = require('./../controllers/catalog-achievement/catalogAchievementController');
 
 const router = express.Router();

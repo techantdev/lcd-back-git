@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const catalogUnitController = require('./../controllers/catalog-unit/catalogUnitController');
 
 const router = express.Router();

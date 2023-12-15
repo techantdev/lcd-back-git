@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const yearSubjectController = require('./../controllers/year-subject/yearSubjectController');
 
 const router = express.Router();
