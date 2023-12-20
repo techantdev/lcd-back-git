@@ -1,8 +1,8 @@
 import express from'express';
-import trackerController from './../controllers/tracker/trackerController';
+import {getTracker, updateTracker}from './../controllers/tracker/trackerController';
 
 const router = express.Router();
 
-router.route('/:trackerId').get(trackerController.getTracker).patch(trackerController.updateTracker);
+router.route('/:trackerId').get(getTracker).patch(updateTracker);
 
 export default router;

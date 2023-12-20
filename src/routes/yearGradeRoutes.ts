@@ -1,8 +1,8 @@
 import express from'express';
-import yearGradeController from './../controllers/year-grade/yearGradeController';
+import {getSubjectYearGrade, getYearGrade} from './../controllers/year-grade/yearGradeController';
 
 const router = express.Router();
 
-router.route('').get(yearGradeController.getYearGrade).get(yearGradeController.getSubjectYearGrade);
+router.route('').get(getYearGrade).get(getSubjectYearGrade);
 
 export default router;

@@ -1,10 +1,10 @@
 import express from'express';
-import catalogAreaController from './../controllers/catalog-area/catalogAreaController';
+import {createCatalogArea, deleteCatalogArea, getCatalogArea, updateCatalogArea} from './../controllers/catalog-area/catalogAreaController';
 
 const router = express.Router();
 
-router.route('').get(catalogAreaController.getCatalogArea).post(catalogAreaController.createCatalogArea);
+router.route('').get(getCatalogArea).post(createCatalogArea);
 
-router.route('/:catalogAreaId').patch(catalogAreaController.updateCatalogArea).delete(catalogAreaController.deleteCatalogArea);
+router.route('/:catalogAreaId').patch(updateCatalogArea).delete(deleteCatalogArea);
 
 export default router;

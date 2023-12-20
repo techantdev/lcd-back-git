@@ -1,10 +1,10 @@
 import express from'express';
-import catalogUnitController from './../controllers/catalog-unit/catalogUnitController';
+import {createCatalogUnit, deleteCatalogUnit, getCatalogUnit, updateCatalogUnit} from './../controllers/catalog-unit/catalogUnitController';
 
 const router = express.Router();
 
-router.route('').get(catalogUnitController.getCatalogUnit).post(catalogUnitController.createCatalogUnit);
+router.route('').get(getCatalogUnit).post(createCatalogUnit);
 
-router.route('/:catalogUnitId').patch(catalogUnitController.updateCatalogUnit).delete(catalogUnitController.deleteCatalogUnit);
+router.route('/:catalogUnitId').patch(updateCatalogUnit).delete(deleteCatalogUnit);
 
 export default router;

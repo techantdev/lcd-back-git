@@ -1,10 +1,10 @@
 import express from'express';
-import catalogGradeController from './../controllers/catalog-grade/catalogGradeController';
+import {createCatalogGrade, deleteCatalogGrade, getCatalogGrade, updateCatalogGrade} from './../controllers/catalog-grade/catalogGradeController';
 
 const router = express.Router();
 
-router.route('').get(catalogGradeController.getCatalogGrade).post(catalogGradeController.createCatalogGrade);
+router.route('').get(getCatalogGrade).post(createCatalogGrade);
 
-router.route('/:catalogGradeId').patch(catalogGradeController.updateCatalogGrade).delete(catalogGradeController.deleteCatalogGrade);
+router.route('/:catalogGradeId').patch(updateCatalogGrade).delete(deleteCatalogGrade);
 
 export default router;

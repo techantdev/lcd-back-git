@@ -1,13 +1,13 @@
 import express from'express';
-import catalogAchievementController from './../controllers/catalog-achievement/catalogAchievementController';
+import {createCatalogAchievement, deleteCatalogAchievement, getCatalogAchievement, updateCatalogAchievement} from './../controllers/catalog-achievement/catalogAchievementController';
 
 const router = express.Router();
 
-router.route('').get(catalogAchievementController.getCatalogAchievement).post(catalogAchievementController.createCatalogAchievement);
+router.route('').get(getCatalogAchievement).post(createCatalogAchievement);
 
 router
   .route('/:catalogAchievementId')
-  .patch(catalogAchievementController.updateCatalogAchievement)
-  .delete(catalogAchievementController.deleteCatalogAchievement);
+  .patch(updateCatalogAchievement)
+  .delete(deleteCatalogAchievement);
 
 export default router;

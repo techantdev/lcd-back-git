@@ -1,10 +1,10 @@
 import express from'express';
-import teacherController from './../controllers/teacher/teacherController';
+import {createTeacher, deleteTeacher, getTeacher, updateTeacher} from './../controllers/teacher/teacherController';
 
 const router = express.Router();
 
-router.route('').get(teacherController.getTeacher).post(teacherController.createTeacher);
+router.route('').get(getTeacher).post(createTeacher);
 
-router.route('/:teacherId').patch(teacherController.updateTeacher).delete(teacherController.deleteTeacher);
+router.route('/:teacherId').patch(updateTeacher).delete(deleteTeacher);
 
 export default router;

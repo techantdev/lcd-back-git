@@ -1,13 +1,13 @@
 import express from'express';
-import catalogSubTopicController from './../controllers/catalog-sub-topic/catalogSubTopicController';
+import {createCatalogSubTopic, deleteCatalogSubTopic, getCatalogSubTopic, updateCatalogSubTopic} from './../controllers/catalog-sub-topic/catalogSubTopicController';
 
 const router = express.Router();
 
-router.route('').get(catalogSubTopicController.getCatalogSubTopic).post(catalogSubTopicController.createCatalogSubTopic);
+router.route('').get(getCatalogSubTopic).post(createCatalogSubTopic);
 
 router
   .route('/:catalogSubTopicId')
-  .patch(catalogSubTopicController.updateCatalogSubTopic)
-  .delete(catalogSubTopicController.deleteCatalogSubTopic);
+  .patch(updateCatalogSubTopic)
+  .delete(deleteCatalogSubTopic);
 
 export default router;

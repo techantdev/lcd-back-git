@@ -1,3 +1,5 @@
-const getAcademicYear = async () => {};
+const getAcademicYear = async () => {
+  return 'FUNCIONO';
+};
 
 export default getAcademicYear;

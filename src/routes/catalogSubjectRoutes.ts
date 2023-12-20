@@ -1,15 +1,15 @@
 import express from'express';
-import catalogSubjectController from './../controllers/catalog-subject/catalogSubjectController';
+import {assignGradeCatalogSubject, createCatalogSubject, deleteCatalogSubject, getCatalogSubject, updateCatalogSubject} from './../controllers/catalog-subject/catalogSubjectController';
 
 const router = express.Router();
 
-router.route('').get(catalogSubjectController.getCatalogSubject).post(catalogSubjectController.createCatalogSubject);
+router.route('').get(getCatalogSubject).post(createCatalogSubject);
 
 router
   .route('/:catalogSubejctId')
-  .patch(catalogSubjectController.updateCatalogSubject)
-  .delete(catalogSubjectController.deleteCatalogSubject);
+  .patch(updateCatalogSubject)
+  .delete(deleteCatalogSubject);
 
-router.route('/:catalogSubejctId/grades').patch(catalogSubjectController.assignGradeCatalogSubject);
+router.route('/:catalogSubejctId/grades').patch(assignGradeCatalogSubject);
 
 export default router;
