@@ -1,5 +1,5 @@
-const express = require('express');
-const courseController = require('./../controllers/course/courseController');
+import express from'express';
+import courseController from './../controllers/course/courseController';
 
 const router = express.Router();
 

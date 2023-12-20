@@ -1,5 +1,5 @@
-const express = require('express');
-const yearGradeController = require('./../controllers/year-grade/yearGradeController');
+import express from'express';
+import yearGradeController from './../controllers/year-grade/yearGradeController';
 
 const router = express.Router();
 

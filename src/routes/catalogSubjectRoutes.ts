@@ -1,5 +1,5 @@
-const express = require('express');
-const catalogSubjectController = require('./../controllers/catalog-subject/catalogSubjectController');
+import express from'express';
+import catalogSubjectController from './../controllers/catalog-subject/catalogSubjectController';
 
 const router = express.Router();
 

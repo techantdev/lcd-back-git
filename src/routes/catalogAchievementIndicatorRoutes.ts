@@ -1,5 +1,5 @@
-const express = require('express');
-const catalogAchievementIndicatorController = require('./../controllers/catalog-achievement-indicator/catalogAchievementIndicatorController');
+import express from 'express';
+import catalogAchievementIndicatorController from './../controllers/catalog-achievement-indicator/catalogAchievementIndicatorController';
 
 const router = express.Router();
 
@@ -14,3 +14,5 @@ router
   .delete(catalogAchievementIndicatorController.deleteCatalogAchievementIndicator);
 
 export default router;
+
+

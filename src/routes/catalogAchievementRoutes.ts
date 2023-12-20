@@ -1,5 +1,5 @@
-const express = require('express');
-const catalogAchievementController = require('./../controllers/catalog-achievement/catalogAchievementController');
+import express from'express';
+import catalogAchievementController from './../controllers/catalog-achievement/catalogAchievementController';
 
 const router = express.Router();
 

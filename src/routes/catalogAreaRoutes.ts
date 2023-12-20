@@ -1,5 +1,5 @@
-const express = require('express');
-const catalogAreaController = require('./../controllers/catalog-area/catalogAreaController');
+import express from'express';
+import catalogAreaController from './../controllers/catalog-area/catalogAreaController';
 
 const router = express.Router();
 

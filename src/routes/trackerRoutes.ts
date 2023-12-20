@@ -1,5 +1,5 @@
-const express = require('express');
-const trackerController = require('./../controllers/tracker/trackerController');
+import express from'express';
+import trackerController from './../controllers/tracker/trackerController';
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
-const express = require('express');
-const yearAreaController = require('./../controllers/year-area/yearAreaController');
+import express from'express';
+import yearAreaController from './../controllers/year-area/yearAreaController';
 
 const router = express.Router();
 

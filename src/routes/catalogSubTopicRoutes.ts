@@ -1,5 +1,5 @@
-const express = require('express');
-const catalogSubTopicController = require('./../controllers/catalog-sub-topic/catalogSubTopicController');
+import express from'express';
+import catalogSubTopicController from './../controllers/catalog-sub-topic/catalogSubTopicController';
 
 const router = express.Router();
 

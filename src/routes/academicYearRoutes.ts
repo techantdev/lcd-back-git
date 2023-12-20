@@ -1,5 +1,5 @@
-const express = require('express');
-const academicYearController = require('./../controllers/academic-year/academicYearController');
+import express from'express';
+import academicYearController from './../controllers/academic-year/academicYearController';
 
 const router = express.Router();
 

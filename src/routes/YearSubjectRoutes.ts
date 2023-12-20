@@ -1,5 +1,5 @@
-const express = require('express');
-const yearSubjectController = require('./../controllers/year-subject/yearSubjectController');
+import express from'express';
+import yearSubjectController from './../controllers/year-subject/yearSubjectController';
 
 const router = express.Router();
 
