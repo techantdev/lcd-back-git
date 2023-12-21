@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import getTrackerMethod from './getTracker';
 import updateTrackerMethod from './updateTracker';
 

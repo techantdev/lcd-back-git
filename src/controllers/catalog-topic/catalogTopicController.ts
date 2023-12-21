@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogTopicMethod from './createCatalogTopic';
 import deleteCatalogTopicMethod from './deleteCatalogTopic';
 import getCatalogTopicMethod from './getCatalogTopic';

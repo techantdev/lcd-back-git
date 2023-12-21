@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogAchievementIndicatorMethod from './createCatalogAchievementIndicator';
 import deleteCatalogAchievementIndicatorMethod from './deleteCatalogAchievementIndicator';
 import getCatalogAchievementIndicatorMethod from './getCatalogAchievementIndicator';

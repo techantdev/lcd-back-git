@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import getUserMethod from './getUser';
 
 import { catchAsync } from '../../middleware/middleware';

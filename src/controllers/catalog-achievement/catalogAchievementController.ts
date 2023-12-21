@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogAchievementMethod from './createCatalogAchievement';
 import deleteCatalogAchievementMethod from './deleteCatalogAchievement';
 import getCatalogAchievementMethod from './getCatalogAchievement';

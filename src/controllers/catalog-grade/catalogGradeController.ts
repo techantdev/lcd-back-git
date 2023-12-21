@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogGradeMethod from './createCatalogGrade';
 import deleteCatalogGradeMethod from './deleteCatalogGrade';
 import getCatalogGradeMethod from './getCatalogGrade';

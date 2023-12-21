@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import getYearGradeMethod from './getYearGrade';
 import getSubjectYearGradeMethod from './getSubjectYearGrade';
 

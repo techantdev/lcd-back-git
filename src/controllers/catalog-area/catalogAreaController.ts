@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogAreaMethod from './createCatalogArea';
 import deleteCatalogAreaMethod from './deleteCatalogArea';
 import getCatalogAreaMethod from './getCatalogArea';

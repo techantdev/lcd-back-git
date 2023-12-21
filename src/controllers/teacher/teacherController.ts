@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createTeacherMethod from './createTeacher';
 import deleteTeacherMethod from './deleteTeacher';
 import getTeacherMethod from './getTeacher';

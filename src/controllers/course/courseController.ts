@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCourseMethod from './createCourse';
 import deleteCourseMethod from './deleteCourse';
 import getCourseMethod from './getCourse';

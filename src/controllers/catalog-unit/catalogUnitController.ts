@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import createCatalogUnitMethod from './createCatalogUnit';
 import deleteCatalogUnitMethod from './deleteCatalogUnit';
 import getCatalogUnitMethod from './getCatalogUnit';
