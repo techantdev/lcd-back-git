@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import academicYearSchema from '../schemas/AcademicYearSchema';
 
 class AcademicYear extends DatabaseEntity {
   academicYearId: String;
@@ -7,9 +8,16 @@ class AcademicYear extends DatabaseEntity {
 
   constructor(schoolId: String, year: Number) {
     super();
+
+    // Attributes from params
     this.academicYearId = this.generateId();
     this.schoolId = schoolId;
     this.year = year;
+
+    // Schema
+    this.schema = academicYearSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.academicYearId), this.getSK(this.academicYearId));
   }
 
@@ -20,8 +28,6 @@ class AcademicYear extends DatabaseEntity {
   getSK(academicYearId: String) {
     return `ACADEMICYEAR_${academicYearId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

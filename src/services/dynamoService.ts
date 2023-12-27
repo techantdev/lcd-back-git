@@ -9,7 +9,9 @@ const {
   // TransactWriteItemsCommand
 } = require('@aws-sdk/lib-dynamodb');
 
-const dbclientV3 = DynamoDBDocumentClient.from(new DynamoDBClient());
+import { credentials, region } from './credentials';
+
+const dbclientV3 = DynamoDBDocumentClient.from(new DynamoDBClient({ credentials, region }));
 
 const TEST_TABLE_NAME = 'TEST_TABLE_NAME';
 
