@@ -1,5 +1,8 @@
+import { AcademicYear } from '../../models/AcademicYearModel';
+
 const getAcademicYear = async () => {
-  return 'FUNCIONO';
+  // const academicYear = new AcademicYear();
+  // return await academicYear.get();
 };
 
 export default getAcademicYear;

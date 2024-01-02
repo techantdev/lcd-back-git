@@ -1,7 +1,7 @@
 import { ulid } from 'ulid';
 import { ObjectSchema } from 'yup';
 
-import { putItem } from '../services/dynamoService';
+import { putItem, getItem } from '../services/dynamoService';
 
 abstract class DatabaseEntity {
   private PK: String;
@@ -15,6 +15,8 @@ abstract class DatabaseEntity {
   abstract getSK(param: String): String;
 
   abstract toItem(): Object;
+
+  abstract getGSIKeysObject(): Object;
 
   // METHODS
 
@@ -41,8 +43,13 @@ abstract class DatabaseEntity {
     return await this.saveToDB(itemToSave);
   }
 
+  async get() {
+    const gettedItem = await getItem(this.PK, this.SK);
+    return gettedItem;
+  }
+
   toDBItem() {
-    const dbItem = { ...this.getPartitionKeysObject(), ...this.toItem() };
+    const dbItem = { ...this.getPartitionKeysObject(), ...this.getGSIKeysObject(), ...this.toItem() };
     return dbItem;
   }
 }
