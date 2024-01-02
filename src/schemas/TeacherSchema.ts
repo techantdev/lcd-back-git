@@ -1,6 +1,8 @@
 import { object, string } from 'yup';
+import { partitionKeysSchema } from './schemaUtils';
 
 const teacherSchema = object({
+  ...partitionKeysSchema,
   teacherId: string().required(),
   userId: string().required(),
   schoolId: string().required(),

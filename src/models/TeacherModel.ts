@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import teacherSchema from '../schemas/TeacherSchema';
 
 class Teacher extends DatabaseEntity {
   teacherId: String;
@@ -10,11 +11,18 @@ class Teacher extends DatabaseEntity {
 
   constructor( userId: String, schoolId: String, teacherName: String, teacherLastName: String) {
     super();
+
+    // Attributes from params
     this.teacherId = this.generateId();
     this.userId = userId;
     this.schoolId = schoolId;
     this.teacherName = teacherName;
     this.teacherLastName = teacherLastName;
+
+    // Schema
+    this.schema = teacherSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.teacherId), this.getSK(this.teacherId));
   }
 
@@ -25,8 +33,6 @@ class Teacher extends DatabaseEntity {
   getSK(teacherId: String) {
     return `TEACHER_${teacherId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

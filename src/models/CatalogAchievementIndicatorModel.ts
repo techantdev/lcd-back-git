@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import catalogAchievementIndicatorSchema from '../schemas/CatalogAchievementIndicatorSchema';
 
 class CatalogAchievementIndicator extends DatabaseEntity {
   catalogAchievementIndicatorId: String;
@@ -8,10 +9,17 @@ class CatalogAchievementIndicator extends DatabaseEntity {
 
   constructor( catalogSubjectId: String, catalogGradeId: String, catalogAchievementIndicatorName: String) {
     super();
+
+    // Attributes from params
     this.catalogAchievementIndicatorId = this.generateId();
     this.catalogSubjectId = catalogSubjectId;
     this.catalogGradeId = catalogGradeId;
     this.catalogAchievementIndicatorName = catalogAchievementIndicatorName;
+
+    // Schema
+    this.schema = catalogAchievementIndicatorSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.catalogAchievementIndicatorId), this.getSK(this.catalogAchievementIndicatorId));
   }
 
@@ -22,8 +30,6 @@ class CatalogAchievementIndicator extends DatabaseEntity {
   getSK(catalogAchievementIndicatorId: String) {
     return `CATALOGACHIEVEMENTINDICATOR_${catalogAchievementIndicatorId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

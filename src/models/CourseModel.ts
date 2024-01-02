@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import courseSchema from '../schemas/CourseSchema';
 
 class Course extends DatabaseEntity {
   courseId: String;
@@ -9,11 +10,18 @@ class Course extends DatabaseEntity {
 
   constructor( teacherId: String, yearGradeId: String, trackerId: String, courseLabel: String) {
     super();
+
+    // Attributes from params
     this.courseId = this.generateId();
     this.teacherId = teacherId;
     this.yearGradeId = yearGradeId;
     this.trackerId = trackerId;
     this.courseLabel = courseLabel;
+
+    // Schema
+    this.schema = courseSchema;
+    
+    // Partition keys
     this.initializeKeys(this.getPK(this.courseId), this.getSK(this.courseId));
   }
 
@@ -24,8 +32,6 @@ class Course extends DatabaseEntity {
   getSK(courseId: String) {
     return `COURSE_${courseId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

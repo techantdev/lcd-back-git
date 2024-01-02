@@ -7,3 +7,4 @@ const createCatalogAchievement = async (catalogSubjectId: String, catalogGradeId
 };
 
 export default createCatalogAchievement;
+

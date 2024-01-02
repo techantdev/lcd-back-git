@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import catalogTopicSchema from '../schemas/CatalogTopicSchema';
 
 class CatalogTopic extends DatabaseEntity {
   catalogTopicId: String;
@@ -7,9 +8,16 @@ class CatalogTopic extends DatabaseEntity {
 
   constructor(catalogUnitId: String, catalogTopicName: String) {
     super();
+
+    // Attributes from params
     this.catalogTopicId = this.generateId();
     this.catalogUnitId = catalogUnitId;
     this.catalogTopicName = catalogTopicName;
+
+    // Schema
+    this.schema = catalogTopicSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.catalogTopicId), this.getSK(this.catalogTopicId));
   }
 
@@ -20,8 +28,6 @@ class CatalogTopic extends DatabaseEntity {
   getSK(catalogTopicId: String) {
     return `CATALOGTOPIC_${catalogTopicId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

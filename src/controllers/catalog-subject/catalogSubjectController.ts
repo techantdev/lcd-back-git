@@ -8,7 +8,7 @@ import assignGradeCatalogSubjectMethod from './assignGradeCatalogSubject';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogSubject = catchAsync((req: Request) => createCatalogSubjectMethod());
+export const createCatalogSubject = catchAsync((req: Request) => createCatalogSubjectMethod(req.body.catalogAreaId, req.body.catalogSubjectName));
 export const deleteCatalogSubject = catchAsync((req: Request) => deleteCatalogSubjectMethod());
 export const getCatalogSubject = catchAsync((req: Request) => getCatalogSubjectMethod());
 export const updateCatalogSubject = catchAsync((req: Request) => updateCatalogSubjectMethod());

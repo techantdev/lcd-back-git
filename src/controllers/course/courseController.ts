@@ -8,7 +8,7 @@ import updateCourseMethod from './updateCourse';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createCourse = catchAsync((req: Request) => createCourseMethod());
+export const createCourse = catchAsync((req: Request) => createCourseMethod(req.body.teacherId, req.body.yearGradeId, req.body.trackerId, req.body.courseLabel));
 export const deleteCourse = catchAsync((req: Request) => deleteCourseMethod());
 export const getCourse = catchAsync((req: Request) => getCourseMethod());
 export const getTeacherCourse = catchAsync((req: Request) => getTeacherCourseMethod());

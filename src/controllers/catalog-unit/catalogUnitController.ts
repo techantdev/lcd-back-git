@@ -7,7 +7,7 @@ import updateCatalogUnitMethod from './updateCatalogUnit';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const createCatalogUnit = catchAsync((req: Request) => createCatalogUnitMethod());
+export const createCatalogUnit = catchAsync((req: Request) => createCatalogUnitMethod(req.body.catalogSubjectId, req.body.catalogGradeId, req.body.catalogUnitName));
 export const deleteCatalogUnit = catchAsync((req: Request) => deleteCatalogUnitMethod());
 export const getCatalogUnit = catchAsync((req: Request) => getCatalogUnitMethod());
 export const updateCatalogUnit = catchAsync((req: Request) => updateCatalogUnitMethod());

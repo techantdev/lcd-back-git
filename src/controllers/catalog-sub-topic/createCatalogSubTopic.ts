@@ -1,3 +1,9 @@
-const createCatalogTopic = async () => {};
+import { CatalogSubTopic } from '../../models/CatalogSubTopicModel';
 
-export default createCatalogTopic;
+const createCatalogSubTopic = async (catalogTopicId: String, catalogSubTopicName: String) => {
+  const newCatalogSubTopic = new CatalogSubTopic(catalogTopicId, catalogSubTopicName);
+  await newCatalogSubTopic.save();
+  return newCatalogSubTopic.toItem();
+};
+
+export default createCatalogSubTopic;

@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import catalogAreaSchema from '../schemas/CatalogAreaSchema';
 
 class CatalogArea extends DatabaseEntity {
   catalogAreaId: String;
@@ -7,9 +8,16 @@ class CatalogArea extends DatabaseEntity {
 
   constructor(schoolId: String, catalogAreaName: String) {
     super();
+
+    // Attributes from params
     this.catalogAreaId = this.generateId();
     this.schoolId = schoolId;
     this.catalogAreaName = catalogAreaName;
+
+    // Schema
+    this.schema = catalogAreaSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.catalogAreaId), this.getSK(this.catalogAreaId));
   }
 
@@ -20,8 +28,6 @@ class CatalogArea extends DatabaseEntity {
   getSK(catalogAreaId: String) {
     return `CATALOGAREA_${catalogAreaId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {
