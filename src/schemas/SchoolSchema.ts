@@ -1,10 +1,15 @@
 import { object, string } from 'yup';
-import { partitionKeysSchema } from './schemaUtils';
+
+import { getPartitionKeysSchema } from './schemaUtils';
+
+const SCHOOL = 'SCHOOL';
 
 const schoolSchema = object({
-  ...partitionKeysSchema,
+  ...getPartitionKeysSchema(SCHOOL),
   schoolId: string().required(),
   schoolName: string().required()
 });
+
+export { SCHOOL };
 
 export default schoolSchema;

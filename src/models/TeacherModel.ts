@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import teacherSchema from '../schemas/TeacherSchema';
+import teacherSchema, { TEACHER, SCHOOL } from '../schemas/TeacherSchema';
 
 class Teacher extends DatabaseEntity {
   teacherId: String;
@@ -27,11 +27,27 @@ class Teacher extends DatabaseEntity {
   }
 
   getPK(teacherId: String) {
-    return `TEACHER_${teacherId}`;
+    return `${TEACHER}_${teacherId}`;
   }
 
   getSK(teacherId: String) {
-    return `TEACHER_${teacherId}`;
+    return `${TEACHER}_${teacherId}`;
+  }
+
+  
+  getGSI1PK() {
+    return `${SCHOOL}_${this.schoolId}`;
+  }
+
+  getGSI1SK() {
+    return `${TEACHER}_${this.teacherId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
   }
 
   toItem() {

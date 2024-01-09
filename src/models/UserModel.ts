@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import userSchema, { USER, USEREMAIL } from '../schemas/UserSchema';
 
 class User extends DatabaseEntity {
   userId: String;
@@ -15,18 +16,36 @@ class User extends DatabaseEntity {
     this.userName = userName;
     this.userLastName = userLastName;
     this.userEmail = userEmail;
+
+     // Schema
+     this.schema = userSchema;
+
+     // Partition keys
     this.initializeKeys(this.getPK(this.userId), this.getSK(this.userId));
   }
 
   getPK(userId: String) {
-    return `USER_${userId}`;
+    return `${USER}_${userId}`;
   }
 
   getSK(userId: String) {
-    return `USER_${userId}`;
+    return `${USER}_${userId}`;
   }
 
-  async save() {}
+  getGSI1PK() {
+    return `${USEREMAIL}_${this.userEmail}`;
+  }
+
+  getGSI1SK() {
+    return `${USEREMAIL}_${this.userEmail}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
+  }
 
   toItem() {
     return {

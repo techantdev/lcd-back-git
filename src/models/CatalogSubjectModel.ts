@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogSubjectSchema from '../schemas/CatalogSubjectSchema';
+import catalogSubjectSchema, { CATALOGSUBJECT, CATALOGAREA } from '../schemas/CatalogSubjectSchema';
 
 class CatalogSubject extends DatabaseEntity {
   catalogSubjectId: String;
@@ -23,12 +23,28 @@ class CatalogSubject extends DatabaseEntity {
   }
 
   getPK(catalogSubjectId: String) {
-    return `CATALOGSUBJECT_${catalogSubjectId}`;
+    return `${CATALOGSUBJECT}_${catalogSubjectId}`;
   }
 
   getSK(catalogSubjectId: String) {
-    return `CATALOGSUBJECT_${catalogSubjectId}`;
+    return `${CATALOGSUBJECT}_${catalogSubjectId}`;
   }
+
+  getGSI1PK() {
+    return `${CATALOGAREA}_${this.catalogAreaId}`;
+  }
+
+  getGSI1SK() {
+    return `${CATALOGSUBJECT}_${this.catalogSubjectId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
+  }
+
 
   toItem() {
     return {

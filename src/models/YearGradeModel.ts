@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import yearGradeSchema, { YEARGRADE, ACADEMICYEAR } from '../schemas/YearGradeSchema';
 
 class YearGrade extends DatabaseEntity {
   yearGradeId: String;
@@ -10,18 +11,36 @@ class YearGrade extends DatabaseEntity {
     this.yearGradeId = this.generateId();
     this.catalogGradeId = catalogGradeId;
     this.academicYearId = academicYearId;
+
+    // Schema
+    this.schema = yearGradeSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.yearGradeId), this.getSK(this.yearGradeId));
   }
 
   getPK(yearGradeId: String) {
-    return `YEARGRADE_${yearGradeId}`;
+    return `${YEARGRADE}_${yearGradeId}`;
   }
 
   getSK(yearGradeId: String) {
-    return `YEARGRADE_${yearGradeId}`;
+    return `${YEARGRADE}_${yearGradeId}`;
   }
 
-  async save() {}
+  getGSI1PK() {
+    return `${ACADEMICYEAR}_${this.academicYearId}`;
+  }
+
+  getGSI1SK() {
+    return `${YEARGRADE}_${this.yearGradeId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
+  }
 
   toItem() {
     return {

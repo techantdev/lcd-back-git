@@ -1,10 +1,15 @@
 import { object, string } from 'yup';
-import { partitionKeysSchema } from './schemaUtils';
+
+import { getPartitionKeysSchema } from './schemaUtils';
+
+const CATALOGROLES = 'CATALOGROLES';
 
 const catalogRolesSchema = object({
-  ...partitionKeysSchema,
+  ...getPartitionKeysSchema(CATALOGROLES),
   catalogRoleId: string().required(),
   catalogRoleName: string().required()
 });
+
+export { CATALOGROLES };
 
 export default catalogRolesSchema;

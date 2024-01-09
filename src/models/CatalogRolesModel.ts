@@ -1,4 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import catalogRolesSchema, { CATALOGROLES } from '../schemas/CatalogRolesSchema';
 
 class CatalogRoles extends DatabaseEntity {
   catalogRoleId: String;
@@ -8,18 +9,21 @@ class CatalogRoles extends DatabaseEntity {
     super();
     this.catalogRoleId = this.generateId();
     this.catalogRoleName = catalogRoleName;
+
+    // Schema
+    this.schema = catalogRolesSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.catalogRoleId), this.getSK(this.catalogRoleId));
   }
 
   getPK(catalogRoleId: String) {
-    return `CATALOGROLES_${catalogRoleId}`;
+    return `${CATALOGROLES}_${catalogRoleId}`;
   }
 
   getSK(catalogRoleId: String) {
-    return `CATALOGROLES_${catalogRoleId}`;
+    return `${CATALOGROLES}_${catalogRoleId}`;
   }
-
-  async save() {}
 
   toItem() {
     return {

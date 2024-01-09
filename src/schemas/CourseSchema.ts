@@ -16,4 +16,6 @@ const courseSchema = object({
   courseLabel: string().required()
 });
 
+export { YEARGRADE, COURSE , TEACHER };
+
 export default courseSchema;

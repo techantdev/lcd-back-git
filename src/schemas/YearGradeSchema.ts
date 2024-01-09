@@ -1,11 +1,18 @@
 import { object, string } from 'yup';
-import { partitionKeysSchema } from './schemaUtils';
+
+import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+
+const YEARGRADE = 'YEARGRADE';
+const ACADEMICYEAR = 'ACADEMICYEAR';
 
 const yearGradeSchema = object({
-  ...partitionKeysSchema,
+  ...getPartitionKeysSchema(YEARGRADE),
+  ...getGSIKeysSchema(1, getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`), getRegex(`${YEARGRADE}_${ulidRegexStr}`)),
   yearGradeId: string().required(),
   academicYearId: string().required(),
   catalogGradeId: string().required()
 });
+
+export { YEARGRADE, ACADEMICYEAR };
 
 export default yearGradeSchema;

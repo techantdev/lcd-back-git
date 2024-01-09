@@ -1,4 +1,6 @@
 import { DatabaseEntity } from '../classes/classesIndex';
+import schoolSchema, { SCHOOL } from '../schemas/SchoolSchema';
+
 
 class School extends DatabaseEntity {
   schoolId: String;
@@ -8,18 +10,22 @@ class School extends DatabaseEntity {
     super();
     this.schoolId = this.generateId();
     this.schoolName = schoolName;
+
+    // Schema
+     this.schema = schoolSchema;
+
+    // Partition keys
     this.initializeKeys(this.getPK(this.schoolId), this.getSK(this.schoolId));
   }
 
   getPK(schoolId: String) {
-    return `SCHOOL_${schoolId}`;
+    return `${SCHOOL}_${schoolId}`;
   }
 
   getSK(schoolId: String) {
-    return `SCHOOL_${schoolId}`;
+    return `${SCHOOL}_${schoolId}`;
   }
 
-  async save() {}
 
   toItem() {
     return {

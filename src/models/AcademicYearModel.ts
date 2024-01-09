@@ -29,6 +29,7 @@ class AcademicYear extends DatabaseEntity {
     return `${ACADEMICYEAR}_${academicYearId}`;
   }
 
+  
   getGSI1PK() {
     return `${SCHOOL}_${this.schoolId}`;
   }

@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogAreaSchema from '../schemas/CatalogAreaSchema';
+import catalogAreaSchema, { CATALOGAREA, SCHOOL } from '../schemas/CatalogAreaSchema';
 
 class CatalogArea extends DatabaseEntity {
   catalogAreaId: String;
@@ -22,12 +22,28 @@ class CatalogArea extends DatabaseEntity {
   }
 
   getPK(catalogAreaId: String) {
-    return `CATALOGAREA_${catalogAreaId}`;
+    return `${CATALOGAREA}_${catalogAreaId}`;
   }
 
   getSK(catalogAreaId: String) {
-    return `CATALOGAREA_${catalogAreaId}`;
+    return `${CATALOGAREA}_${catalogAreaId}`;
   }
+
+  getGSI1PK() {
+    return `${SCHOOL}_${this.schoolId}`;
+  }
+
+  getGSI1SK() {
+    return `${CATALOGAREA}_${this.catalogAreaId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
+  }
+
 
   toItem() {
     return {

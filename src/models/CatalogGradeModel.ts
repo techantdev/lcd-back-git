@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogGradeSchema from '../schemas/CatalogGradeSchema';
+import catalogGradeSchema, { CATALOGGRADE, SCHOOL } from '../schemas/CatalogGradeSchema';
 
 class CatalogGrade extends DatabaseEntity {
   catalogGradeId: String;
@@ -22,11 +22,27 @@ class CatalogGrade extends DatabaseEntity {
   }
 
   getPK(catalogGradeId: String) {
-    return `CATALOGGRADE_${catalogGradeId}`;
+    return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
   getSK(catalogGradeId: String) {
-    return `CATALOGGRADE_${catalogGradeId}`;
+    return `${CATALOGGRADE}_${catalogGradeId}`;
+  }
+
+  
+  getGSI1PK() {
+    return `${SCHOOL}_${this.schoolId}`;
+  }
+
+  getGSI1SK() {
+    return `${CATALOGGRADE}_${this.catalogGradeId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
   }
 
   toItem() {

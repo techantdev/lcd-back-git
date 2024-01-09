@@ -1,8 +1,13 @@
 import { object, string } from 'yup';
-import { partitionKeysSchema } from './schemaUtils';
+
+import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+
+const TEACHER = 'TEACHER';
+const SCHOOL = 'SCHOOL';
 
 const teacherSchema = object({
-  ...partitionKeysSchema,
+  ...getPartitionKeysSchema(TEACHER),
+  ...getGSIKeysSchema(1, getRegex(`${SCHOOL}_${ulidRegexStr}`), getRegex(`${TEACHER}_${ulidRegexStr}`)),
   teacherId: string().required(),
   userId: string().required(),
   schoolId: string().required(),
@@ -10,5 +15,7 @@ const teacherSchema = object({
   teacherLastName: string().required()
   // PENDIENTE COLOCAR <ARRAY>OBJECT teacherAssignedCatalogAreas
 });
+
+export { TEACHER, SCHOOL };
 
 export default teacherSchema;

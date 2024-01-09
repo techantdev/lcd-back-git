@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import courseSchema from '../schemas/CourseSchema';
+import courseSchema, { COURSE, YEARGRADE, TEACHER } from '../schemas/CourseSchema';
 
 class Course extends DatabaseEntity {
   courseId: String;
@@ -26,11 +26,36 @@ class Course extends DatabaseEntity {
   }
 
   getPK(courseId: String) {
-    return `COURSE_${courseId}`;
+    return `${COURSE}_${courseId}`;
   }
 
   getSK(courseId: String) {
-    return `COURSE_${courseId}`;
+    return `${COURSE}_${courseId}`;
+  }
+
+  getGSI1PK() {
+    return `${YEARGRADE}_${this.yearGradeId}`;
+  }
+
+  getGSI1SK() {
+    return `${COURSE}_${this.courseId}`;
+  }
+
+  getGSI2PK() {
+    return `${TEACHER}_${this.teacherId}`;
+  }
+
+  getGSI2SK() {
+    return `${COURSE}_${this.courseId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK(),
+      GSI2PK: this.getGSI2PK(),
+      GSI2SK: this.getGSI2SK()
+    };
   }
 
   toItem() {

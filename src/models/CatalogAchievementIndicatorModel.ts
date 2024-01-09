@@ -1,5 +1,6 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogAchievementIndicatorSchema from '../schemas/CatalogAchievementIndicatorSchema';
+import catalogAchievementIndicatorSchema, { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE  } from '../schemas/CatalogAchievementIndicatorSchema';
+
 
 class CatalogAchievementIndicator extends DatabaseEntity {
   catalogAchievementIndicatorId: String;
@@ -24,11 +25,26 @@ class CatalogAchievementIndicator extends DatabaseEntity {
   }
 
   getPK(catalogAchievementIndicatorId: String) {
-    return `CATALOGACHIEVEMENTINDICATOR_${catalogAchievementIndicatorId}`;
+    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
   }
 
   getSK(catalogAchievementIndicatorId: String) {
-    return `CATALOGACHIEVEMENTINDICATOR_${catalogAchievementIndicatorId}`;
+    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
+  }
+
+  getGSI1PK() {
+    return `${CATALOGSUBJECT}_${this.catalogSubjectId}_${CATALOGACHIEVEMENTINDICATOR}`;
+  }
+
+  getGSI1SK() {
+    return `${CATALOGGRADE}_${this.catalogGradeId}`;
+  }
+
+  getGSIKeysObject() {
+    return {
+      GSI1PK: this.getGSI1PK(),
+      GSI1SK: this.getGSI1SK()
+    };
   }
 
   toItem() {
