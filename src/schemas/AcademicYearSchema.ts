@@ -1,18 +1,21 @@
-import { number, object, string } from 'yup';
+import { number, object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const ACADEMICYEAR = 'ACADEMICYEAR';
 const SCHOOL = 'SCHOOL';
 
 const academicYearSchema = object({
   ...getPartitionKeysSchema(ACADEMICYEAR),
-  ...getGSIKeysSchema(1, getRegex(`${SCHOOL}_${ulidRegexStr}`), getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
   academicYearId: string().required(),
   schoolId: string().required(),
   year: number().required().positive()
 });
 
-export { ACADEMICYEAR, SCHOOL };
+interface AcademicYearInterface extends InferType<typeof academicYearSchema> {}
+
+export { ACADEMICYEAR, SCHOOL, AcademicYearInterface };
 
 export default academicYearSchema;

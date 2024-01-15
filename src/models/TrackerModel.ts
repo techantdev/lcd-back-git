@@ -25,7 +25,10 @@ class Tracker extends DatabaseEntity {
     return `${TRACKER}_${trackerId}`;
   }
 
-  
+  getGSIKeysObject() {
+    return {};
+  }
+
   toItem() {
     return {
       trackerId: this.trackerId,

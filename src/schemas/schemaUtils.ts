@@ -14,10 +14,12 @@ const getPartitionKeysSchema = (entityKey: String) => {
   };
 };
 
+const getGSIKeySchema = (regex: RegExp) => string().matches(regex).required();
+
 const getGSIKeysSchema = (index: Number, PKRegex: RegExp, SKRegex: RegExp) => {
   return {
-    [`GSI${index}PK`]: string().matches(PKRegex).required(),
-    [`GSI${index}SK`]: string().matches(SKRegex).required()
+    [`GSI${index}PK`]: getGSIKeySchema(PKRegex),
+    [`GSI${index}SK`]: getGSIKeySchema(SKRegex)
   };
 };
 
@@ -25,4 +27,4 @@ const ulidRegexStr = '[0-9A-HJKMNP-Z]{26}';
 
 const getRegex = (expression: string) => new RegExp(expression, 'g');
 
-export { partitionKeysSchema, getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex };
+export { partitionKeysSchema, getPartitionKeysSchema, getGSIKeySchema, getGSIKeysSchema, ulidRegexStr, getRegex };

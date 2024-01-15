@@ -2,7 +2,7 @@ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const {
   DynamoDBDocumentClient,
   PutCommand,
-  // QueryCommand,
+  QueryCommand,
   GetCommand
   // UpdateCommand,
   // DeleteCommand,
@@ -25,4 +25,24 @@ const getItem = async (PK: String, SK: String) => {
   return Item;
 };
 
-export { putItem, getItem };
+const getItemsGSI = async (
+  indexName: String,
+  {
+    KeyConditionExpression,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues
+  }: { KeyConditionExpression: String; ExpressionAttributeNames: Object; ExpressionAttributeValues: Object }
+) => {
+  const { Items = null } = await dbclientV3.send(
+    new QueryCommand({
+      TableName: TEST_TABLE_NAME,
+      IndexName: indexName,
+      KeyConditionExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues
+    })
+  );
+  return Items;
+};
+
+export { putItem, getItem, getItemsGSI };

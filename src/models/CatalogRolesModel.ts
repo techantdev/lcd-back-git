@@ -25,6 +25,10 @@ class CatalogRoles extends DatabaseEntity {
     return `${CATALOGROLES}_${catalogRoleId}`;
   }
 
+  getGSIKeysObject() {
+    return {};
+  }
+
   toItem() {
     return {
       catalogRoleId: this.catalogRoleId,

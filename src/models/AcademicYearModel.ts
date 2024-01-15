@@ -1,35 +1,25 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import academicYearSchema, { ACADEMICYEAR, SCHOOL } from '../schemas/AcademicYearSchema';
+import academicYearSchema, { ACADEMICYEAR, SCHOOL, AcademicYearInterface } from '../schemas/AcademicYearSchema';
+import { getItemsGSI } from '../services/dynamoService';
 
 class AcademicYear extends DatabaseEntity {
-  academicYearId: String;
-  schoolId: String;
-  year: Number;
+  private academicYearId: String;
+  private schoolId: String;
+  private year: Number;
 
-  constructor(schoolId: String, year: Number) {
+  constructor() {
     super();
-
-    // Attributes from params
-    this.academicYearId = this.generateId();
-    this.schoolId = schoolId;
-    this.year = year;
-
-    // Schema
     this.schema = academicYearSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.academicYearId), this.getSK(this.academicYearId));
   }
 
-  getPK(academicYearId: String) {
-    return `${ACADEMICYEAR}_${academicYearId}`;
+  getPK() {
+    return `${ACADEMICYEAR}_${this.academicYearId}`;
   }
 
-  getSK(academicYearId: String) {
-    return `${ACADEMICYEAR}_${academicYearId}`;
+  getSK() {
+    return `${ACADEMICYEAR}_${this.academicYearId}`;
   }
 
-  
   getGSI1PK() {
     return `${SCHOOL}_${this.schoolId}`;
   }
@@ -51,6 +41,65 @@ class AcademicYear extends DatabaseEntity {
       schoolId: this.schoolId,
       year: this.year
     };
+  }
+
+  // STATIC
+  public static getPK(academicYearId: String) {
+    return `${ACADEMICYEAR}_${academicYearId}`;
+  }
+
+  public static getSK(academicYearId: String) {
+    return `${ACADEMICYEAR}_${academicYearId}`;
+  }
+
+  public static getGSI1PK(schoolId: String) {
+    return `${SCHOOL}_${schoolId}`;
+  }
+
+  public static getGSI1SK(academicYearId: String) {
+    return `${ACADEMICYEAR}_${academicYearId}`;
+  }
+
+  public static fromDB(item: AcademicYearInterface) {
+    const newAcademicYear = new AcademicYear();
+
+    newAcademicYear.academicYearId = item.academicYearId;
+
+    // Attributes from params
+    newAcademicYear.schoolId = item.schoolId;
+    newAcademicYear.year = item.year;
+
+    // Partition keys
+    newAcademicYear.initializeKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
+
+    return newAcademicYear.toItem();
+  }
+
+  public static async insertOne({ schoolId, year }: { schoolId: String; year: Number }) {
+    const newAcademicYear = new AcademicYear();
+
+    newAcademicYear.academicYearId = newAcademicYear.generateId();
+
+    // Attributes from params
+    newAcademicYear.schoolId = schoolId;
+    newAcademicYear.year = year;
+
+    // Partition keys
+    newAcademicYear.initializeKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
+
+    await newAcademicYear.save();
+
+    return newAcademicYear.toItem();
+  }
+
+  public static async getSchoolAcademicYears(schoolId: String) {
+    const items = await getItemsGSI('GSI1', {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': AcademicYear.getGSI1PK(schoolId) }
+    });
+
+    return items.map(AcademicYear.fromDB);
   }
 }
 

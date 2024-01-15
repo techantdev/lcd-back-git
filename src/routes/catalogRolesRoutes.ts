@@ -3,7 +3,7 @@ import express from 'express';
 
 const router = express.Router();
 
-// router.route('').get(academicYearController.getAcademicYear).post(academicYearController.createAcademicYear);
+// router.route('').get(academicYearController.getAcademicYears).post(academicYearController.createAcademicYear);
 
 // router.route('/:academicYearId').patch(academicYearController.updateAcademicYear);
 
