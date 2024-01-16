@@ -1,5 +1,6 @@
-import { DatabaseEntity } from '../classes/classesIndex';
 import academicYearSchema, { ACADEMICYEAR, SCHOOL, AcademicYearInterface } from '../schemas/AcademicYearSchema';
+import { DatabaseEntity } from '../classes/classesIndex';
+import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class AcademicYear extends DatabaseEntity {
@@ -93,7 +94,7 @@ class AcademicYear extends DatabaseEntity {
   }
 
   public static async getSchoolAcademicYears(schoolId: String) {
-    const items = await getItemsGSI('GSI1', {
+    const items = await getItemsGSI(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': AcademicYear.getGSI1PK(schoolId) }

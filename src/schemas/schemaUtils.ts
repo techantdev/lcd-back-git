@@ -27,4 +27,10 @@ const ulidRegexStr = '[0-9A-HJKMNP-Z]{26}';
 
 const getRegex = (expression: string) => new RegExp(expression, 'g');
 
-export { partitionKeysSchema, getPartitionKeysSchema, getGSIKeySchema, getGSIKeysSchema, ulidRegexStr, getRegex };
+const GSINames = {
+  GSI1: 'GSI1',
+  GSI2: 'GSI2',
+  GSI3: 'GSI3'
+};
+
+export { partitionKeysSchema, getPartitionKeysSchema, getGSIKeySchema, getGSIKeysSchema, ulidRegexStr, getRegex, GSINames };
