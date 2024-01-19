@@ -5,5 +5,9 @@ import getSubjectYearGradeMethod from './getSubjectYearGrade';
 
 import { catchAsync } from '../../middleware/middleware';
 
-export const getYearGrade = catchAsync((req: Request) => getYearGradeMethod());
-export const getSubjectYearGrade = catchAsync((req: Request) => getSubjectYearGradeMethod());
+export const getYearGrade = catchAsync((req: Request<{}, {}, {}, { academicYearId: String }>) => 
+    getYearGradeMethod(req.query.academicYearId)
+);
+export const getSubjectYearGrade = catchAsync((req: Request<{}, {}, {}, { yearSubjectId: String }>) => 
+    getSubjectYearGradeMethod(req.query.yearSubjectId)
+);

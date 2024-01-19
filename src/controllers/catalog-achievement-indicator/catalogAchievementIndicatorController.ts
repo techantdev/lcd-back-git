@@ -9,5 +9,7 @@ import { catchAsync } from '../../middleware/middleware';
 
 export const createCatalogAchievementIndicator = catchAsync((req: Request) => createCatalogAchievementIndicatorMethod(req.body.catalogSubjectId, req.body.catalogGradeId, req.body.catalogAchievementIndicatorName));
 export const deleteCatalogAchievementIndicator = catchAsync((req: Request) => deleteCatalogAchievementIndicatorMethod());
-export const getCatalogAchievementIndicator = catchAsync((req: Request) => getCatalogAchievementIndicatorMethod());
+export const getCatalogAchievementIndicators = catchAsync((req: Request<{}, {}, {}, { catalogSubjectId: String, catalogGradeId: String }>) => 
+    getCatalogAchievementIndicatorMethod(req.query.catalogSubjectId, req.query.catalogGradeId)
+);
 export const updateCatalogAchievementIndicator = catchAsync((req: Request) => updateCatalogAchievementIndicatorMethod());

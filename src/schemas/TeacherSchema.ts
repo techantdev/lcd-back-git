@@ -1,13 +1,14 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const TEACHER = 'TEACHER';
 const SCHOOL = 'SCHOOL';
 
 const teacherSchema = object({
   ...getPartitionKeysSchema(TEACHER),
-  ...getGSIKeysSchema(1, getRegex(`${SCHOOL}_${ulidRegexStr}`), getRegex(`${TEACHER}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${TEACHER}_${ulidRegexStr}`)),
   teacherId: string().required(),
   userId: string().required(),
   schoolId: string().required(),
@@ -16,6 +17,8 @@ const teacherSchema = object({
   // PENDIENTE COLOCAR <ARRAY>OBJECT teacherAssignedCatalogAreas
 });
 
-export { TEACHER, SCHOOL };
+interface TeacherInterface extends InferType<typeof teacherSchema> {}
+
+export { TEACHER, SCHOOL, TeacherInterface };
 
 export default teacherSchema;

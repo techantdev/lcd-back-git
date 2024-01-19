@@ -1,36 +1,25 @@
+import catalogUnitSchema, { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitface } from '../schemas/CatalogUnitSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogUnitSchema, { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE } from '../schemas/CatalogUnitSchema';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogUnit extends DatabaseEntity {
-  catalogUnitId: String;
-  catalogSubjectId: String;
-  catalogGradeId: String;
-  catalogUnitName: String;
+  private catalogUnitId: String;
+  private catalogSubjectId: String;
+  private catalogGradeId: String;
+  private catalogUnitName: String;
 
-  constructor(catalogSubjectId: String, catalogGradeId: String, catalogUnitName: String) {
+  constructor() {
     super();
-
-    // Attributes from params
-    this.catalogUnitId = this.generateId();
-    this.catalogSubjectId = catalogSubjectId;
-    this.catalogGradeId = catalogGradeId;
-    this.catalogUnitName = catalogUnitName;
-
-    // Schema
     this.schema = catalogUnitSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.catalogUnitId), this.getSK(this.catalogUnitId));
+  }
+  
+  getPK() {
+    return `${CATALOGUNIT}_${this.catalogUnitId}`;
   }
 
-  getPK(catalogUnitId: String) {
-    return `${CATALOGUNIT}_${catalogUnitId}`;
-  }
-
-  getSK(catalogUnitId: String) {
-    return `${CATALOGUNIT}_${catalogUnitId}`;
+  getSK() {
+    return `${CATALOGUNIT}_${this.catalogUnitId}`;
   }
 
   getGSI1PK() {
@@ -58,6 +47,14 @@ class CatalogUnit extends DatabaseEntity {
   }
 
   // STATIC
+  public static getPK(catalogUnitId: String) {
+    return `${CATALOGUNIT}_${catalogUnitId}`;
+  }
+
+  public static getSK(catalogUnitId: String) {
+    return `${CATALOGUNIT}_${catalogUnitId}`;
+  }
+
   public static getGSI1PK(catalogSubjectId: String) {
     return `${CATALOGSUBJECT}_${catalogSubjectId}_${CATALOGUNIT}`;
   }
@@ -66,7 +63,38 @@ class CatalogUnit extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB() {}
+  public static fromDB(item: CatalogUnitface) {
+    const newCatalogUnit = new CatalogUnit();
+
+    newCatalogUnit.catalogUnitId = item.catalogUnitId;
+
+    // Attributes from params
+    newCatalogUnit.catalogSubjectId = item.catalogSubjectId;
+    newCatalogUnit.catalogGradeId = item.catalogGradeId;
+    newCatalogUnit.catalogUnitName = item.catalogUnitName;
+    // Partition keys
+    newCatalogUnit.initializeKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
+
+    return newCatalogUnit.toItem();
+  }
+
+  public static async insertOne({ catalogSubjectId, catalogGradeId, catalogUnitName }: { catalogSubjectId: String; catalogGradeId: String; catalogUnitName: String }) {
+    const newCatalogUnit = new CatalogUnit();
+
+    newCatalogUnit.catalogUnitId = newCatalogUnit.generateId();
+
+    // Attributes from params
+    newCatalogUnit.catalogSubjectId = catalogSubjectId;
+    newCatalogUnit.catalogGradeId = catalogGradeId;
+    newCatalogUnit.catalogUnitName = catalogUnitName;
+
+    // Partition keys
+    newCatalogUnit.initializeKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
+
+    await newCatalogUnit.save();
+
+    return newCatalogUnit.toItem();
+  }
 
   public static async getCatalogUnits(catalogSubjectId: String, catalogGradeId: String) {
     const items = await getItemsGSI(GSINames.GSI1, {

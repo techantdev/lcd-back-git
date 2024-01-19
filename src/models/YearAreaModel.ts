@@ -1,30 +1,25 @@
+import yearAreaSchema, { YEARAREA, ACADEMICYEAR, YearAreaInterface } from '../schemas/YearAreaSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import yearAreaSchema, { YEARAREA, ACADEMICYEAR } from '../schemas/YearAreaSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
+
 
 class YearArea extends DatabaseEntity {
-  yearAreaId: String;
-  catalogAreaId: String;
-  academicYearId: String;
+private yearAreaId: String;
+private catalogAreaId: String;
+private academicYearId: String;
 
-  constructor(catalogAreaId: String, academicYearId: String) {
+  constructor() {
     super();
-    this.yearAreaId = this.generateId();
-    this.catalogAreaId = catalogAreaId;
-    this.academicYearId = academicYearId;
-
-     // Schema
-     this.schema = yearAreaSchema;
-
-     // Partition keys
-    this.initializeKeys(this.getPK(this.yearAreaId), this.getSK(this.yearAreaId));
+    this.schema = yearAreaSchema;
   }
 
-  getPK(yearAreaId: String) {
-    return `${YEARAREA}_${yearAreaId}`;
+  getPK() {
+    return `${YEARAREA}_${this.yearAreaId}`;
   }
 
-  getSK(yearAreaId: String) {
-    return `${YEARAREA}_${yearAreaId}`;
+  getSK() {
+    return `${YEARAREA}_${this.yearAreaId}`;
   }
 
   getGSI1PK() {
@@ -49,6 +44,64 @@ class YearArea extends DatabaseEntity {
       academicYearId: this.academicYearId
     };
   }
+// STATIC
+    public static getPK(yearAreaId: String) {
+      return `${YEARAREA}_${yearAreaId}`;
+    }
+  
+    public static getSK(yearAreaId: String) {
+      return `${YEARAREA}_${yearAreaId}`;
+    }
+  
+    public static getGSI1PK(academicYearId: String) {
+      return `${ACADEMICYEAR}_${academicYearId}`;
+    }
+  
+    public static getGSI1SK(yearAreaId: String) {
+      return `${YEARAREA}_${yearAreaId}`;
+    }
+  
+    public static fromDB(item: YearAreaInterface) {
+      const newYearArea = new YearArea();
+  
+      newYearArea.yearAreaId = item.yearAreaId;
+  
+      // Attributes from params
+      newYearArea.catalogAreaId = item.catalogAreaId;
+      newYearArea.academicYearId = item.academicYearId;
+  
+      // Partition keys
+      newYearArea.initializeKeys(newYearArea.getPK(), newYearArea.getSK());
+  
+      return newYearArea.toItem();
+    }
+  
+    public static async insertOne({ catalogAreaId, academicYearId }: { catalogAreaId: String; academicYearId: String }) {
+      const newYearArea = new YearArea();
+  
+      newYearArea.academicYearId = newYearArea.generateId();
+  
+      // Attributes from params
+      newYearArea.catalogAreaId = catalogAreaId;
+      newYearArea.academicYearId = academicYearId;
+  
+      // Partition keys
+      newYearArea.initializeKeys(newYearArea.getPK(), newYearArea.getSK());
+  
+      await newYearArea.save();
+  
+      return newYearArea.toItem();
+    }
+  
+    public static async getYearAreas(academicYearId: String) {
+      const items = await getItemsGSI(GSINames.GSI1, {
+        KeyConditionExpression: '#GSI1PK = :GSI1PK',
+        ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+        ExpressionAttributeValues: { ':GSI1PK': YearArea.getGSI1PK(academicYearId) }
+      });
+  
+      return items.map(YearArea.fromDB);
+    }
 }
 
 export { YearArea };

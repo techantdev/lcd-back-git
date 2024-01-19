@@ -1,9 +1,7 @@
 import { CatalogUnit } from '../../models/CatalogUnitModel';
 
 const createCatalogUnit = async (catalogSubjectId: String, catalogGradeId: String, catalogUnitName: String) => {
-  const newCatalogUnit = new CatalogUnit(catalogSubjectId, catalogGradeId, catalogUnitName);
-  await newCatalogUnit.save();
-  return newCatalogUnit.toItem();
+  return await CatalogUnit.insertOne({ catalogSubjectId, catalogGradeId, catalogUnitName});
 };
 
 export default createCatalogUnit;

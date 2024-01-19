@@ -1,6 +1,6 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const CATALOGUNIT = 'CATALOGUNIT';
 const CATALOGSUBJECT = 'CATALOGSUBJECT';
@@ -8,13 +8,16 @@ const CATALOGGRADE = 'CATALOGGRADE';
 
 const catalogUnitSchema = object({
   ...getPartitionKeysSchema(CATALOGUNIT),
-  ...getGSIKeysSchema(1, getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGUNIT}`), getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGUNIT}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
   catalogUnitId: string().required(),
   catalogSubjectId: string().required(),
   catalogGradeId: string().required(),
   catalogUnitName: string().required()
 });
 
-export { CATALOGUNIT , CATALOGSUBJECT , CATALOGGRADE };
+interface CatalogUnitface extends InferType<typeof catalogUnitSchema> {}
+
+export { CATALOGUNIT , CATALOGSUBJECT , CATALOGGRADE, CatalogUnitface };
 
 export default catalogUnitSchema;

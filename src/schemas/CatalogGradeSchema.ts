@@ -1,17 +1,20 @@
-import { object, string } from 'yup';
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { object, string, InferType } from 'yup';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const CATALOGGRADE = 'CATALOGGRADE_';
 const SCHOOL = 'SCHOOL';
 
 const catalogGradeSchema = object({
   ...getPartitionKeysSchema(CATALOGGRADE),
-  ...getGSIKeysSchema(1, getRegex(`${SCHOOL}_${ulidRegexStr}`), getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
   catalogGradeId: string().required(),
   schoolId: string().required(),
   catalogGradeLabel: string().required()
 });
 
-export { CATALOGGRADE, SCHOOL };
+interface CatalogGradeInterface extends InferType<typeof catalogGradeSchema> {}
+
+export { CATALOGGRADE, SCHOOL, CatalogGradeInterface };
 
 export default catalogGradeSchema;

@@ -1,18 +1,21 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const YEARAREA = 'YEARAREA';
 const ACADEMICYEAR = 'ACADEMICYEAR';
 
 const yearAreaSchema = object({
   ...getPartitionKeysSchema(YEARAREA),
-  ...getGSIKeysSchema(1, getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`), getRegex(`${YEARAREA}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${YEARAREA}_${ulidRegexStr}`)),
   yearAreaId: string().required(),
   catalogAreaId: string().required(),
   academicYearId: string().required()
 });
 
-export { YEARAREA, ACADEMICYEAR };
+interface YearAreaInterface extends InferType<typeof yearAreaSchema> {}
+
+export { YEARAREA, ACADEMICYEAR, YearAreaInterface };
 
 export default yearAreaSchema;

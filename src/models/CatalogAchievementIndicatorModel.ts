@@ -1,35 +1,26 @@
+import catalogAchievementIndicatorSchema, { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementIndicatorface } from '../schemas/CatalogAchievementIndicatorSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogAchievementIndicatorSchema, { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE  } from '../schemas/CatalogAchievementIndicatorSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
 
 
 class CatalogAchievementIndicator extends DatabaseEntity {
-  catalogAchievementIndicatorId: String;
-  catalogSubjectId: String;
-  catalogGradeId: String;
-  catalogAchievementIndicatorName: String;
+  private catalogAchievementIndicatorId: String;
+  private catalogSubjectId: String;
+  private catalogGradeId: String;
+  private catalogAchievementIndicatorName: String;
 
-  constructor( catalogSubjectId: String, catalogGradeId: String, catalogAchievementIndicatorName: String) {
+  constructor() {
     super();
-
-    // Attributes from params
-    this.catalogAchievementIndicatorId = this.generateId();
-    this.catalogSubjectId = catalogSubjectId;
-    this.catalogGradeId = catalogGradeId;
-    this.catalogAchievementIndicatorName = catalogAchievementIndicatorName;
-
-    // Schema
     this.schema = catalogAchievementIndicatorSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.catalogAchievementIndicatorId), this.getSK(this.catalogAchievementIndicatorId));
+  }
+  
+  getPK() {
+    return `${CATALOGACHIEVEMENTINDICATOR}_${this.catalogAchievementIndicatorId}`;
   }
 
-  getPK(catalogAchievementIndicatorId: String) {
-    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
-  }
-
-  getSK(catalogAchievementIndicatorId: String) {
-    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
+  getSK() {
+    return `${CATALOGACHIEVEMENTINDICATOR}_${this.catalogAchievementIndicatorId}`;
   }
 
   getGSI1PK() {
@@ -55,6 +46,69 @@ class CatalogAchievementIndicator extends DatabaseEntity {
       catalogAchievementIndicatorName: this.catalogAchievementIndicatorName
     };
   }
-}
 
+  // STATIC
+  public static getPK(catalogAchievementIndicatorId: String) {
+    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
+  }
+
+  public static getSK(catalogAchievementIndicatorId: String) {
+    return `${CATALOGACHIEVEMENTINDICATOR}_${catalogAchievementIndicatorId}`;
+  }
+
+  public static getGSI1PK(catalogSubjectId: String) {
+    return `${CATALOGSUBJECT}_${catalogSubjectId}_${CATALOGACHIEVEMENTINDICATOR}`;
+  }
+
+  public static getGSI1SK(catalogGradeId: String) {
+    return `${CATALOGGRADE}_${catalogGradeId}`;
+  }
+
+  public static fromDB(item: CatalogAchievementIndicatorface) {
+    const newCatalogAchievementIndicator = new CatalogAchievementIndicator();
+
+    newCatalogAchievementIndicator.catalogAchievementIndicatorId = item.catalogAchievementIndicatorId;
+
+    // Attributes from params
+    newCatalogAchievementIndicator.catalogSubjectId = item.catalogSubjectId;
+    newCatalogAchievementIndicator.catalogGradeId = item.catalogGradeId;
+    newCatalogAchievementIndicator.catalogAchievementIndicatorName = item.catalogAchievementIndicatorName;
+
+    // Partition keys
+    newCatalogAchievementIndicator.initializeKeys(newCatalogAchievementIndicator.getPK(), newCatalogAchievementIndicator.getSK());
+
+    return newCatalogAchievementIndicator.toItem();
+  }
+
+  public static async insertOne({ catalogSubjectId, catalogGradeId, catalogAchievementIndicatorName }: { catalogSubjectId: String; catalogGradeId: String; catalogAchievementIndicatorName: String }) {
+    const newCatalogAchievementIndicator = new CatalogAchievementIndicator();
+
+    newCatalogAchievementIndicator.catalogAchievementIndicatorId = newCatalogAchievementIndicator.generateId();
+
+    // Attributes from params
+    newCatalogAchievementIndicator.catalogSubjectId = catalogSubjectId;
+    newCatalogAchievementIndicator.catalogGradeId = catalogGradeId;
+    newCatalogAchievementIndicator.catalogAchievementIndicatorName = catalogAchievementIndicatorName;
+
+    // Partition keys
+    newCatalogAchievementIndicator.initializeKeys(newCatalogAchievementIndicator.getPK(), newCatalogAchievementIndicator.getSK());
+
+    await newCatalogAchievementIndicator.save();
+
+    return newCatalogAchievementIndicator.toItem();
+  }
+
+  public static async getCatalogAchievementIndicators(catalogSubjectId: String, catalogGradeId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND #GSI1SK = :GSI1SK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: {
+        ':GSI1PK': CatalogAchievementIndicator.getGSI1PK(catalogSubjectId),
+        ':GSI1SK': CatalogAchievementIndicator.getGSI1SK(catalogGradeId) 
+      }
+    });
+
+    return items.map(CatalogAchievementIndicator.fromDB);
+  }
+}
 export { CatalogAchievementIndicator };

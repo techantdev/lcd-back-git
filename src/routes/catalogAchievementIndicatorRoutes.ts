@@ -1,11 +1,11 @@
 import express from 'express';
-import {createCatalogAchievementIndicator, deleteCatalogAchievementIndicator, getCatalogAchievementIndicator, updateCatalogAchievementIndicator} from './../controllers/catalog-achievement-indicator/catalogAchievementIndicatorController';
+import {createCatalogAchievementIndicator, deleteCatalogAchievementIndicator, getCatalogAchievementIndicators, updateCatalogAchievementIndicator} from './../controllers/catalog-achievement-indicator/catalogAchievementIndicatorController';
 
 const router = express.Router();
 
 router
   .route('')
-  .get(getCatalogAchievementIndicator)
+  .get(getCatalogAchievementIndicators)
   .post(createCatalogAchievementIndicator);
 
 router

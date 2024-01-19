@@ -1,32 +1,24 @@
+import catalogGradeSchema, { CATALOGGRADE, SCHOOL, CatalogGradeInterface } from '../schemas/CatalogGradeSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogGradeSchema, { CATALOGGRADE, SCHOOL } from '../schemas/CatalogGradeSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogGrade extends DatabaseEntity {
-  catalogGradeId: String;
-  schoolId: String;
-  catalogGradeLabel: String;
+private catalogGradeId: String;
+private schoolId: String;
+private catalogGradeLabel: String;
 
-  constructor(schoolId: String, catalogGradeLabel: String) {
+  constructor() {
     super();
-
-    // Attributes from params
-    this.catalogGradeId = this.generateId();
-    this.schoolId = schoolId;
-    this.catalogGradeLabel = catalogGradeLabel;
-
-    // Schema
     this.schema = catalogGradeSchema;
-    
-    // Partition keys
-    this.initializeKeys(this.getPK(this.catalogGradeId), this.getSK(this.catalogGradeId));
   }
 
-  getPK(catalogGradeId: String) {
-    return `${CATALOGGRADE}_${catalogGradeId}`;
+  getPK() {
+    return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
-  getSK(catalogGradeId: String) {
-    return `${CATALOGGRADE}_${catalogGradeId}`;
+  getSK() {
+    return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
   
@@ -51,6 +43,65 @@ class CatalogGrade extends DatabaseEntity {
       schoolId: this.schoolId,
       catalogGradeLabel: this.catalogGradeLabel
     };
+  }
+  
+  // STATIC
+  public static getPK(catalogGradeId: String) {
+    return `${CATALOGGRADE}_${catalogGradeId}`;
+  }
+
+  public static getSK(catalogGradeId: String) {
+    return `${CATALOGGRADE}_${catalogGradeId}`;
+  }
+
+  public static getGSI1PK(schoolId: String) {
+    return `${SCHOOL}_${schoolId}`;
+  }
+
+  public static getGSI1SK(catalogGradeId: String) {
+    return `${CATALOGGRADE}_${catalogGradeId}`;
+  }
+
+  public static fromDB(item: CatalogGradeInterface) {
+    const newCatalogGrade = new CatalogGrade();
+
+    newCatalogGrade.catalogGradeId = item.catalogGradeId;
+
+    // Attributes from params
+    newCatalogGrade.schoolId = item.schoolId;
+    newCatalogGrade.catalogGradeLabel = item.catalogGradeLabel;
+
+    // Partition keys
+    newCatalogGrade.initializeKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
+
+    return newCatalogGrade.toItem();
+  }
+
+  public static async insertOne({ schoolId, catalogGradeLabel }: { schoolId: String; catalogGradeLabel: String }) {
+    const newCatalogGrade = new CatalogGrade();
+
+    newCatalogGrade.catalogGradeId = newCatalogGrade.generateId();
+
+    // Attributes from params
+    newCatalogGrade.schoolId = schoolId;
+    newCatalogGrade.catalogGradeLabel = catalogGradeLabel;
+
+    // Partition keys
+    newCatalogGrade.initializeKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
+
+    await newCatalogGrade.save();
+
+    return newCatalogGrade.toItem();
+  }
+
+  public static async getCatalogGrades(schoolId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': CatalogGrade.getGSI1PK(schoolId) }
+    });
+
+    return items.map(CatalogGrade.fromDB);
   }
 }
 

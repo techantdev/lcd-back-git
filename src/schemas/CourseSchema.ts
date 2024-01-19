@@ -1,5 +1,5 @@
-import { object, string } from 'yup';
-import { getRegex, partitionKeysSchema, getGSIKeysSchema, ulidRegexStr } from './schemaUtils';
+import { object, string, InferType } from 'yup';
+import { getRegex, partitionKeysSchema, getGSIKeySchema, ulidRegexStr } from './schemaUtils';
 
 const YEARGRADE = 'YEARGRADE';
 const COURSE = 'COURSE';
@@ -7,8 +7,10 @@ const TEACHER = 'TEACHER';
 
 const courseSchema = object({
   ...partitionKeysSchema,
-  ...getGSIKeysSchema(1, getRegex(`${YEARGRADE}_${ulidRegexStr}`), getRegex(`${COURSE}_${ulidRegexStr}`)),
-  ...getGSIKeysSchema(2, getRegex(`${TEACHER}_${ulidRegexStr}`), getRegex(`${COURSE}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${YEARGRADE}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${COURSE}_${ulidRegexStr}`)),
+  GSI2PK: getGSIKeySchema(getRegex(`${TEACHER}_${ulidRegexStr}`)),
+  GSI2SK: getGSIKeySchema(getRegex(`${COURSE}_${ulidRegexStr}`)),
   courseId: string().required(),
   teacherId: string().required(),
   yearGradeId: string().required(),
@@ -16,6 +18,8 @@ const courseSchema = object({
   courseLabel: string().required()
 });
 
-export { YEARGRADE, COURSE , TEACHER };
+interface CourseInterface extends InferType<typeof courseSchema> {}
+
+export { YEARGRADE, COURSE , TEACHER, CourseInterface };
 
 export default courseSchema;

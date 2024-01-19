@@ -1,21 +1,23 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const USER = 'USER';
 const USEREMAIL = 'USEREMAIL';
-
 const userSchema = object({
   ...getPartitionKeysSchema(USER),
-  ...getGSIKeysSchema(1, getRegex(`${USEREMAIL}_${ulidRegexStr}`), getRegex(`${USEREMAIL}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${USEREMAIL}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${USEREMAIL}_${ulidRegexStr}`)),
   userId: string().required(),
   teacherId: string().required(),
   userName: string().required(),
   userLastName: string().required(),
-  userEmail: string().email()
+  userEmail: string().required()
   // PENDIENTE COLOCAR <ARRAY>OBJECT userUSEREMAILs
 });
 
-export { USER, USEREMAIL };
+interface UserInterface extends InferType<typeof userSchema> {}
+
+export { USER, USEREMAIL, UserInterface };
 
 export default userSchema;

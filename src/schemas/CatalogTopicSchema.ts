@@ -1,18 +1,21 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
-import { getPartitionKeysSchema, getGSIKeysSchema, ulidRegexStr, getRegex } from './schemaUtils';
+import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const CATALOGTOPIC = 'CATALOGTOPIC';
 const CATALOGUNIT = 'CATALOGUNIT';
 
 const catalogTopicSchema = object({
   ...getPartitionKeysSchema(CATALOGTOPIC),
-  ...getGSIKeysSchema(1, getRegex(`${CATALOGUNIT}_${ulidRegexStr}`), getRegex(`${CATALOGTOPIC}_${ulidRegexStr}`)),
+  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGUNIT}_${ulidRegexStr}`)),
+  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGTOPIC}_${ulidRegexStr}`)),
   catalogTopicId: string().required(),
   catalogUnitId: string().required(),
   catalogTopicName: string().required()
 });
 
-export { CATALOGTOPIC, CATALOGUNIT };
+interface CatalogTopicInterface extends InferType<typeof catalogTopicSchema> {}
+
+export { CATALOGTOPIC, CATALOGUNIT, CatalogTopicInterface };
 
 export default catalogTopicSchema;

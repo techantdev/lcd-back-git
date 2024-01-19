@@ -1,9 +1,7 @@
 import { CatalogGrade } from '../../models/CatalogGradeModel';
 
 const createCatalogGrade = async (schoolId: String, catalogGradeLabel: String) => {
-  const newCatalogGrade = new CatalogGrade(schoolId, catalogGradeLabel);
-  await newCatalogGrade.save();
-  return newCatalogGrade.toItem();
+  return await CatalogGrade.insertOne({ schoolId, catalogGradeLabel});
 };
 
 export default createCatalogGrade;

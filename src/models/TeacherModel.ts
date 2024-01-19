@@ -1,40 +1,29 @@
+import teacherSchema, { TEACHER, SCHOOL, TeacherInterface } from '../schemas/TeacherSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import teacherSchema, { TEACHER, SCHOOL } from '../schemas/TeacherSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
 
 class Teacher extends DatabaseEntity {
-  teacherId: String;
-  userId: String;
-  schoolId: String;
-  teacherName: String;
-  teacherLastName: String;
-  // FALTA teacherAssignedCatalogAreas
+private teacherId: String;
+private schoolId: String;
+private userId: String;
+private teacherName: String;
+private teacherLastName: String;
+// FALTA teacherAssignedCatalogAreas
 
-  constructor( userId: String, schoolId: String, teacherName: String, teacherLastName: String) {
+  constructor() {
     super();
-
-    // Attributes from params
-    this.teacherId = this.generateId();
-    this.userId = userId;
-    this.schoolId = schoolId;
-    this.teacherName = teacherName;
-    this.teacherLastName = teacherLastName;
-
-    // Schema
     this.schema = teacherSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.teacherId), this.getSK(this.teacherId));
   }
 
-  getPK(teacherId: String) {
-    return `${TEACHER}_${teacherId}`;
+  getPK() {
+    return `${TEACHER}_${this.teacherId}`;
   }
 
-  getSK(teacherId: String) {
-    return `${TEACHER}_${teacherId}`;
+  getSK() {
+    return `${TEACHER}_${this.teacherId}`;
   }
 
-  
   getGSI1PK() {
     return `${SCHOOL}_${this.schoolId}`;
   }
@@ -53,12 +42,75 @@ class Teacher extends DatabaseEntity {
   toItem() {
     return {
       teacherId: this.teacherId,
-      userId: this.userId,
       schoolId: this.schoolId,
+      userId: this.userId,
       teacherName: this.teacherName,
       teacherLastName: this.teacherLastName
     };
   }
+
+    // STATIC
+    public static getPK(teacherId: String) {
+      return `${TEACHER}_${teacherId}`;
+    }
+  
+    public static getSK(teacherId: String) {
+      return `${TEACHER}_${teacherId}`;
+    }
+  
+    public static getGSI1PK(schoolId: String) {
+      return `${SCHOOL}_${schoolId}`;
+    }
+  
+    public static getGSI1SK(teacherId: String) {
+      return `${TEACHER}_${teacherId}`;
+    }
+  
+    public static fromDB(item: TeacherInterface) {
+      const newTeacher = new Teacher();
+  
+      newTeacher.teacherId = item.teacherId;
+  
+      // Attributes from params
+      newTeacher.schoolId = item.schoolId;
+      newTeacher.userId = item.userId;
+      newTeacher.teacherName = item.teacherName;
+      newTeacher.teacherLastName = item.teacherLastName;
+  
+      // Partition keys
+      newTeacher.initializeKeys(newTeacher.getPK(), newTeacher.getSK());
+  
+      return newTeacher.toItem();
+    }
+  
+    public static async insertOne({ schoolId, userId, teacherName, teacherLastName }: { schoolId: String; userId: String; teacherName: String; teacherLastName: String }) {
+      const newTeacher = new Teacher();
+  
+      newTeacher.teacherId = newTeacher.generateId();
+  
+      // Attributes from params
+      newTeacher.schoolId = schoolId;
+      newTeacher.userId = userId;
+      newTeacher.teacherName = teacherName;
+      newTeacher.teacherLastName = teacherLastName;
+  
+      // Partition keys
+      newTeacher.initializeKeys(newTeacher.getPK(), newTeacher.getSK());
+  
+      await newTeacher.save();
+  
+      return newTeacher.toItem();
+    }
+  
+    public static async getTeachers(schoolId: String) {
+      const items = await getItemsGSI(GSINames.GSI1, {
+        KeyConditionExpression: '#GSI1PK = :GSI1PK',
+        ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+        ExpressionAttributeValues: { ':GSI1PK': Teacher.getGSI1PK(schoolId) }
+      });
+  
+      return items.map(Teacher.fromDB);
+    }
 }
 
 export { Teacher };

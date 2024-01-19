@@ -1,30 +1,24 @@
+import yearGradeSchema, { YEARGRADE, ACADEMICYEAR, YearGradeInterface } from '../schemas/YearGradeSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import yearGradeSchema, { YEARGRADE, ACADEMICYEAR } from '../schemas/YearGradeSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
 
 class YearGrade extends DatabaseEntity {
-  yearGradeId: String;
-  catalogGradeId: String;
-  academicYearId: String;
+private yearGradeId: String;
+private academicYearId: String;
+private catalogGradeId: String;
 
-  constructor(catalogGradeId: String, academicYearId: String) {
+  constructor() {
     super();
-    this.yearGradeId = this.generateId();
-    this.catalogGradeId = catalogGradeId;
-    this.academicYearId = academicYearId;
-
-    // Schema
     this.schema = yearGradeSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.yearGradeId), this.getSK(this.yearGradeId));
   }
 
-  getPK(yearGradeId: String) {
-    return `${YEARGRADE}_${yearGradeId}`;
+  getPK() {
+    return `${YEARGRADE}_${this.yearGradeId}`;
   }
 
-  getSK(yearGradeId: String) {
-    return `${YEARGRADE}_${yearGradeId}`;
+  getSK() {
+    return `${YEARGRADE}_${this.yearGradeId}`;
   }
 
   getGSI1PK() {
@@ -48,6 +42,75 @@ class YearGrade extends DatabaseEntity {
       catalogGradeId: this.catalogGradeId,
       academicYearId: this.academicYearId
     };
+  }
+
+  // STATIC
+  public static getPK(yearGradeId: String) {
+    return `${ACADEMICYEAR}_${yearGradeId}`;
+  }
+
+  public static getSK(yearGradeId: String) {
+    return `${ACADEMICYEAR}_${yearGradeId}`;
+  }
+
+  public static getGSI1PK(academicYearId: String) {
+    return `${ACADEMICYEAR}_${academicYearId}`;
+  }
+
+  public static getGSI1SK(yearGradeId: String) {
+    return `${ACADEMICYEAR}_${yearGradeId}`;
+  }
+
+  public static fromDB(item: YearGradeInterface) {
+    const newYearGrade = new YearGrade();
+
+    newYearGrade.yearGradeId = item.yearGradeId;
+
+    // Attributes from params
+    newYearGrade.academicYearId = item.academicYearId;
+    newYearGrade.catalogGradeId = item.catalogGradeId;
+
+    // Partition keys
+    newYearGrade.initializeKeys(newYearGrade.getPK(), newYearGrade.getSK());
+
+    return newYearGrade.toItem();
+  }
+
+  public static async insertOne({ academicYearId, catalogGradeId }: { academicYearId: String; catalogGradeId: String }) {
+    const newYearGrade = new YearGrade();
+
+    newYearGrade.academicYearId = newYearGrade.generateId();
+
+    // Attributes from params
+    newYearGrade.academicYearId = academicYearId;
+    newYearGrade.catalogGradeId = catalogGradeId;
+
+    // Partition keys
+    newYearGrade.initializeKeys(newYearGrade.getPK(), newYearGrade.getSK());
+
+    await newYearGrade.save();
+
+    return newYearGrade.toItem();
+  }
+
+  public static async getYearGrades(academicYearId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(academicYearId) }
+    });
+
+    return items.map(YearGrade.fromDB);
+  }
+
+  public static async getSubjectYearGrades(yearSubjectId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(yearSubjectId) }
+    });
+
+    return items.map(YearGrade.fromDB);
   }
 }
 

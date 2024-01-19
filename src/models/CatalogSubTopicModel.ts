@@ -1,32 +1,24 @@
+import catalogSubTopicSchema, { CATALOGSUBTOPIC, CATALOGTOPIC, CatalogSubTopicInterface } from '../schemas/CatalogSubTopicSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogSubTopicSchema, { CATALOGSUBTOPIC, CATALOGTOPIC } from '../schemas/CatalogSubTopicSchema';
+import { GSINames } from '../schemas/schemaUtils';
+import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogSubTopic extends DatabaseEntity {
-  catalogSubTopicId: String;
-  catalogTopicId: String;
-  catalogSubTopicName: String;
+private catalogSubTopicId: String;
+private catalogTopicId: String;
+private catalogSubTopicName: String;
 
-  constructor(catalogTopicId: String, catalogSubTopicName: String) {
+  constructor() {
     super();
-    
-    // Attributes from params
-    this.catalogSubTopicId = this.generateId();
-    this.catalogTopicId = catalogTopicId;
-    this.catalogSubTopicName = catalogSubTopicName;
-    
-     // Schema
-     this.schema = catalogSubTopicSchema;
-
-    // Partition keys
-    this.initializeKeys(this.getPK(this.catalogSubTopicId), this.getSK(this.catalogSubTopicId));
+    this.schema = catalogSubTopicSchema;
   }
 
-  getPK(catalogSubTopicId: String) {
-    return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
+  getPK() {
+    return `${CATALOGSUBTOPIC}_${this.catalogSubTopicId}`;
   }
 
-  getSK(catalogSubTopicId: String) {
-    return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
+  getSK() {
+    return `${CATALOGSUBTOPIC}_${this.catalogSubTopicId}`;
   }
 
   getGSI1PK() {
@@ -52,6 +44,66 @@ class CatalogSubTopic extends DatabaseEntity {
       catalogSubTopicName: this.catalogSubTopicName
     };
   }
+
+ // STATIC
+  public static getPK(catalogSubTopicId: String) {
+    return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
+  }
+
+  public static getSK(catalogSubTopicId: String) {
+    return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
+  }
+
+  public static getGSI1PK(catalogTopicId: String) {
+    return `${CATALOGTOPIC}_${catalogTopicId}`;
+  }
+
+  public static getGSI1SK(catalogSubTopicId: String) {
+    return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
+  }
+
+  public static fromDB(item: CatalogSubTopicInterface) {
+    const newCatalogSubTopic = new CatalogSubTopic();
+
+    newCatalogSubTopic.catalogSubTopicId = item.catalogSubTopicId;
+
+    // Attributes from params
+    newCatalogSubTopic.catalogTopicId = item.catalogTopicId;
+    newCatalogSubTopic.catalogSubTopicName = item.catalogSubTopicName;
+
+    // Partition keys
+    newCatalogSubTopic.initializeKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
+
+    return newCatalogSubTopic.toItem();
+  }
+
+  public static async insertOne({ catalogTopicId, catalogSubTopicName }: { catalogTopicId: String; catalogSubTopicName: String }) {
+    const newCatalogSubTopic = new CatalogSubTopic();
+
+    newCatalogSubTopic.catalogSubTopicId = newCatalogSubTopic.generateId();
+
+    // Attributes from params
+    newCatalogSubTopic.catalogTopicId = catalogTopicId;
+    newCatalogSubTopic.catalogSubTopicName = catalogSubTopicName;
+
+    // Partition keys
+    newCatalogSubTopic.initializeKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
+
+    await newCatalogSubTopic.save();
+
+    return newCatalogSubTopic.toItem();
+  }
+
+  public static async getCatalogSubTopics(catalogTopicId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': CatalogSubTopic.getGSI1PK(catalogTopicId) }
+    });
+
+    return items.map(CatalogSubTopic.fromDB);
+  }  
+
 }
 
 export { CatalogSubTopic };
