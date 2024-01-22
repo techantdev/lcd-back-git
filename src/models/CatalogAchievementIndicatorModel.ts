@@ -1,8 +1,12 @@
-import catalogAchievementIndicatorSchema, { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementIndicatorface } from '../schemas/CatalogAchievementIndicatorSchema';
+import catalogAchievementIndicatorSchema, {
+  CATALOGACHIEVEMENTINDICATOR,
+  CATALOGSUBJECT,
+  CATALOGGRADE,
+  CatalogAchievementIndicatorface
+} from '../schemas/CatalogAchievementIndicatorSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
-
 
 class CatalogAchievementIndicator extends DatabaseEntity {
   private catalogAchievementIndicatorId: String;
@@ -14,7 +18,7 @@ class CatalogAchievementIndicator extends DatabaseEntity {
     super();
     this.schema = catalogAchievementIndicatorSchema;
   }
-  
+
   getPK() {
     return `${CATALOGACHIEVEMENTINDICATOR}_${this.catalogAchievementIndicatorId}`;
   }
@@ -75,12 +79,23 @@ class CatalogAchievementIndicator extends DatabaseEntity {
     newCatalogAchievementIndicator.catalogAchievementIndicatorName = item.catalogAchievementIndicatorName;
 
     // Partition keys
-    newCatalogAchievementIndicator.initializeKeys(newCatalogAchievementIndicator.getPK(), newCatalogAchievementIndicator.getSK());
+    newCatalogAchievementIndicator.initializePartitionKeys(
+      newCatalogAchievementIndicator.getPK(),
+      newCatalogAchievementIndicator.getSK()
+    );
 
     return newCatalogAchievementIndicator.toItem();
   }
 
-  public static async insertOne({ catalogSubjectId, catalogGradeId, catalogAchievementIndicatorName }: { catalogSubjectId: String; catalogGradeId: String; catalogAchievementIndicatorName: String }) {
+  public static async insertOne({
+    catalogSubjectId,
+    catalogGradeId,
+    catalogAchievementIndicatorName
+  }: {
+    catalogSubjectId: String;
+    catalogGradeId: String;
+    catalogAchievementIndicatorName: String;
+  }) {
     const newCatalogAchievementIndicator = new CatalogAchievementIndicator();
 
     newCatalogAchievementIndicator.catalogAchievementIndicatorId = newCatalogAchievementIndicator.generateId();
@@ -91,7 +106,10 @@ class CatalogAchievementIndicator extends DatabaseEntity {
     newCatalogAchievementIndicator.catalogAchievementIndicatorName = catalogAchievementIndicatorName;
 
     // Partition keys
-    newCatalogAchievementIndicator.initializeKeys(newCatalogAchievementIndicator.getPK(), newCatalogAchievementIndicator.getSK());
+    newCatalogAchievementIndicator.initializePartitionKeys(
+      newCatalogAchievementIndicator.getPK(),
+      newCatalogAchievementIndicator.getSK()
+    );
 
     await newCatalogAchievementIndicator.save();
 
@@ -104,7 +122,7 @@ class CatalogAchievementIndicator extends DatabaseEntity {
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {
         ':GSI1PK': CatalogAchievementIndicator.getGSI1PK(catalogSubjectId),
-        ':GSI1SK': CatalogAchievementIndicator.getGSI1SK(catalogGradeId) 
+        ':GSI1SK': CatalogAchievementIndicator.getGSI1SK(catalogGradeId)
       }
     });
 

@@ -3,11 +3,10 @@ import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
-
 class YearArea extends DatabaseEntity {
-private yearAreaId: String;
-private catalogAreaId: String;
-private academicYearId: String;
+  private yearAreaId: String;
+  private catalogAreaId: String;
+  private academicYearId: String;
 
   constructor() {
     super();
@@ -44,64 +43,68 @@ private academicYearId: String;
       academicYearId: this.academicYearId
     };
   }
-// STATIC
-    public static getPK(yearAreaId: String) {
-      return `${YEARAREA}_${yearAreaId}`;
-    }
-  
-    public static getSK(yearAreaId: String) {
-      return `${YEARAREA}_${yearAreaId}`;
-    }
-  
-    public static getGSI1PK(academicYearId: String) {
-      return `${ACADEMICYEAR}_${academicYearId}`;
-    }
-  
-    public static getGSI1SK(yearAreaId: String) {
-      return `${YEARAREA}_${yearAreaId}`;
-    }
-  
-    public static fromDB(item: YearAreaInterface) {
-      const newYearArea = new YearArea();
-  
-      newYearArea.yearAreaId = item.yearAreaId;
-  
-      // Attributes from params
-      newYearArea.catalogAreaId = item.catalogAreaId;
-      newYearArea.academicYearId = item.academicYearId;
-  
-      // Partition keys
-      newYearArea.initializeKeys(newYearArea.getPK(), newYearArea.getSK());
-  
-      return newYearArea.toItem();
-    }
-  
-    public static async insertOne({ catalogAreaId, academicYearId }: { catalogAreaId: String; academicYearId: String }) {
-      const newYearArea = new YearArea();
-  
-      newYearArea.academicYearId = newYearArea.generateId();
-  
-      // Attributes from params
-      newYearArea.catalogAreaId = catalogAreaId;
-      newYearArea.academicYearId = academicYearId;
-  
-      // Partition keys
-      newYearArea.initializeKeys(newYearArea.getPK(), newYearArea.getSK());
-  
-      await newYearArea.save();
-  
-      return newYearArea.toItem();
-    }
-  
-    public static async getYearAreas(academicYearId: String) {
-      const items = await getItemsGSI(GSINames.GSI1, {
-        KeyConditionExpression: '#GSI1PK = :GSI1PK',
-        ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-        ExpressionAttributeValues: { ':GSI1PK': YearArea.getGSI1PK(academicYearId) }
-      });
-  
-      return items.map(YearArea.fromDB);
-    }
+  // STATIC
+  public static getPK(yearAreaId: String) {
+    return `${YEARAREA}_${yearAreaId}`;
+  }
+
+  public static getSK(yearAreaId: String) {
+    return `${YEARAREA}_${yearAreaId}`;
+  }
+
+  public static getGSI1PK(academicYearId: String) {
+    return `${ACADEMICYEAR}_${academicYearId}`;
+  }
+
+  public static getGSI1SK(yearAreaId: String) {
+    return `${YEARAREA}_${yearAreaId}`;
+  }
+
+  public static fromDB(item: YearAreaInterface) {
+    const newYearArea = new YearArea();
+
+    newYearArea.yearAreaId = item.yearAreaId;
+
+    // Attributes from params
+    newYearArea.catalogAreaId = item.catalogAreaId;
+    newYearArea.academicYearId = item.academicYearId;
+
+    // Partition keys
+    newYearArea.initializePartitionKeys(newYearArea.getPK(), newYearArea.getSK());
+
+    return newYearArea.toItem();
+  }
+
+  public static async insertOne({ catalogAreaId, academicYearId }: { catalogAreaId: String; academicYearId: String }) {
+    const newYearArea = new YearArea();
+
+    newYearArea.academicYearId = newYearArea.generateId();
+
+    // Attributes from params
+    newYearArea.catalogAreaId = catalogAreaId;
+    newYearArea.academicYearId = academicYearId;
+
+    // Partition keys
+    newYearArea.initializePartitionKeys(newYearArea.getPK(), newYearArea.getSK());
+
+    await newYearArea.save();
+
+    return newYearArea.toItem();
+  }
+
+  public static async insertMultiple(items: [{}]) {
+    return [{}];
+  }
+
+  public static async getYearAreas(academicYearId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': YearArea.getGSI1PK(academicYearId) }
+    });
+
+    return items.map(YearArea.fromDB);
+  }
 }
 
-export { YearArea };
+export { YearArea, YearAreaInterface };

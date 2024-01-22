@@ -4,9 +4,9 @@ import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class YearGrade extends DatabaseEntity {
-private yearGradeId: String;
-private academicYearId: String;
-private catalogGradeId: String;
+  private yearGradeId: String;
+  private academicYearId: String;
+  private catalogGradeId: String;
 
   constructor() {
     super();
@@ -71,7 +71,7 @@ private catalogGradeId: String;
     newYearGrade.catalogGradeId = item.catalogGradeId;
 
     // Partition keys
-    newYearGrade.initializeKeys(newYearGrade.getPK(), newYearGrade.getSK());
+    newYearGrade.initializePartitionKeys(newYearGrade.getPK(), newYearGrade.getSK());
 
     return newYearGrade.toItem();
   }
@@ -86,7 +86,7 @@ private catalogGradeId: String;
     newYearGrade.catalogGradeId = catalogGradeId;
 
     // Partition keys
-    newYearGrade.initializeKeys(newYearGrade.getPK(), newYearGrade.getSK());
+    newYearGrade.initializePartitionKeys(newYearGrade.getPK(), newYearGrade.getSK());
 
     await newYearGrade.save();
 

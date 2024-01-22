@@ -4,9 +4,9 @@ import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogTopic extends DatabaseEntity {
-private catalogTopicId: String;
-private catalogUnitId: String;
-private catalogTopicName: String;
+  private catalogTopicId: String;
+  private catalogUnitId: String;
+  private catalogTopicName: String;
 
   constructor() {
     super();
@@ -71,7 +71,7 @@ private catalogTopicName: String;
     newCatalogTopic.catalogTopicName = item.catalogTopicName;
 
     // Partition keys
-    newCatalogTopic.initializeKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
+    newCatalogTopic.initializePartitionKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
 
     return newCatalogTopic.toItem();
   }
@@ -86,7 +86,7 @@ private catalogTopicName: String;
     newCatalogTopic.catalogTopicName = catalogTopicName;
 
     // Partition keys
-    newCatalogTopic.initializeKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
+    newCatalogTopic.initializePartitionKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
 
     await newCatalogTopic.save();
 

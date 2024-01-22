@@ -1,4 +1,9 @@
-import catalogAchievementSchema, { CATALOGACHIEVEMENT, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementface  } from '../schemas/CatalogAchievementSchema';
+import catalogAchievementSchema, {
+  CATALOGACHIEVEMENT,
+  CATALOGSUBJECT,
+  CATALOGGRADE,
+  CatalogAchievementface
+} from '../schemas/CatalogAchievementSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
@@ -22,7 +27,6 @@ class CatalogAchievement extends DatabaseEntity {
     return `${CATALOGACHIEVEMENT}_${this.catalogAchievementId}`;
   }
 
-  
   getGSI1PK() {
     return `${CATALOGSUBJECT}_${this.catalogSubjectId}_${CATALOGACHIEVEMENT}`;
   }
@@ -75,12 +79,20 @@ class CatalogAchievement extends DatabaseEntity {
     newCatalogAchievement.catalogAchievementName = item.catalogAchievementName;
 
     // Partition keys
-    newCatalogAchievement.initializeKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
+    newCatalogAchievement.initializePartitionKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
 
     return newCatalogAchievement.toItem();
   }
 
-  public static async insertOne({ catalogSubjectId, catalogGradeId, catalogAchievementName }: { catalogSubjectId: String; catalogGradeId: String; catalogAchievementName: String }) {
+  public static async insertOne({
+    catalogSubjectId,
+    catalogGradeId,
+    catalogAchievementName
+  }: {
+    catalogSubjectId: String;
+    catalogGradeId: String;
+    catalogAchievementName: String;
+  }) {
     const newCatalogAchievement = new CatalogAchievement();
 
     newCatalogAchievement.catalogAchievementId = newCatalogAchievement.generateId();
@@ -91,7 +103,7 @@ class CatalogAchievement extends DatabaseEntity {
     newCatalogAchievement.catalogAchievementName = catalogAchievementName;
 
     // Partition keys
-    newCatalogAchievement.initializeKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
+    newCatalogAchievement.initializePartitionKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
 
     await newCatalogAchievement.save();
 
@@ -104,7 +116,7 @@ class CatalogAchievement extends DatabaseEntity {
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {
         ':GSI1PK': CatalogAchievement.getGSI1PK(catalogSubjectId),
-        ':GSI1SK': CatalogAchievement.getGSI1SK(catalogGradeId) 
+        ':GSI1SK': CatalogAchievement.getGSI1SK(catalogGradeId)
       }
     });
 

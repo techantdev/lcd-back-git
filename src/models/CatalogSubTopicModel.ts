@@ -4,9 +4,9 @@ import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogSubTopic extends DatabaseEntity {
-private catalogSubTopicId: String;
-private catalogTopicId: String;
-private catalogSubTopicName: String;
+  private catalogSubTopicId: String;
+  private catalogTopicId: String;
+  private catalogSubTopicName: String;
 
   constructor() {
     super();
@@ -36,7 +36,6 @@ private catalogSubTopicName: String;
     };
   }
 
-
   toItem() {
     return {
       catalogSubTopicId: this.catalogSubTopicId,
@@ -45,7 +44,7 @@ private catalogSubTopicName: String;
     };
   }
 
- // STATIC
+  // STATIC
   public static getPK(catalogSubTopicId: String) {
     return `${CATALOGSUBTOPIC}_${catalogSubTopicId}`;
   }
@@ -72,7 +71,7 @@ private catalogSubTopicName: String;
     newCatalogSubTopic.catalogSubTopicName = item.catalogSubTopicName;
 
     // Partition keys
-    newCatalogSubTopic.initializeKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
+    newCatalogSubTopic.initializePartitionKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
 
     return newCatalogSubTopic.toItem();
   }
@@ -87,7 +86,7 @@ private catalogSubTopicName: String;
     newCatalogSubTopic.catalogSubTopicName = catalogSubTopicName;
 
     // Partition keys
-    newCatalogSubTopic.initializeKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
+    newCatalogSubTopic.initializePartitionKeys(newCatalogSubTopic.getPK(), newCatalogSubTopic.getSK());
 
     await newCatalogSubTopic.save();
 
@@ -102,8 +101,7 @@ private catalogSubTopicName: String;
     });
 
     return items.map(CatalogSubTopic.fromDB);
-  }  
-
+  }
 }
 
 export { CatalogSubTopic };

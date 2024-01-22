@@ -13,7 +13,7 @@ class CatalogUnit extends DatabaseEntity {
     super();
     this.schema = catalogUnitSchema;
   }
-  
+
   getPK() {
     return `${CATALOGUNIT}_${this.catalogUnitId}`;
   }
@@ -73,12 +73,20 @@ class CatalogUnit extends DatabaseEntity {
     newCatalogUnit.catalogGradeId = item.catalogGradeId;
     newCatalogUnit.catalogUnitName = item.catalogUnitName;
     // Partition keys
-    newCatalogUnit.initializeKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
+    newCatalogUnit.initializePartitionKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
 
     return newCatalogUnit.toItem();
   }
 
-  public static async insertOne({ catalogSubjectId, catalogGradeId, catalogUnitName }: { catalogSubjectId: String; catalogGradeId: String; catalogUnitName: String }) {
+  public static async insertOne({
+    catalogSubjectId,
+    catalogGradeId,
+    catalogUnitName
+  }: {
+    catalogSubjectId: String;
+    catalogGradeId: String;
+    catalogUnitName: String;
+  }) {
     const newCatalogUnit = new CatalogUnit();
 
     newCatalogUnit.catalogUnitId = newCatalogUnit.generateId();
@@ -89,7 +97,7 @@ class CatalogUnit extends DatabaseEntity {
     newCatalogUnit.catalogUnitName = catalogUnitName;
 
     // Partition keys
-    newCatalogUnit.initializeKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
+    newCatalogUnit.initializePartitionKeys(newCatalogUnit.getPK(), newCatalogUnit.getSK());
 
     await newCatalogUnit.save();
 

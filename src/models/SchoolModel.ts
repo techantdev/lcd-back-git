@@ -14,7 +14,7 @@ class School extends DatabaseEntity {
     this.schema = schoolSchema;
 
     // Partition keys
-    this.initializeKeys(this.getPK(this.schoolId), this.getSK(this.schoolId));
+    this.initializePartitionKeys(this.getPK(this.schoolId), this.getSK(this.schoolId));
   }
 
   getPK(schoolId: String) {

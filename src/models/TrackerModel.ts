@@ -5,24 +5,25 @@ class Tracker extends DatabaseEntity {
   trackerId: String;
   courseId: String;
 
-  constructor(courseId: String) {
+  constructor() {
     super();
-    this.trackerId = this.generateId();
-    this.courseId = courseId;
-
-    // Schema
     this.schema = trackerSchema;
 
-    // Partition keys
-    this.initializeKeys(this.getPK(this.trackerId), this.getSK(this.trackerId));
+    // this.trackerId = this.generateId();
+    // this.courseId = courseId;
+
+    // // Schema
+
+    // // Partition keys
+    // this.initializePartitionKeys(this.getPK(this.trackerId), this.getSK(this.trackerId));
   }
 
-  getPK(trackerId: String) {
-    return `${TRACKER}_${trackerId}`;
+  getPK() {
+    return `${TRACKER}_${this.trackerId}`;
   }
 
-  getSK(trackerId: String) {
-    return `${TRACKER}_${trackerId}`;
+  getSK() {
+    return `${TRACKER}_${this.trackerId}`;
   }
 
   getGSIKeysObject() {
@@ -34,6 +35,18 @@ class Tracker extends DatabaseEntity {
       trackerId: this.trackerId,
       courseId: this.courseId
     };
+  }
+
+  // TODO: Replicar esta lógica que consulta en BD la entidad a partir de su PK y su SK en vez de los GSIs
+  // STATIC
+  public static async getTracker(trackerId: String) {
+    const tracker = new Tracker();
+
+    tracker.trackerId = trackerId;
+
+    tracker.initializePartitionKeys(tracker.getPK(), tracker.getSK());
+
+    return await tracker.get();
   }
 }
 

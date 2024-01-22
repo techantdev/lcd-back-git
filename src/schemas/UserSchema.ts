@@ -12,7 +12,7 @@ const userSchema = object({
   teacherId: string().required(),
   userName: string().required(),
   userLastName: string().required(),
-  userEmail: string().required()
+  userEmail: string().email().required()
   // PENDIENTE COLOCAR <ARRAY>OBJECT userUSEREMAILs
 });
 

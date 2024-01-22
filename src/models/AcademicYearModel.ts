@@ -71,7 +71,7 @@ class AcademicYear extends DatabaseEntity {
     newAcademicYear.year = item.year;
 
     // Partition keys
-    newAcademicYear.initializeKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
+    newAcademicYear.initializePartitionKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
 
     return newAcademicYear.toItem();
   }
@@ -86,7 +86,7 @@ class AcademicYear extends DatabaseEntity {
     newAcademicYear.year = year;
 
     // Partition keys
-    newAcademicYear.initializeKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
+    newAcademicYear.initializePartitionKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
 
     await newAcademicYear.save();
 

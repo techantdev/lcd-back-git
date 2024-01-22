@@ -4,9 +4,9 @@ import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogSubject extends DatabaseEntity {
-private catalogSubjectId: String;
-private catalogAreaId: String;
-private catalogSubjectName: String;
+  private catalogSubjectId: String;
+  private catalogAreaId: String;
+  private catalogSubjectName: String;
   // PONER EL CATALOG SUBGRADES QUE FALTA ARREGLO
 
   constructor() {
@@ -37,7 +37,6 @@ private catalogSubjectName: String;
     };
   }
 
-
   toItem() {
     return {
       catalogSubjectId: this.catalogSubjectId,
@@ -46,66 +45,66 @@ private catalogSubjectName: String;
     };
   }
 
-    // STATIC
-    public static getPK(catalogSubjectId: String) {
-      return `${CATALOGSUBJECT}_${catalogSubjectId}`;
-    }
-  
-    public static getSK(catalogSubjectId: String) {
-      return `${CATALOGSUBJECT}_${catalogSubjectId}`;
-    }
-  
-    public static getGSI1PK(catalogAreaId: String) {
-      return `${CATALOGAREA}_${catalogAreaId}`;
-    }
-  
-    public static getGSI1SK(catalogSubjectId: String) {
-      return `${CATALOGSUBJECT}_${catalogSubjectId}`;
-    }
-  
-    public static fromDB(item: CatalogSubjectInterface) {
-      const newCatalogSubject = new CatalogSubject();
-  
-      newCatalogSubject.catalogSubjectId = item.catalogSubjectId;
-  
-      // Attributes from params
-      newCatalogSubject.catalogAreaId = item.catalogAreaId;
-      newCatalogSubject.catalogSubjectName = item.catalogSubjectName;
-      // FALTA PONER CATALOGSUBJECTGRADES 
+  // STATIC
+  public static getPK(catalogSubjectId: String) {
+    return `${CATALOGSUBJECT}_${catalogSubjectId}`;
+  }
 
-      // Partition keys
-      newCatalogSubject.initializeKeys(newCatalogSubject.getPK(), newCatalogSubject.getSK());
-  
-      return newCatalogSubject.toItem();
-    }
-  
-    public static async insertOne({ catalogAreaId, catalogSubjectName }: { catalogAreaId: String; catalogSubjectName: String }) {
-      const newCatalogSubject = new CatalogSubject();
-  
-      newCatalogSubject.catalogSubjectId = newCatalogSubject.generateId();
-  
-      // Attributes from params
-      newCatalogSubject.catalogAreaId = catalogAreaId;
-      newCatalogSubject.catalogSubjectName = catalogSubjectName;
-      // FALTA PONER CATALOGSUBJECTGRADES
-  
-      // Partition keys
-      newCatalogSubject.initializeKeys(newCatalogSubject.getPK(), newCatalogSubject.getSK());
-  
-      await newCatalogSubject.save();
-  
-      return newCatalogSubject.toItem();
-    }
-  
-    public static async getCatalogSubjects(catalogAreaId: String) {
-      const items = await getItemsGSI(GSINames.GSI1, {
-        KeyConditionExpression: '#GSI1PK = :GSI1PK',
-        ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-        ExpressionAttributeValues: { ':GSI1PK': CatalogSubject.getGSI1PK(catalogAreaId) }
-      });
-  
-      return items.map(CatalogSubject.fromDB);
-    }
+  public static getSK(catalogSubjectId: String) {
+    return `${CATALOGSUBJECT}_${catalogSubjectId}`;
+  }
+
+  public static getGSI1PK(catalogAreaId: String) {
+    return `${CATALOGAREA}_${catalogAreaId}`;
+  }
+
+  public static getGSI1SK(catalogSubjectId: String) {
+    return `${CATALOGSUBJECT}_${catalogSubjectId}`;
+  }
+
+  public static fromDB(item: CatalogSubjectInterface) {
+    const newCatalogSubject = new CatalogSubject();
+
+    newCatalogSubject.catalogSubjectId = item.catalogSubjectId;
+
+    // Attributes from params
+    newCatalogSubject.catalogAreaId = item.catalogAreaId;
+    newCatalogSubject.catalogSubjectName = item.catalogSubjectName;
+    // FALTA PONER CATALOGSUBJECTGRADES
+
+    // Partition keys
+    newCatalogSubject.initializePartitionKeys(newCatalogSubject.getPK(), newCatalogSubject.getSK());
+
+    return newCatalogSubject.toItem();
+  }
+
+  public static async insertOne({ catalogAreaId, catalogSubjectName }: { catalogAreaId: String; catalogSubjectName: String }) {
+    const newCatalogSubject = new CatalogSubject();
+
+    newCatalogSubject.catalogSubjectId = newCatalogSubject.generateId();
+
+    // Attributes from params
+    newCatalogSubject.catalogAreaId = catalogAreaId;
+    newCatalogSubject.catalogSubjectName = catalogSubjectName;
+    // FALTA PONER CATALOGSUBJECTGRADES
+
+    // Partition keys
+    newCatalogSubject.initializePartitionKeys(newCatalogSubject.getPK(), newCatalogSubject.getSK());
+
+    await newCatalogSubject.save();
+
+    return newCatalogSubject.toItem();
+  }
+
+  public static async getCatalogSubjects(catalogAreaId: String) {
+    const items = await getItemsGSI(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
+      ExpressionAttributeValues: { ':GSI1PK': CatalogSubject.getGSI1PK(catalogAreaId) }
+    });
+
+    return items.map(CatalogSubject.fromDB);
+  }
 }
 
 export { CatalogSubject };

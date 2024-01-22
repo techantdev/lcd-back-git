@@ -20,7 +20,7 @@ abstract class DatabaseEntity {
 
   // METHODS
 
-  initializeKeys(PK: String, SK: String) {
+  initializePartitionKeys(PK: String, SK: String) {
     this.PK = PK;
     this.SK = SK;
   }

@@ -14,7 +14,7 @@ class CatalogRoles extends DatabaseEntity {
     this.schema = catalogRolesSchema;
 
     // Partition keys
-    this.initializeKeys(this.getPK(this.catalogRoleId), this.getSK(this.catalogRoleId));
+    this.initializePartitionKeys(this.getPK(this.catalogRoleId), this.getSK(this.catalogRoleId));
   }
 
   getPK(catalogRoleId: String) {

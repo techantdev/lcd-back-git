@@ -1,12 +1,12 @@
-import  yearSubjectSchema, { YEARSUBJECT, YEARAREA, YearSubjectInterface }  from '../schemas/YearSubjectSchema';
+import yearSubjectSchema, { YEARSUBJECT, YEARAREA, YearSubjectInterface } from '../schemas/YearSubjectSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class YearSubject extends DatabaseEntity {
-private yearSubjectId: String;
-private catalogSubjectId: String;
-private yearAreaId: String;
+  private yearSubjectId: String;
+  private catalogSubjectId: String;
+  private yearAreaId: String;
   // FALTA  yearSubjectGrades
 
   constructor() {
@@ -22,7 +22,6 @@ private yearAreaId: String;
     return `${YEARSUBJECT}_${this.yearSubjectId}`;
   }
 
-  
   getGSI1PK() {
     return `${YEARAREA}_${this.yearAreaId}`;
   }
@@ -73,7 +72,7 @@ private yearAreaId: String;
     newYearSubject.yearAreaId = item.yearAreaId;
 
     // Partition keys
-    newYearSubject.initializeKeys(newYearSubject.getPK(), newYearSubject.getSK());
+    newYearSubject.initializePartitionKeys(newYearSubject.getPK(), newYearSubject.getSK());
 
     return newYearSubject.toItem();
   }
@@ -88,7 +87,7 @@ private yearAreaId: String;
     newYearSubject.yearAreaId = yearAreaId;
 
     // Partition keys
-    newYearSubject.initializeKeys(newYearSubject.getPK(), newYearSubject.getSK());
+    newYearSubject.initializePartitionKeys(newYearSubject.getPK(), newYearSubject.getSK());
 
     await newYearSubject.save();
 
@@ -104,7 +103,6 @@ private yearAreaId: String;
 
     return items.map(YearSubject.fromDB);
   }
-
 }
 
 export { YearSubject };

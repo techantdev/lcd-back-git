@@ -4,9 +4,9 @@ import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogGrade extends DatabaseEntity {
-private catalogGradeId: String;
-private schoolId: String;
-private catalogGradeLabel: String;
+  private catalogGradeId: String;
+  private schoolId: String;
+  private catalogGradeLabel: String;
 
   constructor() {
     super();
@@ -21,7 +21,6 @@ private catalogGradeLabel: String;
     return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
-  
   getGSI1PK() {
     return `${SCHOOL}_${this.schoolId}`;
   }
@@ -44,7 +43,7 @@ private catalogGradeLabel: String;
       catalogGradeLabel: this.catalogGradeLabel
     };
   }
-  
+
   // STATIC
   public static getPK(catalogGradeId: String) {
     return `${CATALOGGRADE}_${catalogGradeId}`;
@@ -72,7 +71,7 @@ private catalogGradeLabel: String;
     newCatalogGrade.catalogGradeLabel = item.catalogGradeLabel;
 
     // Partition keys
-    newCatalogGrade.initializeKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
+    newCatalogGrade.initializePartitionKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
 
     return newCatalogGrade.toItem();
   }
@@ -87,7 +86,7 @@ private catalogGradeLabel: String;
     newCatalogGrade.catalogGradeLabel = catalogGradeLabel;
 
     // Partition keys
-    newCatalogGrade.initializeKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
+    newCatalogGrade.initializePartitionKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
 
     await newCatalogGrade.save();
 
