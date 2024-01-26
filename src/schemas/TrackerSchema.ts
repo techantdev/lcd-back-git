@@ -1,6 +1,7 @@
-import { object, string } from 'yup';
+import { object, string, InferType } from 'yup';
 
 import { getPartitionKeysSchema } from './schemaUtils';
+import { TrackerSchema } from './schemasIndex';
 
 const TRACKER = 'TRACKER';
 
@@ -11,6 +12,8 @@ const trackerSchema = object({
   // PENDIENTE COLOCAR <ARRAY>OBJECT trackerRows
 });
 
-export { TRACKER };
+interface TrackerInterface extends InferType<typeof TrackerSchema> {}
+
+export { TRACKER, TrackerInterface };
 
 export default trackerSchema;

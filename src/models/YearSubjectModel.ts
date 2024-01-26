@@ -94,6 +94,10 @@ class YearSubject extends DatabaseEntity {
     return newYearSubject.toItem();
   }
 
+  public static async insertMultiple(items: [{}]) {
+    return [{}];
+  }
+
   public static async getYearSubjects(yearAreaId: String) {
     const items = await getItemsGSI(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -105,4 +109,4 @@ class YearSubject extends DatabaseEntity {
   }
 }
 
-export { YearSubject };
+export { YearSubject, YearSubjectInterface };

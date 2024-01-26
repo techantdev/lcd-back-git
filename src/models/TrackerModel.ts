@@ -1,21 +1,13 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import trackerSchema, { TRACKER } from '../schemas/TrackerSchema';
+import trackerSchema, { TRACKER, TrackerInterface } from '../schemas/TrackerSchema';
 
 class Tracker extends DatabaseEntity {
-  trackerId: String;
-  courseId: String;
+  private trackerId: String;
+  private courseId: String;
 
   constructor() {
     super();
     this.schema = trackerSchema;
-
-    // this.trackerId = this.generateId();
-    // this.courseId = courseId;
-
-    // // Schema
-
-    // // Partition keys
-    // this.initializePartitionKeys(this.getPK(this.trackerId), this.getSK(this.trackerId));
   }
 
   getPK() {
@@ -34,12 +26,58 @@ class Tracker extends DatabaseEntity {
     return {
       trackerId: this.trackerId,
       courseId: this.courseId
+      // FALTA trackerRows
     };
   }
 
   // TODO: Replicar esta lógica que consulta en BD la entidad a partir de su PK y su SK en vez de los GSIs
   // STATIC
-  public static async getTracker(trackerId: String) {
+
+  public static getPK(trackerId: String) {
+    return `${TRACKER}_${trackerId}`;
+  }
+
+  public static getSK(trackerId: String) {
+    return `${TRACKER}_${trackerId}`;
+  }
+
+  public static fromDB(item: TrackerInterface) {
+    const newTracker = new Tracker();
+
+    newTracker.trackerId = item.yearSubjectId;
+
+    // Attributes from params
+    newTracker.courseId = item.courseId;
+    //newTracker.yearAreaId = item.yearAreaId;
+
+    // Partition keys
+    newTracker.initializePartitionKeys(newTracker.getPK(), newTracker.getSK());
+
+    return newTracker.toItem();
+  }
+
+  public static async insertOne({ courseId }: { courseId: String }) {
+    const newTracker = new Tracker();
+
+    newTracker.trackerId = newTracker.generateId();
+
+    // Attributes from params
+    newTracker.courseId = courseId;
+    //newTracker.yearAreaId = yearAreaId;
+
+    // Partition keys
+    newTracker.initializePartitionKeys(newTracker.getPK(), newTracker.getSK());
+
+    await newTracker.save();
+
+    return newTracker.toItem();
+  }
+
+  public static async insertMultiple(items: [{}]) {
+    return [{}];
+  }
+
+  public static async getTracker(trackerId: String): Promise<TrackerInterface> {
     const tracker = new Tracker();
 
     tracker.trackerId = trackerId;
@@ -50,4 +88,4 @@ class Tracker extends DatabaseEntity {
   }
 }
 
-export { Tracker };
+export { Tracker, TrackerInterface };

@@ -103,6 +103,10 @@ class YearGrade extends DatabaseEntity {
     return items.map(YearGrade.fromDB);
   }
 
+  public static async insertMultiple(items: [{}]): Promise<YearGradeInterface[]> {
+    return [];
+  }
+
   public static async getSubjectYearGrades(yearSubjectId: String) {
     const items = await getItemsGSI(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -114,4 +118,4 @@ class YearGrade extends DatabaseEntity {
   }
 }
 
-export { YearGrade };
+export { YearGrade, YearGradeInterface };

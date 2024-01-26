@@ -139,6 +139,10 @@ class Course extends DatabaseEntity {
     return items.map(Course.fromDB);
   }
 
+  public static async insertMultiple(items: [{}]): Promise<CourseInterface[]> {
+    return [];
+  }
+
   public static async getTeacherCourses(teacherId: String) {
     const items = await getItemsGSI(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -150,4 +154,4 @@ class Course extends DatabaseEntity {
   }
 }
 
-export { Course };
+export { Course, CourseInterface };

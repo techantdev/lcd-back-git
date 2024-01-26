@@ -92,8 +92,8 @@ class YearArea extends DatabaseEntity {
     return newYearArea.toItem();
   }
 
-  public static async insertMultiple(items: [{}]) {
-    return [{}];
+  public static async insertMultiple(items: [{}]):Promise<YearAreaInterface[]> {
+    return [];
   }
 
   public static async getYearAreas(academicYearId: String) {
