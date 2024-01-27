@@ -94,7 +94,7 @@ class YearSubject extends DatabaseEntity {
     return newYearSubject.toItem();
   }
 
-  public static async insertMultiple(items: [{}]) {
+  public static async insertMultiple(items: Object[]) {
     return [{}];
   }
 

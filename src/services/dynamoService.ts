@@ -1,5 +1,5 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const {
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
@@ -7,7 +7,7 @@ const {
   // UpdateCommand,
   // DeleteCommand,
   // TransactWriteItemsCommand
-} = require('@aws-sdk/lib-dynamodb');
+} from '@aws-sdk/lib-dynamodb';
 
 import { credentials, region } from './credentials';
 
@@ -25,24 +25,24 @@ const getItem = async (PK: String, SK: String) => {
   return Item;
 };
 
-const getItemsGSI = async (
+const getItemsGSI = async <T>(
   indexName: String,
   {
     KeyConditionExpression,
     ExpressionAttributeNames,
     ExpressionAttributeValues
-  }: { KeyConditionExpression: String; ExpressionAttributeNames: Object; ExpressionAttributeValues: Object }
-) => {
-  const { Items = null } = await dbclientV3.send(
+  }: { KeyConditionExpression: string; ExpressionAttributeNames: Record<string, string>; ExpressionAttributeValues: Object }
+): Promise<T[]> => {
+  const { Items = [] } = await dbclientV3.send(
     new QueryCommand({
       TableName: TEST_TABLE_NAME,
-      IndexName: indexName,
+      IndexName: indexName.toString(),
       KeyConditionExpression,
       ExpressionAttributeNames,
       ExpressionAttributeValues
     })
   );
-  return Items;
+  return Items as T[];
 };
 
 export { putItem, getItem, getItemsGSI };

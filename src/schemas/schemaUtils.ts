@@ -24,6 +24,7 @@ const getGSIKeysSchema = (index: Number, PKRegex: RegExp, SKRegex: RegExp) => {
 };
 
 const ulidRegexStr = '[0-9A-HJKMNP-Z]{26}';
+const emailRegexStr = '[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$';
 
 const getRegex = (expression: string) => new RegExp(expression, 'g');
 
@@ -33,4 +34,13 @@ const GSINames = {
   GSI3: 'GSI3'
 };
 
-export { partitionKeysSchema, getPartitionKeysSchema, getGSIKeySchema, getGSIKeysSchema, ulidRegexStr, getRegex, GSINames };
+export {
+  partitionKeysSchema,
+  getPartitionKeysSchema,
+  getGSIKeySchema,
+  getGSIKeysSchema,
+  ulidRegexStr,
+  emailRegexStr,
+  getRegex,
+  GSINames
+};

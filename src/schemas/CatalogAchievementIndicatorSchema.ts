@@ -16,8 +16,8 @@ const catalogAchievementIndicatorSchema = object({
   catalogAchievementIndicatorName: string().required()
 });
 
-interface CatalogAchievementIndicatorface extends InferType<typeof catalogAchievementIndicatorSchema> {}
+interface CatalogAchievementIndicatorInterface extends InferType<typeof catalogAchievementIndicatorSchema> {}
 
-export { CATALOGACHIEVEMENTINDICATOR , CATALOGSUBJECT , CATALOGGRADE, CatalogAchievementIndicatorface };
+export { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementIndicatorInterface };
 
 export default catalogAchievementIndicatorSchema;

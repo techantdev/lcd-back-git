@@ -94,7 +94,7 @@ class CatalogGrade extends DatabaseEntity {
   }
 
   public static async getCatalogGrades(schoolId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogGradeInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogGrade.getGSI1PK(schoolId) }

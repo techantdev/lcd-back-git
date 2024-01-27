@@ -93,7 +93,7 @@ class CatalogArea extends DatabaseEntity {
   }
 
   public static async getCatalogAreas(schoolId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogAreaInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogArea.getGSI1PK(schoolId) }

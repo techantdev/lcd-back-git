@@ -16,8 +16,8 @@ const catalogAchievementSchema = object({
   catalogAchievementName: string().required()
 });
 
-interface CatalogAchievementface extends InferType<typeof catalogAchievementSchema> {}
+interface CatalogAchievementInterface extends InferType<typeof catalogAchievementSchema> {}
 
-export { CATALOGACHIEVEMENT , CATALOGSUBJECT , CATALOGGRADE, CatalogAchievementface };
+export { CATALOGACHIEVEMENT, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementInterface };
 
 export default catalogAchievementSchema;

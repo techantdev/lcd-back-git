@@ -17,7 +17,7 @@ const createAcademicYear = async (schoolId: String, year: Number) => {
     //
     // 2. Por cada YearArea crear uno nuevo pero especificando un nuevo academicYearId
     const createdYearAreas = await YearArea.insertMultiple(
-      previousYearAreas.map((area: YearAreaInterface) => ({ ...area, academicYearId: createdAcademicYear.academicYearId }))
+      previousYearAreas.map(area => ({ ...area, academicYearId: createdAcademicYear.academicYearId }))
     );
 
     // 3. Se debe hacer fetch a todos los YearGrade  del año académico anterior usando previousAcademicYearId
@@ -25,7 +25,7 @@ const createAcademicYear = async (schoolId: String, year: Number) => {
     //
     // 4. Por cada YearGrade crear uno nuevo pero especificando un nuevo academicYearId.
     const createdYearGrades = await YearGrade.insertMultiple(
-      previousYearGrades.map((grade: YearGradeInterface) => ({ ...grade, academicYearId: createdAcademicYear.academicYearId }))
+      previousYearGrades.map(grade => ({ ...grade, academicYearId: createdAcademicYear.academicYearId }))
     );
 
     for (let index = 0; index < previousYearAreas.length; index++) {
@@ -44,7 +44,7 @@ const createAcademicYear = async (schoolId: String, year: Number) => {
       const previousGradeCourses = await Course.getYearGradeCourses(previousYearGrade.yearGradeId);
       // 8. Por cada CourseYearGrade crear uno nuevo pero especificando un nuevo yearGradeId.
       const createdCoursesGrade = await Course.insertMultiple(
-        previousGradeCourses.map((gradeCourse: CourseInterface) => ({
+        previousGradeCourses.map(gradeCourse => ({
           ...gradeCourse,
           yearGradeId: createdYearGrades[index].yearGradeId
         }))

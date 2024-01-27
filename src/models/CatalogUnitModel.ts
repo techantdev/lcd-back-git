@@ -1,4 +1,4 @@
-import catalogUnitSchema, { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitface } from '../schemas/CatalogUnitSchema';
+import catalogUnitSchema, { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitInterface } from '../schemas/CatalogUnitSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
@@ -63,7 +63,7 @@ class CatalogUnit extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB(item: CatalogUnitface) {
+  public static fromDB(item: CatalogUnitInterface) {
     const newCatalogUnit = new CatalogUnit();
 
     newCatalogUnit.catalogUnitId = item.catalogUnitId;
@@ -105,7 +105,7 @@ class CatalogUnit extends DatabaseEntity {
   }
 
   public static async getCatalogUnits(catalogSubjectId: String, catalogGradeId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogUnitInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND #GSI1SK = :GSI1SK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {

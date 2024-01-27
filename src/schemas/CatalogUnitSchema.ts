@@ -16,8 +16,8 @@ const catalogUnitSchema = object({
   catalogUnitName: string().required()
 });
 
-interface CatalogUnitface extends InferType<typeof catalogUnitSchema> {}
+interface CatalogUnitInterface extends InferType<typeof catalogUnitSchema> {}
 
-export { CATALOGUNIT , CATALOGSUBJECT , CATALOGGRADE, CatalogUnitface };
+export { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitInterface };
 
 export default catalogUnitSchema;

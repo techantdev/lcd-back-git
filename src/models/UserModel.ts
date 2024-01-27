@@ -113,14 +113,14 @@ class User extends DatabaseEntity {
   }
 
   // TODO: ajustar el nombre a getUser
-  public static async getUsers(userEmail: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+  public static async getUser(userEmail: String) {
+    const items = await getItemsGSI<UserInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': User.getGSI1PK(userEmail) }
     });
 
-    return User.fromDB(items[0]);
+    return items[0] ? User.fromDB(items[0]) : null;
   }
 }
 

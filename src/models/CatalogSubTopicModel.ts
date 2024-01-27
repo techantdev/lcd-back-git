@@ -94,7 +94,7 @@ class CatalogSubTopic extends DatabaseEntity {
   }
 
   public static async getCatalogSubTopics(catalogTopicId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogSubTopicInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogSubTopic.getGSI1PK(catalogTopicId) }

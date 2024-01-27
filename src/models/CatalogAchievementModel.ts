@@ -2,7 +2,7 @@ import catalogAchievementSchema, {
   CATALOGACHIEVEMENT,
   CATALOGSUBJECT,
   CATALOGGRADE,
-  CatalogAchievementface
+  CatalogAchievementInterface
 } from '../schemas/CatalogAchievementSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
@@ -68,7 +68,7 @@ class CatalogAchievement extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB(item: CatalogAchievementface) {
+  public static fromDB(item: CatalogAchievementInterface) {
     const newCatalogAchievement = new CatalogAchievement();
 
     newCatalogAchievement.catalogAchievementId = item.catalogAchievementId;
@@ -111,7 +111,7 @@ class CatalogAchievement extends DatabaseEntity {
   }
 
   public static async getCatalogAchievements(catalogSubjectId: String, catalogGradeId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogAchievementInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND #GSI1SK = :GSI1SK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {

@@ -92,12 +92,12 @@ class YearArea extends DatabaseEntity {
     return newYearArea.toItem();
   }
 
-  public static async insertMultiple(items: [{}]):Promise<YearAreaInterface[]> {
+  public static async insertMultiple(items: Object[]): Promise<YearAreaInterface[]> {
     return [];
   }
 
   public static async getYearAreas(academicYearId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<YearAreaInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearArea.getGSI1PK(academicYearId) }

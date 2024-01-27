@@ -130,7 +130,7 @@ class Course extends DatabaseEntity {
   }
 
   public static async getYearGradeCourses(yearGradeId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CourseInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI2PK = :GSI2PK',
       ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK' },
       ExpressionAttributeValues: { ':GSI2PK': Course.getGSI2PK(yearGradeId) }
@@ -139,12 +139,12 @@ class Course extends DatabaseEntity {
     return items.map(Course.fromDB);
   }
 
-  public static async insertMultiple(items: [{}]): Promise<CourseInterface[]> {
+  public static async insertMultiple(items: Object[]): Promise<CourseInterface[]> {
     return [];
   }
 
   public static async getTeacherCourses(teacherId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CourseInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': Course.getGSI1PK(teacherId) }

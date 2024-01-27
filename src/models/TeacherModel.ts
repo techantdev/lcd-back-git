@@ -112,12 +112,12 @@ class Teacher extends DatabaseEntity {
     return newTeacher.toItem();
   }
 
-  public static async insertMultiple(items: [{}]) {
+  public static async insertMultiple(items: Object[]) {
     return [{}];
   }
 
   public static async getTeachers(schoolId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<TeacherInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': Teacher.getGSI1PK(schoolId) }

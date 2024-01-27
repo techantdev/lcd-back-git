@@ -73,7 +73,7 @@ class Tracker extends DatabaseEntity {
     return newTracker.toItem();
   }
 
-  public static async insertMultiple(items: [{}]) {
+  public static async insertMultiple(items: Object[]) {
     return [{}];
   }
 

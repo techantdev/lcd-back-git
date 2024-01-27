@@ -94,7 +94,7 @@ class YearGrade extends DatabaseEntity {
   }
 
   public static async getYearGrades(academicYearId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<YearGradeInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(academicYearId) }
@@ -103,12 +103,12 @@ class YearGrade extends DatabaseEntity {
     return items.map(YearGrade.fromDB);
   }
 
-  public static async insertMultiple(items: [{}]): Promise<YearGradeInterface[]> {
+  public static async insertMultiple(items: Object[]): Promise<YearGradeInterface[]> {
     return [];
   }
 
   public static async getSubjectYearGrades(yearSubjectId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<YearGradeInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(yearSubjectId) }

@@ -97,7 +97,7 @@ class CatalogSubject extends DatabaseEntity {
   }
 
   public static async getCatalogSubjects(catalogAreaId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogSubjectInterface>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogSubject.getGSI1PK(catalogAreaId) }
