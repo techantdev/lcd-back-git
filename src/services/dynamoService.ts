@@ -3,8 +3,8 @@ import {
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
-  GetCommand
-  // UpdateCommand,
+  GetCommand,
+  UpdateCommand
   // DeleteCommand,
   // TransactWriteItemsCommand
 } from '@aws-sdk/lib-dynamodb';
@@ -45,4 +45,24 @@ const getItemsGSI = async <T>(
   return Items as T[];
 };
 
-export { putItem, getItem, getItemsGSI };
+const updateItem = async <T>(
+  PK: String,
+  SK: String,
+  UpdateExpression: String,
+  ExpressionAttributeNames: Record<string, string>,
+  ExpressionAttributeValues: Object
+) => {
+  const { Attributes = {} } = await dbclientV3.send(
+    new UpdateCommand({
+      TableName: TEST_TABLE_NAME,
+      Key: { PK, SK },
+      UpdateExpression: UpdateExpression.toString(),
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+      ReturnValues: 'ALL_NEW'
+    })
+  );
+  return Attributes as T;
+};
+
+export { putItem, getItem, getItemsGSI, updateItem };

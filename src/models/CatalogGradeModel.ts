@@ -1,7 +1,7 @@
 import catalogGradeSchema, { CATALOGGRADE, SCHOOL, CatalogGradeInterface } from '../schemas/CatalogGradeSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogGrade extends DatabaseEntity {
   private catalogGradeId: String;
@@ -95,12 +95,24 @@ class CatalogGrade extends DatabaseEntity {
 
   public static async getCatalogGrades(schoolId: String) {
     const items = await getItemsGSI<CatalogGradeInterface>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': CatalogGrade.getGSI1PK(schoolId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': CatalogGrade.getGSI1PK(schoolId), ':GSI1SK': CatalogGrade.getGSI1SK('') }
     });
 
     return items.map(CatalogGrade.fromDB);
+  }
+
+  public static async updateOne(catalogGradeId: String, catalogGradeData: { catalogGradeLabel: String }) {
+    const updatedItem = await updateItem<CatalogGradeInterface>(
+      CatalogGrade.getPK(catalogGradeId),
+      CatalogGrade.getSK(catalogGradeId),
+      `SET #catalogGradeLabel=:catalogGradeLabel`,
+      { '#catalogGradeLabel': 'catalogGradeLabel' },
+      { ':catalogGradeLabel': catalogGradeData.catalogGradeLabel }
+    );
+
+    return CatalogGrade.fromDB(updatedItem);
   }
 }
 

@@ -1,7 +1,7 @@
 import catalogAreaSchema, { CATALOGAREA, SCHOOL, CatalogAreaInterface } from '../schemas/CatalogAreaSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogArea extends DatabaseEntity {
   private catalogAreaId: String;
@@ -94,12 +94,24 @@ class CatalogArea extends DatabaseEntity {
 
   public static async getCatalogAreas(schoolId: String) {
     const items = await getItemsGSI<CatalogAreaInterface>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': CatalogArea.getGSI1PK(schoolId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': CatalogArea.getGSI1PK(schoolId), ':GSI1SK': CatalogArea.getGSI1SK('') }
     });
 
     return items.map(CatalogArea.fromDB);
+  }
+
+  public static async updateOne(catalogAreaId: String, catalogGradeData: { catalogAreaName: String }) {
+    const updatedItem = await updateItem<CatalogAreaInterface>(
+      CatalogArea.getPK(catalogAreaId),
+      CatalogArea.getSK(catalogAreaId),
+      `SET #catalogAreaName=:catalogAreaName`,
+      { '#catalogAreaName': 'catalogAreaName' },
+      { ':catalogAreaName': catalogGradeData.catalogAreaName }
+    );
+
+    return CatalogArea.fromDB(updatedItem);
   }
 }
 

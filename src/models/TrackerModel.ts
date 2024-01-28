@@ -74,7 +74,9 @@ class Tracker extends DatabaseEntity {
   }
 
   public static async insertMultiple(items: Object[]) {
-    return [{}];
+    console.log(items);
+
+    return [];
   }
 
   public static async getTracker(trackerId: String): Promise<TrackerInterface> {

@@ -1,4 +1,4 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, array } from 'yup';
 
 import { getPartitionKeysSchema, getGSIKeySchema, getRegex, emailRegexStr } from './schemaUtils';
 
@@ -12,8 +12,17 @@ const userSchema = object({
   teacherId: string().default(''),
   userName: string().default(''),
   userLastName: string().default(''),
-  userEmail: string().email().required()
-  // PENDIENTE COLOCAR <ARRAY>OBJECT userUSEREMAILs
+  userEmail: string().email().required(),
+  userSchools: array()
+    .of(
+      object({
+        schoolId: string().required(),
+        catalogRoles: array()
+          .of(object({ catalogRoleId: string().required() }))
+          .required()
+      })
+    )
+    .required()
 });
 
 interface UserInterface extends InferType<typeof userSchema> {}

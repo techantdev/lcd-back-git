@@ -104,6 +104,8 @@ class YearGrade extends DatabaseEntity {
   }
 
   public static async insertMultiple(items: Object[]): Promise<YearGradeInterface[]> {
+    console.log(items);
+
     return [];
   }
 

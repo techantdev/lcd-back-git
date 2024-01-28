@@ -1,9 +1,9 @@
 import { AcademicYear } from '../../models/AcademicYearModel';
-import { YearArea, YearAreaInterface } from '../../models/YearAreaModel';
-import { YearGrade, YearGradeInterface } from '../../models/YearGradeModel';
-import { YearSubject, YearSubjectInterface } from '../../models/YearSubjectModel';
-import { Course, CourseInterface } from '../../models/CourseModel';
-import { Tracker, TrackerInterface } from '../../models/TrackerModel';
+import { YearArea /*YearAreaInterface*/ } from '../../models/YearAreaModel';
+import { YearGrade /*YearGradeInterface*/ } from '../../models/YearGradeModel';
+// import { YearSubject, YearSubjectInterface } from '../../models/YearSubjectModel';
+import { Course /*CourseInterface */ } from '../../models/CourseModel';
+// import { Tracker, TrackerInterface } from '../../models/TrackerModel';
 
 const createAcademicYear = async (schoolId: String, year: Number) => {
   const isCreationBasedOnPreviousYear = false; // Viene de front
@@ -16,26 +16,26 @@ const createAcademicYear = async (schoolId: String, year: Number) => {
     const previousYearAreas = await YearArea.getYearAreas(previousAcademicYearId);
     //
     // 2. Por cada YearArea crear uno nuevo pero especificando un nuevo academicYearId
-    const createdYearAreas = await YearArea.insertMultiple(
-      previousYearAreas.map(area => ({ ...area, academicYearId: createdAcademicYear.academicYearId }))
-    );
+    // const createdYearAreas = await YearArea.insertMultiple(
+    //   previousYearAreas.map(area => ({ ...area, academicYearId: createdAcademicYear.academicYearId }))
+    // );
 
     // 3. Se debe hacer fetch a todos los YearGrade  del año académico anterior usando previousAcademicYearId
     const previousYearGrades = await YearGrade.getYearGrades(previousAcademicYearId);
     //
     // 4. Por cada YearGrade crear uno nuevo pero especificando un nuevo academicYearId.
-    const createdYearGrades = await YearGrade.insertMultiple(
-      previousYearGrades.map(grade => ({ ...grade, academicYearId: createdAcademicYear.academicYearId }))
-    );
+    // const createdYearGrades = await YearGrade.insertMultiple(
+    //   previousYearGrades.map(grade => ({ ...grade, academicYearId: createdAcademicYear.academicYearId }))
+    // );
 
     for (let index = 0; index < previousYearAreas.length; index++) {
-      const previousYearArea = previousYearAreas[index];
+      // const previousYearArea = previousYearAreas[index];
       // 5. Se debe hacer fetch a todos los YearSubject utilizando los YearAreaIds previos.
-      const previousYearSubjects = await YearSubject.getYearSubjects(previousYearArea.yearAreaId);
+      // const previousYearSubjects = await YearSubject.getYearSubjects(previousYearArea.yearAreaId);
       // 6. Por cada YearSubject crear uno nuevo pero especificando un nuevo yearAreaId.
-      const createdYearSubjects = await YearSubject.insertMultiple(
-        previousYearSubjects.map((subject: YearSubjectInterface) => ({ ...subject, yearAreaId: createdYearAreas[index].yearAreaId }))
-      );
+      // const createdYearSubjects = await YearSubject.insertMultiple(
+      //   previousYearSubjects.map((subject: YearSubjectInterface) => ({ ...subject, yearAreaId: createdYearAreas[index].yearAreaId }))
+      // );
     }
 
     for (let index = 0; index < previousYearGrades.length; index++) {
@@ -43,17 +43,17 @@ const createAcademicYear = async (schoolId: String, year: Number) => {
       // 7. Se debe hacer fetch a todos los Course utilizando los YearGradeIds previos.
       const previousGradeCourses = await Course.getYearGradeCourses(previousYearGrade.yearGradeId);
       // 8. Por cada CourseYearGrade crear uno nuevo pero especificando un nuevo yearGradeId.
-      const createdCoursesGrade = await Course.insertMultiple(
-        previousGradeCourses.map(gradeCourse => ({
-          ...gradeCourse,
-          yearGradeId: createdYearGrades[index].yearGradeId
-        }))
-      );
+      // const createdCoursesGrade = await Course.insertMultiple(
+      //   previousGradeCourses.map(gradeCourse => ({
+      //     ...gradeCourse,
+      //     yearGradeId: createdYearGrades[index].yearGradeId
+      //   }))
+      // );
       for (let index = 0; index < previousGradeCourses.length; index++) {
-        const previousGradeCourse = previousGradeCourses[index];
+        // const previousGradeCourse = previousGradeCourses[index];
         // 7. Se debe hacer fetch a todos los Course utilizando los YearGradeIds previos.
-        const previousTracker = await Tracker.getTracker(previousGradeCourse.trackerId);
-        const createdTracker = await Tracker.insertOne({ courseId: createdCoursesGrade[index].courseId });
+        // const previousTracker = await Tracker.getTracker(previousGradeCourse.trackerId);
+        // const createdTracker = await Tracker.insertOne({ courseId: createdCoursesGrade[index].courseId });
       }
     }
 

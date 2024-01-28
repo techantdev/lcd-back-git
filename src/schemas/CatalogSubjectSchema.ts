@@ -1,4 +1,4 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, array } from 'yup';
 import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const CATALOGSUBJECT = 'CATALOGSUBJECT';
@@ -10,8 +10,10 @@ const catalogSubjectSchema = object({
   GSI1SK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}`)),
   catalogSubjectId: string().required(),
   catalogAreaId: string().required(),
-  catalogSubjectName: string().required()
-  // PENDIENTE COLOCAR <ARRAY>OBJECT catalogSubjectGrades
+  catalogSubjectName: string().required(),
+  catalogSubjectGrades: array()
+    .of(object({ catalogGradeId: string().required() }))
+    .required()
 });
 
 interface CatalogSubjectInterface extends InferType<typeof catalogSubjectSchema> {}

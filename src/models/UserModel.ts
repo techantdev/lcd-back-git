@@ -9,7 +9,7 @@ class User extends DatabaseEntity {
   private userName: String;
   private userLastName: String;
   private userEmail: String;
-  // FALTA userSchools
+  private userSchools: { schoolId: String; catalogRoles: { catalogRoleId: string }[] }[];
 
   constructor() {
     super();
@@ -45,7 +45,8 @@ class User extends DatabaseEntity {
       teacherId: this.teacherId,
       userName: this.userName,
       userLastName: this.userLastName,
-      userEmail: this.userEmail
+      userEmail: this.userEmail,
+      userSchools: this.userSchools
     };
   }
 
@@ -76,6 +77,7 @@ class User extends DatabaseEntity {
     newUser.userName = item.userName;
     newUser.userLastName = item.userLastName;
     newUser.userEmail = item.userEmail;
+    newUser.userSchools = item.userSchools;
 
     // Partition keys
     newUser.initializePartitionKeys(newUser.getPK(), newUser.getSK());
@@ -87,12 +89,14 @@ class User extends DatabaseEntity {
     teacherId,
     userName,
     userLastName,
-    userEmail
+    userEmail,
+    schoolId
   }: {
     teacherId: String;
     userName: String;
     userLastName: String;
     userEmail: String;
+    schoolId: String;
   }) {
     const newUser = new User();
 
@@ -103,6 +107,7 @@ class User extends DatabaseEntity {
     newUser.userName = userName;
     newUser.userLastName = userLastName;
     newUser.userEmail = userEmail;
+    newUser.userSchools = [{ schoolId, catalogRoles: [] }];
 
     // Partition keys
     newUser.initializePartitionKeys(newUser.getPK(), newUser.getSK());

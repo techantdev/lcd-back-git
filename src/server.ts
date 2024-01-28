@@ -42,3 +42,5 @@ app.listen(port, () => {
 //     console.log('💥 Process terminated!');
 //   });
 // });
+
+// TODO: Implementar lógica de borrado lógico

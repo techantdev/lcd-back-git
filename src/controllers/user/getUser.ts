@@ -1,4 +1,5 @@
 import { User } from '../../models/UserModel';
+import { LCD_SCHOOL_ID } from '../../services/constants';
 import { getGWorkspaceUserByEmail } from '../../services/googleWorkspaceService';
 
 const getUser = async (userEmail: String) => {
@@ -15,12 +16,12 @@ const getUser = async (userEmail: String) => {
     if (existingUser) {
       user = existingUser;
     } else {
-      user = await User.insertOne({ teacherId: '', userEmail, userLastName: '', userName: '' });
+      user = await User.insertOne({ teacherId: '', userEmail, userLastName: '', userName: '', schoolId: LCD_SCHOOL_ID });
       userWasCreated = true;
     }
   }
 
-  return { isUserFromGWorkspace, userWasCreated, user };
+  return { isUserFromGWorkspace, userWasCreated, user: { ...user, schoolId: user?.userSchools[0].schoolId } };
 };
 
 export default getUser;

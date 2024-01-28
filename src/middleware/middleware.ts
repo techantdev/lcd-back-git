@@ -24,6 +24,8 @@ const catchAsync = (fn: any): RequestHandler => {
 
 const decodeURL: RequestHandler = (req, _, next) => {
   // req.query = Object.keys(req.query).reduce((prev, key) => ({ ...prev, [key]: req.query[key].replace(/\$/g, '#') }), {});
+  console.log(req);
+
   next();
 };
 

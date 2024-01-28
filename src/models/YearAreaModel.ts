@@ -93,6 +93,8 @@ class YearArea extends DatabaseEntity {
   }
 
   public static async insertMultiple(items: Object[]): Promise<YearAreaInterface[]> {
+    console.log(items);
+
     return [];
   }
 

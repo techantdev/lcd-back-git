@@ -140,6 +140,8 @@ class Course extends DatabaseEntity {
   }
 
   public static async insertMultiple(items: Object[]): Promise<CourseInterface[]> {
+    console.log(items);
+
     return [];
   }
 
