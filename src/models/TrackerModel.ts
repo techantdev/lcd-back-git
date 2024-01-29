@@ -1,13 +1,13 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import trackerSchema, { TRACKER, TrackerInterface } from '../schemas/TrackerSchema';
+import { TRACKER, TrackerDB, TrackerRaw, trackerSchemaDB } from '../schemas/TrackerSchema';
 
 class Tracker extends DatabaseEntity {
-  private trackerId: String;
-  private courseId: String;
+  private trackerId: string;
+  private courseId: string;
 
   constructor() {
     super();
-    this.schema = trackerSchema;
+    this.schema = trackerSchemaDB;
   }
 
   getPK() {
@@ -18,11 +18,12 @@ class Tracker extends DatabaseEntity {
     return `${TRACKER}_${this.trackerId}`;
   }
 
-  getGSIKeysObject() {
-    return {};
+  initializeFields(fields: TrackerRaw) {
+    this.trackerId = fields.trackerId;
+    this.courseId = fields.courseId;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       trackerId: this.trackerId,
       courseId: this.courseId
@@ -41,53 +42,37 @@ class Tracker extends DatabaseEntity {
     return `${TRACKER}_${trackerId}`;
   }
 
-  public static fromDB(item: TrackerInterface) {
-    const newTracker = new Tracker();
+  public static fromRawFields = (fields: TrackerDB) => {
+    const instance = new Tracker();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newTracker.trackerId = item.yearSubjectId;
-
-    // Attributes from params
-    newTracker.courseId = item.courseId;
-    //newTracker.yearAreaId = item.yearAreaId;
-
-    // Partition keys
-    newTracker.initializePartitionKeys(newTracker.getPK(), newTracker.getSK());
-
-    return newTracker.toItem();
+  public static async insertOne({ courseId }: { courseId: string }) {
+    const instance = new Tracker();
+    instance.initializeFields({
+      trackerId: Tracker.generateId(),
+      courseId: courseId,
+      trackerRows: []
+    });
+    return await instance.save<TrackerRaw>();
   }
 
-  public static async insertOne({ courseId }: { courseId: String }) {
-    const newTracker = new Tracker();
-
-    newTracker.trackerId = newTracker.generateId();
-
-    // Attributes from params
-    newTracker.courseId = courseId;
-    //newTracker.yearAreaId = yearAreaId;
-
-    // Partition keys
-    newTracker.initializePartitionKeys(newTracker.getPK(), newTracker.getSK());
-
-    await newTracker.save();
-
-    return newTracker.toItem();
+  public static async insertMultiple(items: TrackerRaw[]) {
+    return await Tracker.saveMultiple<TrackerRaw>(
+      items.map(item => {
+        const instance = new Tracker();
+        instance.initializeFields({ ...item, trackerId: Tracker.generateId() });
+        return instance;
+      })
+    );
   }
 
-  public static async insertMultiple(items: Object[]) {
-    console.log(items);
-
-    return [];
-  }
-
-  public static async getTracker(trackerId: String): Promise<TrackerInterface> {
+  public static async getTracker(trackerId: string) {
     const tracker = new Tracker();
-
     tracker.trackerId = trackerId;
-
-    tracker.initializePartitionKeys(tracker.getPK(), tracker.getSK());
-
     return await tracker.get();
   }
 }
 
-export { Tracker, TrackerInterface };
+export { Tracker };

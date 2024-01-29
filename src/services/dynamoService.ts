@@ -2,6 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
   PutCommand,
+  BatchWriteCommand,
   QueryCommand,
   GetCommand,
   UpdateCommand
@@ -18,6 +19,13 @@ const TEST_TABLE_NAME = 'TEST_TABLE_NAME';
 const putItem = async (item: Object) => {
   const { Attributes } = await dbclientV3.send(new PutCommand({ TableName: TEST_TABLE_NAME, Item: item }));
   return Attributes;
+};
+
+const putItems = async (items: Record<string, any>[]) => {
+  await dbclientV3.send(
+    new BatchWriteCommand({ RequestItems: { [TEST_TABLE_NAME]: items.map(item => ({ PutRequest: { Item: item } })) } })
+  );
+  return items;
 };
 
 const getItem = async (PK: String, SK: String) => {
@@ -65,4 +73,4 @@ const updateItem = async <T>(
   return Attributes as T;
 };
 
-export { putItem, getItem, getItemsGSI, updateItem };
+export { putItem, putItems, getItem, getItemsGSI, updateItem };

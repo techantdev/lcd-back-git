@@ -1,16 +1,16 @@
-import catalogAreaSchema, { CATALOGAREA, SCHOOL, CatalogAreaInterface } from '../schemas/CatalogAreaSchema';
+import { CATALOGAREA, CatalogAreaDB, CatalogAreaRaw, SCHOOL, catalogAreaSchemaDB } from '../schemas/CatalogAreaSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogArea extends DatabaseEntity {
-  private catalogAreaId: String;
-  private schoolId: String;
-  private catalogAreaName: String;
+  private catalogAreaId: string;
+  private schoolId: string;
+  private catalogAreaName: string;
 
   constructor() {
     super();
-    this.schema = catalogAreaSchema;
+    this.schema = catalogAreaSchemaDB;
   }
   getPK() {
     return `${CATALOGAREA}_${this.catalogAreaId}`;
@@ -28,14 +28,13 @@ class CatalogArea extends DatabaseEntity {
     return `${CATALOGAREA}_${this.catalogAreaId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: CatalogAreaRaw) {
+    this.catalogAreaId = fields.catalogAreaId;
+    this.schoolId = fields.schoolId;
+    this.catalogAreaName = fields.catalogAreaName;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       catalogAreaId: this.catalogAreaId,
       schoolId: this.schoolId,
@@ -60,50 +59,34 @@ class CatalogArea extends DatabaseEntity {
     return `${CATALOGAREA}_${catalogAreaId}`;
   }
 
-  public static fromDB(item: CatalogAreaInterface) {
-    const newCatalogArea = new CatalogArea();
+  public static fromRawFields = (fields: CatalogAreaDB) => {
+    const instance = new CatalogArea();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newCatalogArea.catalogAreaId = item.catalogAreaId;
-
-    // Attributes from params
-    newCatalogArea.schoolId = item.schoolId;
-    newCatalogArea.catalogAreaName = item.catalogAreaName;
-
-    // Partition keys
-    newCatalogArea.initializePartitionKeys(newCatalogArea.getPK(), newCatalogArea.getSK());
-
-    return newCatalogArea.toItem();
-  }
-
-  public static async insertOne({ schoolId, catalogAreaName }: { schoolId: String; catalogAreaName: String }) {
-    const newCatalogArea = new CatalogArea();
-
-    newCatalogArea.catalogAreaId = newCatalogArea.generateId();
-
-    // Attributes from params
-    newCatalogArea.schoolId = schoolId;
-    newCatalogArea.catalogAreaName = catalogAreaName;
-
-    // Partition keys
-    newCatalogArea.initializePartitionKeys(newCatalogArea.getPK(), newCatalogArea.getSK());
-
-    await newCatalogArea.save();
-
-    return newCatalogArea.toItem();
+  public static async insertOne({ schoolId, catalogAreaName }: { schoolId: string; catalogAreaName: string }) {
+    const instance = new CatalogArea();
+    instance.initializeFields({
+      catalogAreaId: CatalogArea.generateId(),
+      schoolId: schoolId,
+      catalogAreaName: catalogAreaName
+    });
+    return await instance.save<CatalogAreaRaw>();
   }
 
   public static async getCatalogAreas(schoolId: String) {
-    const items = await getItemsGSI<CatalogAreaInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogAreaDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogArea.getGSI1PK(schoolId), ':GSI1SK': CatalogArea.getGSI1SK('') }
     });
 
-    return items.map(CatalogArea.fromDB);
+    return items.map(CatalogArea.fromRawFields);
   }
 
   public static async updateOne(catalogAreaId: String, catalogGradeData: { catalogAreaName: String }) {
-    const updatedItem = await updateItem<CatalogAreaInterface>(
+    const updatedItem = await updateItem<CatalogAreaDB>(
       CatalogArea.getPK(catalogAreaId),
       CatalogArea.getSK(catalogAreaId),
       `SET #catalogAreaName=:catalogAreaName`,
@@ -111,7 +94,7 @@ class CatalogArea extends DatabaseEntity {
       { ':catalogAreaName': catalogGradeData.catalogAreaName }
     );
 
-    return CatalogArea.fromDB(updatedItem);
+    return CatalogArea.fromRawFields(updatedItem);
   }
 }
 

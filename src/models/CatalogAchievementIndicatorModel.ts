@@ -1,22 +1,24 @@
-import catalogAchievementIndicatorSchema, {
+import {
   CATALOGACHIEVEMENTINDICATOR,
   CATALOGSUBJECT,
   CATALOGGRADE,
-  CatalogAchievementIndicatorInterface
+  catalogAchievementIndicatorSchemaDB,
+  CatalogAchievementIndicatorDB,
+  CatalogAchievementIndicatorRaw
 } from '../schemas/CatalogAchievementIndicatorSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogAchievementIndicator extends DatabaseEntity {
-  private catalogAchievementIndicatorId: String;
-  private catalogSubjectId: String;
-  private catalogGradeId: String;
-  private catalogAchievementIndicatorName: String;
+  private catalogAchievementIndicatorId: string;
+  private catalogSubjectId: string;
+  private catalogGradeId: string;
+  private catalogAchievementIndicatorName: string;
 
   constructor() {
     super();
-    this.schema = catalogAchievementIndicatorSchema;
+    this.schema = catalogAchievementIndicatorSchemaDB;
   }
 
   getPK() {
@@ -35,14 +37,14 @@ class CatalogAchievementIndicator extends DatabaseEntity {
     return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: CatalogAchievementIndicatorRaw) {
+    this.catalogAchievementIndicatorId = fields.catalogAchievementIndicatorId;
+    this.catalogSubjectId = fields.catalogSubjectId;
+    this.catalogGradeId = fields.catalogGradeId;
+    this.catalogAchievementIndicatorName = fields.catalogAchievementIndicatorName;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       catalogAchievementIndicatorId: this.catalogAchievementIndicatorId,
       catalogSubjectId: this.catalogSubjectId,
@@ -68,56 +70,33 @@ class CatalogAchievementIndicator extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB(item: CatalogAchievementIndicatorInterface) {
-    const newCatalogAchievementIndicator = new CatalogAchievementIndicator();
-
-    newCatalogAchievementIndicator.catalogAchievementIndicatorId = item.catalogAchievementIndicatorId;
-
-    // Attributes from params
-    newCatalogAchievementIndicator.catalogSubjectId = item.catalogSubjectId;
-    newCatalogAchievementIndicator.catalogGradeId = item.catalogGradeId;
-    newCatalogAchievementIndicator.catalogAchievementIndicatorName = item.catalogAchievementIndicatorName;
-
-    // Partition keys
-    newCatalogAchievementIndicator.initializePartitionKeys(
-      newCatalogAchievementIndicator.getPK(),
-      newCatalogAchievementIndicator.getSK()
-    );
-
-    return newCatalogAchievementIndicator.toItem();
-  }
+  public static fromRawFields = (fields: CatalogAchievementIndicatorDB) => {
+    const instance = new CatalogAchievementIndicator();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
   public static async insertOne({
     catalogSubjectId,
     catalogGradeId,
     catalogAchievementIndicatorName
   }: {
-    catalogSubjectId: String;
-    catalogGradeId: String;
-    catalogAchievementIndicatorName: String;
+    catalogSubjectId: string;
+    catalogGradeId: string;
+    catalogAchievementIndicatorName: string;
   }) {
-    const newCatalogAchievementIndicator = new CatalogAchievementIndicator();
-
-    newCatalogAchievementIndicator.catalogAchievementIndicatorId = newCatalogAchievementIndicator.generateId();
-
-    // Attributes from params
-    newCatalogAchievementIndicator.catalogSubjectId = catalogSubjectId;
-    newCatalogAchievementIndicator.catalogGradeId = catalogGradeId;
-    newCatalogAchievementIndicator.catalogAchievementIndicatorName = catalogAchievementIndicatorName;
-
-    // Partition keys
-    newCatalogAchievementIndicator.initializePartitionKeys(
-      newCatalogAchievementIndicator.getPK(),
-      newCatalogAchievementIndicator.getSK()
-    );
-
-    await newCatalogAchievementIndicator.save();
-
-    return newCatalogAchievementIndicator.toItem();
+    const instance = new CatalogAchievementIndicator();
+    instance.initializeFields({
+      catalogAchievementIndicatorId: CatalogAchievementIndicator.generateId(),
+      catalogSubjectId,
+      catalogGradeId,
+      catalogAchievementIndicatorName
+    });
+    return await instance.save<CatalogAchievementIndicatorRaw>();
   }
 
   public static async getCatalogAchievementIndicators(catalogSubjectId: String, catalogGradeId: String) {
-    const items = await getItemsGSI<CatalogAchievementIndicatorInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogAchievementIndicatorDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND #GSI1SK = :GSI1SK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {
@@ -126,7 +105,7 @@ class CatalogAchievementIndicator extends DatabaseEntity {
       }
     });
 
-    return items.map(CatalogAchievementIndicator.fromDB);
+    return items.map(CatalogAchievementIndicator.fromRawFields);
   }
 }
 export { CatalogAchievementIndicator };

@@ -1,16 +1,16 @@
-import academicYearSchema, { ACADEMICYEAR, SCHOOL, AcademicYearInterface } from '../schemas/AcademicYearSchema';
+import { ACADEMICYEAR, AcademicYearDB, AcademicYearRaw, SCHOOL, academicYearSchemaDB } from '../schemas/AcademicYearSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class AcademicYear extends DatabaseEntity {
-  private academicYearId: String;
-  private schoolId: String;
-  private year: Number;
+  private academicYearId: string;
+  private schoolId: string;
+  private year: number;
 
   constructor() {
     super();
-    this.schema = academicYearSchema;
+    this.schema = academicYearSchemaDB;
   }
 
   getPK() {
@@ -29,14 +29,13 @@ class AcademicYear extends DatabaseEntity {
     return `${ACADEMICYEAR}_${this.academicYearId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: AcademicYearRaw) {
+    this.academicYearId = fields.academicYearId;
+    this.schoolId = fields.schoolId;
+    this.year = fields.year;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       academicYearId: this.academicYearId,
       schoolId: this.schoolId,
@@ -61,46 +60,26 @@ class AcademicYear extends DatabaseEntity {
     return `${ACADEMICYEAR}_${academicYearId}`;
   }
 
-  public static fromDB(item: AcademicYearInterface) {
-    const newAcademicYear = new AcademicYear();
+  public static fromRawFields = (fields: AcademicYearDB) => {
+    const instance = new AcademicYear();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newAcademicYear.academicYearId = item.academicYearId;
-
-    // Attributes from params
-    newAcademicYear.schoolId = item.schoolId;
-    newAcademicYear.year = item.year;
-
-    // Partition keys
-    newAcademicYear.initializePartitionKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
-
-    return newAcademicYear.toItem();
-  }
-
-  public static async insertOne({ schoolId, year }: { schoolId: String; year: Number }) {
-    const newAcademicYear = new AcademicYear();
-
-    newAcademicYear.academicYearId = newAcademicYear.generateId();
-
-    // Attributes from params
-    newAcademicYear.schoolId = schoolId;
-    newAcademicYear.year = year;
-
-    // Partition keys
-    newAcademicYear.initializePartitionKeys(newAcademicYear.getPK(), newAcademicYear.getSK());
-
-    await newAcademicYear.save();
-
-    return newAcademicYear.toItem();
+  public static async insertOne({ schoolId, year }: { schoolId: string; year: number }) {
+    const instance = new AcademicYear();
+    instance.initializeFields({ academicYearId: AcademicYear.generateId(), schoolId, year });
+    return await instance.save<AcademicYearRaw>();
   }
 
   public static async getSchoolAcademicYears(schoolId: String) {
-    const items = await getItemsGSI<AcademicYearInterface>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': AcademicYear.getGSI1PK(schoolId) }
+    const items = await getItemsGSI<AcademicYearDB>(GSINames.GSI1, {
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': AcademicYear.getGSI1PK(schoolId), ':GSI1SK': AcademicYear.getGSI1SK('') }
     });
 
-    return items.map(AcademicYear.fromDB);
+    return items.map(AcademicYear.fromRawFields);
   }
 }
 

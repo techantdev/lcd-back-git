@@ -1,16 +1,16 @@
-import catalogTopicSchema, { CATALOGTOPIC, CATALOGUNIT, CatalogTopicInterface } from '../schemas/CatalogTopicSchema';
+import { CATALOGTOPIC, CATALOGUNIT, CatalogTopicDB, CatalogTopicRaw, catalogTopicSchemaDB } from '../schemas/CatalogTopicSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogTopic extends DatabaseEntity {
-  private catalogTopicId: String;
-  private catalogUnitId: String;
-  private catalogTopicName: String;
+  private catalogTopicId: string;
+  private catalogUnitId: string;
+  private catalogTopicName: string;
 
   constructor() {
     super();
-    this.schema = catalogTopicSchema;
+    this.schema = catalogTopicSchemaDB;
   }
 
   getPK() {
@@ -29,14 +29,13 @@ class CatalogTopic extends DatabaseEntity {
     return `${CATALOGTOPIC}_${this.catalogTopicId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: CatalogTopicRaw) {
+    this.catalogTopicId = fields.catalogTopicId;
+    this.catalogUnitId = fields.catalogUnitId;
+    this.catalogTopicName = fields.catalogTopicName;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       catalogTopicId: this.catalogTopicId,
       catalogUnitId: this.catalogUnitId,
@@ -61,46 +60,30 @@ class CatalogTopic extends DatabaseEntity {
     return `${CATALOGTOPIC}_${catalogTopicId}`;
   }
 
-  public static fromDB(item: CatalogTopicInterface) {
-    const newCatalogTopic = new CatalogTopic();
+  public static fromRawFields = (fields: CatalogTopicDB) => {
+    const instance = new CatalogTopic();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newCatalogTopic.catalogTopicId = item.catalogTopicId;
-
-    // Attributes from params
-    newCatalogTopic.catalogUnitId = item.catalogUnitId;
-    newCatalogTopic.catalogTopicName = item.catalogTopicName;
-
-    // Partition keys
-    newCatalogTopic.initializePartitionKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
-
-    return newCatalogTopic.toItem();
-  }
-
-  public static async insertOne({ catalogUnitId, catalogTopicName }: { catalogUnitId: String; catalogTopicName: String }) {
-    const newCatalogTopic = new CatalogTopic();
-
-    newCatalogTopic.catalogTopicId = newCatalogTopic.generateId();
-
-    // Attributes from params
-    newCatalogTopic.catalogUnitId = catalogUnitId;
-    newCatalogTopic.catalogTopicName = catalogTopicName;
-
-    // Partition keys
-    newCatalogTopic.initializePartitionKeys(newCatalogTopic.getPK(), newCatalogTopic.getSK());
-
-    await newCatalogTopic.save();
-
-    return newCatalogTopic.toItem();
+  public static async insertOne({ catalogUnitId, catalogTopicName }: { catalogUnitId: string; catalogTopicName: string }) {
+    const instance = new CatalogTopic();
+    instance.initializeFields({
+      catalogTopicId: CatalogTopic.generateId(),
+      catalogUnitId: catalogUnitId,
+      catalogTopicName: catalogTopicName
+    });
+    return await instance.save<CatalogTopicRaw>();
   }
 
   public static async getCatalogTopics(catalogUnitId: String) {
-    const items = await getItemsGSI<CatalogTopicInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogTopicDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogTopic.getGSI1PK(catalogUnitId) }
     });
 
-    return items.map(CatalogTopic.fromDB);
+    return items.map(CatalogTopic.fromRawFields);
   }
 }
 

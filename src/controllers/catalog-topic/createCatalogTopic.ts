@@ -1,6 +1,6 @@
 import { CatalogTopic } from '../../models/CatalogTopicModel';
 
-const createCatalogTopic = async (catalogUnitId: String, catalogTopicName: String) => {
+const createCatalogTopic = async (catalogUnitId: string, catalogTopicName: string) => {
   return await CatalogTopic.insertOne({ catalogUnitId, catalogTopicName });
 };
 

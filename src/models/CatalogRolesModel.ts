@@ -1,35 +1,26 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import catalogRolesSchema, { CATALOGROLES } from '../schemas/CatalogRolesSchema';
+import { CATALOGROLES, catalogRolesSchemaDB } from '../schemas/CatalogRolesSchema';
 
 class CatalogRoles extends DatabaseEntity {
-  catalogRoleId: String;
-  catalogRoleName: String;
+  catalogRoleId: string;
+  catalogRoleName: string;
 
-  constructor(catalogRoleName: String) {
+  constructor() {
     super();
-    this.catalogRoleId = this.generateId();
-    this.catalogRoleName = catalogRoleName;
-
-    // Schema
-    this.schema = catalogRolesSchema;
-
-    // Partition keys
-    this.initializePartitionKeys(this.getPK(this.catalogRoleId), this.getSK(this.catalogRoleId));
+    this.schema = catalogRolesSchemaDB;
   }
 
-  getPK(catalogRoleId: String) {
-    return `${CATALOGROLES}_${catalogRoleId}`;
+  getPK() {
+    return `${CATALOGROLES}_${this.catalogRoleId}`;
   }
 
-  getSK(catalogRoleId: String) {
-    return `${CATALOGROLES}_${catalogRoleId}`;
+  getSK() {
+    return `${CATALOGROLES}_${this.catalogRoleId}`;
   }
 
-  getGSIKeysObject() {
-    return {};
-  }
+  initializeFields() {}
 
-  toItem() {
+  getRawItem() {
     return {
       catalogRoleId: this.catalogRoleId,
       catalogRoleName: this.catalogRoleName

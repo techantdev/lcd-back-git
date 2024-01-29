@@ -1,19 +1,40 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, array } from 'yup';
 
 import { getPartitionKeysSchema } from './schemaUtils';
-import { TrackerSchema } from './schemasIndex';
 
 const TRACKER = 'TRACKER';
 
-const trackerSchema = object({
-  ...getPartitionKeysSchema(TRACKER),
+const trackerRowsSchema = array()
+  .of(
+    object({
+      catalogAreaId: string().required(),
+      trackerRowWeekNumber: string().required(),
+      trackerRowStartDate: string().required(),
+      trackerRowEndDate: string().required(),
+      trackerRowCatalogUnitId: string().required(),
+      trackerRowCatalogTopicId: string().required(),
+      trackerRowCatalogAchievementId: string().required(),
+      trackerRowCatalogAchievementIndicatorId: string().required(),
+      trackerRowActivity: string().required(),
+      trackerRowStatus: string().required(),
+      trackerRowSustainableDevelopmentGoal: string().required()
+    })
+  )
+  .required();
+
+const trackerSchemaRaw = object({
   trackerId: string().required(),
-  courseId: string().required()
-  // PENDIENTE COLOCAR <ARRAY>OBJECT trackerRows
+  courseId: string().required(),
+  trackerRows: trackerRowsSchema
 });
 
-interface TrackerInterface extends InferType<typeof TrackerSchema> {}
+const trackerSchemaDB = trackerSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(TRACKER)
+  })
+);
 
-export { TRACKER, TrackerInterface };
+interface TrackerRaw extends InferType<typeof trackerSchemaRaw> {}
+interface TrackerDB extends InferType<typeof trackerSchemaDB> {}
 
-export default trackerSchema;
+export { TRACKER, TrackerRaw, TrackerDB, trackerSchemaRaw, trackerSchemaDB };

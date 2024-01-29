@@ -1,19 +1,19 @@
-import teacherSchema, { TEACHER, SCHOOL, TeacherInterface } from '../schemas/TeacherSchema';
+import { TEACHER, SCHOOL, teacherSchemaDB, TeacherRaw, TeacherDB } from '../schemas/TeacherSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class Teacher extends DatabaseEntity {
-  private teacherId: String;
-  private schoolId: String;
-  private userId: String;
-  private teacherName: String;
-  private teacherLastName: String;
+  private teacherId: string;
+  private schoolId: string;
+  private userId: string;
+  private teacherName: string;
+  private teacherLastName: string;
   // FALTA teacherAssignedCatalogAreas
 
   constructor() {
     super();
-    this.schema = teacherSchema;
+    this.schema = teacherSchemaDB;
   }
 
   getPK() {
@@ -32,14 +32,15 @@ class Teacher extends DatabaseEntity {
     return `${TEACHER}_${this.teacherId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: TeacherRaw) {
+    this.teacherId = fields.teacherId;
+    this.schoolId = fields.schoolId;
+    this.userId = fields.userId;
+    this.teacherName = fields.teacherName;
+    this.teacherLastName = fields.teacherLastName;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       teacherId: this.teacherId,
       schoolId: this.schoolId,
@@ -66,22 +67,11 @@ class Teacher extends DatabaseEntity {
     return `${TEACHER}_${teacherId}`;
   }
 
-  public static fromDB(item: TeacherInterface) {
-    const newTeacher = new Teacher();
-
-    newTeacher.teacherId = item.teacherId;
-
-    // Attributes from params
-    newTeacher.schoolId = item.schoolId;
-    newTeacher.userId = item.userId;
-    newTeacher.teacherName = item.teacherName;
-    newTeacher.teacherLastName = item.teacherLastName;
-
-    // Partition keys
-    newTeacher.initializePartitionKeys(newTeacher.getPK(), newTeacher.getSK());
-
-    return newTeacher.toItem();
-  }
+  public static fromRawFields = (fields: TeacherDB) => {
+    const instance = new Teacher();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
   public static async insertOne({
     schoolId,
@@ -89,44 +79,42 @@ class Teacher extends DatabaseEntity {
     teacherName,
     teacherLastName
   }: {
-    schoolId: String;
-    userId: String;
-    teacherName: String;
-    teacherLastName: String;
+    schoolId: string;
+    userId: string;
+    teacherName: string;
+    teacherLastName: string;
   }) {
-    const newTeacher = new Teacher();
-
-    newTeacher.teacherId = newTeacher.generateId();
-
-    // Attributes from params
-    newTeacher.schoolId = schoolId;
-    newTeacher.userId = userId;
-    newTeacher.teacherName = teacherName;
-    newTeacher.teacherLastName = teacherLastName;
-
-    // Partition keys
-    newTeacher.initializePartitionKeys(newTeacher.getPK(), newTeacher.getSK());
-
-    await newTeacher.save();
-
-    return newTeacher.toItem();
+    const instance = new Teacher();
+    instance.initializeFields({
+      teacherId: Teacher.generateId(),
+      schoolId: schoolId,
+      userId: userId,
+      teacherName: teacherName,
+      teacherLastName: teacherLastName,
+      teacherAssignedCatalogAreas: []
+    });
+    return await instance.save<TeacherRaw>();
   }
 
-  public static async insertMultiple(items: Object[]) {
-    console.log(items);
-
-    return [{}];
+  public static async insertMultiple(items: TeacherRaw[]) {
+    return await Teacher.saveMultiple<TeacherRaw>(
+      items.map(item => {
+        const instance = new Teacher();
+        instance.initializeFields({ ...item, teacherId: Teacher.generateId() });
+        return instance;
+      })
+    );
   }
 
   public static async getTeachers(schoolId: String) {
-    const items = await getItemsGSI<TeacherInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<TeacherDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': Teacher.getGSI1PK(schoolId) }
     });
 
-    return items.map(Teacher.fromDB);
+    return items.map(Teacher.fromRawFields);
   }
 }
 
-export { Teacher, TeacherInterface };
+export { Teacher };

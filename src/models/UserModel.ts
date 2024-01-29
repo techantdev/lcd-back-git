@@ -1,19 +1,19 @@
-import userSchema, { USER, USEREMAIL, UserInterface } from '../schemas/UserSchema';
+import { USER, USEREMAIL, UserDB, UserRaw, userSchemaDB } from '../schemas/UserSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class User extends DatabaseEntity {
-  private userId: String;
-  private teacherId: String;
-  private userName: String;
-  private userLastName: String;
-  private userEmail: String;
-  private userSchools: { schoolId: String; catalogRoles: { catalogRoleId: string }[] }[];
+  private userId: string;
+  private teacherId: string;
+  private userName: string;
+  private userLastName: string;
+  private userEmail: string;
+  private userSchools: { schoolId: string; catalogRoles: { catalogRoleId: string }[] }[];
 
   constructor() {
     super();
-    this.schema = userSchema;
+    this.schema = userSchemaDB;
   }
 
   getPK() {
@@ -32,14 +32,16 @@ class User extends DatabaseEntity {
     return `${USEREMAIL}_${this.userEmail}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: UserRaw) {
+    this.userId = fields.userId;
+    this.teacherId = fields.teacherId;
+    this.userName = fields.userName;
+    this.userLastName = fields.userLastName;
+    this.userEmail = fields.userEmail;
+    this.userSchools = fields.userSchools;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       userId: this.userId,
       teacherId: this.teacherId,
@@ -67,23 +69,11 @@ class User extends DatabaseEntity {
     return `${USER}_${userId}`;
   }
 
-  public static fromDB(item: UserInterface) {
-    const newUser = new User();
-
-    newUser.userId = item.userId;
-
-    // Attributes from params
-    newUser.teacherId = item.teacherId;
-    newUser.userName = item.userName;
-    newUser.userLastName = item.userLastName;
-    newUser.userEmail = item.userEmail;
-    newUser.userSchools = item.userSchools;
-
-    // Partition keys
-    newUser.initializePartitionKeys(newUser.getPK(), newUser.getSK());
-
-    return newUser.toItem();
-  }
+  public static fromRawFields = (fields: UserDB) => {
+    const instance = new User();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
   public static async insertOne({
     teacherId,
@@ -92,40 +82,33 @@ class User extends DatabaseEntity {
     userEmail,
     schoolId
   }: {
-    teacherId: String;
-    userName: String;
-    userLastName: String;
-    userEmail: String;
-    schoolId: String;
+    teacherId: string;
+    userName: string;
+    userLastName: string;
+    userEmail: string;
+    schoolId: string;
   }) {
-    const newUser = new User();
-
-    newUser.userId = newUser.generateId();
-
-    // Attributes from params
-    newUser.teacherId = teacherId;
-    newUser.userName = userName;
-    newUser.userLastName = userLastName;
-    newUser.userEmail = userEmail;
-    newUser.userSchools = [{ schoolId, catalogRoles: [] }];
-
-    // Partition keys
-    newUser.initializePartitionKeys(newUser.getPK(), newUser.getSK());
-
-    await newUser.save();
-
-    return newUser.toItem();
+    const instance = new User();
+    instance.initializeFields({
+      userId: User.generateId(),
+      teacherId: teacherId,
+      userName: userName,
+      userLastName: userLastName,
+      userEmail: userEmail,
+      userSchools: [{ schoolId, catalogRoles: [] }]
+    });
+    return await instance.save<UserRaw>();
   }
 
   // TODO: ajustar el nombre a getUser
   public static async getUser(userEmail: String) {
-    const items = await getItemsGSI<UserInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<UserDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': User.getGSI1PK(userEmail) }
     });
 
-    return items[0] ? User.fromDB(items[0]) : null;
+    return items[0] ? User.fromRawFields(items[0]) : null;
   }
 }
 

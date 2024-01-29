@@ -1,16 +1,16 @@
-import yearGradeSchema, { YEARGRADE, ACADEMICYEAR, YearGradeInterface } from '../schemas/YearGradeSchema';
+import { YEARGRADE, ACADEMICYEAR, yearGradeSchemaDB, YearGradeRaw, YearGradeDB } from '../schemas/YearGradeSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class YearGrade extends DatabaseEntity {
-  private yearGradeId: String;
-  private academicYearId: String;
-  private catalogGradeId: String;
+  private yearGradeId: string;
+  private academicYearId: string;
+  private catalogGradeId: string;
 
   constructor() {
     super();
-    this.schema = yearGradeSchema;
+    this.schema = yearGradeSchemaDB;
   }
 
   getPK() {
@@ -29,14 +29,13 @@ class YearGrade extends DatabaseEntity {
     return `${YEARGRADE}_${this.yearGradeId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: YearGradeRaw) {
+    this.yearGradeId = fields.yearGradeId;
+    this.academicYearId = fields.academicYearId;
+    this.catalogGradeId = fields.catalogGradeId;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       yearGradeId: this.yearGradeId,
       catalogGradeId: this.catalogGradeId,
@@ -61,63 +60,51 @@ class YearGrade extends DatabaseEntity {
     return `${ACADEMICYEAR}_${yearGradeId}`;
   }
 
-  public static fromDB(item: YearGradeInterface) {
-    const newYearGrade = new YearGrade();
+  public static fromRawFields = (fields: YearGradeDB) => {
+    const instance = new YearGrade();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newYearGrade.yearGradeId = item.yearGradeId;
-
-    // Attributes from params
-    newYearGrade.academicYearId = item.academicYearId;
-    newYearGrade.catalogGradeId = item.catalogGradeId;
-
-    // Partition keys
-    newYearGrade.initializePartitionKeys(newYearGrade.getPK(), newYearGrade.getSK());
-
-    return newYearGrade.toItem();
-  }
-
-  public static async insertOne({ academicYearId, catalogGradeId }: { academicYearId: String; catalogGradeId: String }) {
-    const newYearGrade = new YearGrade();
-
-    newYearGrade.academicYearId = newYearGrade.generateId();
-
-    // Attributes from params
-    newYearGrade.academicYearId = academicYearId;
-    newYearGrade.catalogGradeId = catalogGradeId;
-
-    // Partition keys
-    newYearGrade.initializePartitionKeys(newYearGrade.getPK(), newYearGrade.getSK());
-
-    await newYearGrade.save();
-
-    return newYearGrade.toItem();
+  public static async insertOne({ academicYearId, catalogGradeId }: { academicYearId: string; catalogGradeId: string }) {
+    const instance = new YearGrade();
+    instance.initializeFields({
+      yearGradeId: YearGrade.generateId(),
+      academicYearId: academicYearId,
+      catalogGradeId: catalogGradeId
+    });
+    return await instance.save<YearGradeRaw>();
   }
 
   public static async getYearGrades(academicYearId: String) {
-    const items = await getItemsGSI<YearGradeInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<YearGradeDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(academicYearId) }
     });
 
-    return items.map(YearGrade.fromDB);
+    return items.map(YearGrade.fromRawFields);
   }
 
-  public static async insertMultiple(items: Object[]): Promise<YearGradeInterface[]> {
-    console.log(items);
-
-    return [];
+  public static async insertMultiple(items: YearGradeRaw[]) {
+    return await YearGrade.saveMultiple<YearGradeRaw>(
+      items.map(item => {
+        const instance = new YearGrade();
+        instance.initializeFields({ ...item, yearGradeId: YearGrade.generateId() });
+        return instance;
+      })
+    );
   }
 
   public static async getSubjectYearGrades(yearSubjectId: String) {
-    const items = await getItemsGSI<YearGradeInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<YearGradeDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(yearSubjectId) }
     });
 
-    return items.map(YearGrade.fromDB);
+    return items.map(YearGrade.fromRawFields);
   }
 }
 
-export { YearGrade, YearGradeInterface };
+export { YearGrade };

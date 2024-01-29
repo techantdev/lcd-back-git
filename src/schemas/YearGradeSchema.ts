@@ -5,17 +5,21 @@ import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from 
 const YEARGRADE = 'YEARGRADE';
 const ACADEMICYEAR = 'ACADEMICYEAR';
 
-const yearGradeSchema = object({
-  ...getPartitionKeysSchema(YEARGRADE),
-  GSI1PK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${YEARGRADE}_${ulidRegexStr}`)),
+const yearGradeSchemaRaw = object({
   yearGradeId: string().required(),
   academicYearId: string().required(),
   catalogGradeId: string().required()
 });
 
-interface YearGradeInterface extends InferType<typeof yearGradeSchema> {}
+const yearGradeSchemaDB = yearGradeSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(YEARGRADE),
+    GSI1PK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${YEARGRADE}_${ulidRegexStr}`))
+  })
+);
 
-export { YEARGRADE, ACADEMICYEAR, YearGradeInterface };
+interface YearGradeRaw extends InferType<typeof yearGradeSchemaRaw> {}
+interface YearGradeDB extends InferType<typeof yearGradeSchemaDB> {}
 
-export default yearGradeSchema;
+export { YEARGRADE, ACADEMICYEAR, YearGradeRaw, YearGradeDB, yearGradeSchemaRaw, yearGradeSchemaDB };

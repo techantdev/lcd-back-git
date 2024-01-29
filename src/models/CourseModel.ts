@@ -1,18 +1,18 @@
-import courseSchema, { COURSE, YEARGRADE, TEACHER, CourseInterface } from '../schemas/CourseSchema';
+import { COURSE, YEARGRADE, TEACHER, courseSchemaDB, CourseRaw, CourseDB } from '../schemas/CourseSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class Course extends DatabaseEntity {
-  private courseId: String;
-  private teacherId: String;
-  private yearGradeId: String;
-  private trackerId: String;
-  private courseLabel: String;
+  private courseId: string;
+  private teacherId: string;
+  private yearGradeId: string;
+  private trackerId: string;
+  private courseLabel: string;
 
   constructor() {
     super();
-    this.schema = courseSchema;
+    this.schema = courseSchemaDB;
   }
 
   getPK() {
@@ -39,16 +39,15 @@ class Course extends DatabaseEntity {
     return `${COURSE}_${this.courseId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK(),
-      GSI2PK: this.getGSI2PK(),
-      GSI2SK: this.getGSI2SK()
-    };
+  initializeFields(fields: CourseRaw) {
+    this.courseId = fields.courseId;
+    this.teacherId = fields.teacherId;
+    this.yearGradeId = fields.yearGradeId;
+    this.trackerId = fields.trackerId;
+    this.courseLabel = fields.courseLabel;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       courseId: this.courseId,
       teacherId: this.teacherId,
@@ -83,22 +82,11 @@ class Course extends DatabaseEntity {
     return `${COURSE}_${courseId}`;
   }
 
-  public static fromDB(item: CourseInterface) {
-    const newCourse = new Course();
-
-    newCourse.courseId = item.courseId;
-
-    // Attributes from params
-    newCourse.teacherId = item.teacherId;
-    newCourse.yearGradeId = item.yearGradeId;
-    newCourse.trackerId = item.trackerId;
-    newCourse.courseLabel = item.courseLabel;
-
-    // Partition keys
-    newCourse.initializePartitionKeys(newCourse.getPK(), newCourse.getSK());
-
-    return newCourse.toItem();
-  }
+  public static fromRawFields = (fields: CourseDB) => {
+    const instance = new Course();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
   public static async insertOne({
     teacherId,
@@ -106,54 +94,51 @@ class Course extends DatabaseEntity {
     trackerId,
     courseLabel
   }: {
-    teacherId: String;
-    yearGradeId: String;
-    trackerId: String;
-    courseLabel: String;
+    teacherId: string;
+    yearGradeId: string;
+    trackerId: string;
+    courseLabel: string;
   }) {
-    const newCourse = new Course();
-
-    newCourse.courseId = newCourse.generateId();
-
-    // Attributes from params
-    newCourse.teacherId = teacherId;
-    newCourse.yearGradeId = yearGradeId;
-    newCourse.trackerId = trackerId;
-    newCourse.courseLabel = courseLabel;
-
-    // Partition keys
-    newCourse.initializePartitionKeys(newCourse.getPK(), newCourse.getSK());
-
-    await newCourse.save();
-
-    return newCourse.toItem();
+    const instance = new Course();
+    instance.initializeFields({
+      courseId: Course.generateId(),
+      teacherId: teacherId,
+      yearGradeId: yearGradeId,
+      trackerId: trackerId,
+      courseLabel: courseLabel
+    });
+    return await instance.save<CourseRaw>();
   }
 
   public static async getYearGradeCourses(yearGradeId: String) {
-    const items = await getItemsGSI<CourseInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI2PK = :GSI2PK',
       ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK' },
       ExpressionAttributeValues: { ':GSI2PK': Course.getGSI2PK(yearGradeId) }
     });
 
-    return items.map(Course.fromDB);
+    return items.map(Course.fromRawFields);
   }
 
-  public static async insertMultiple(items: Object[]): Promise<CourseInterface[]> {
-    console.log(items);
-
-    return [];
+  public static async insertMultiple(items: CourseRaw[]) {
+    return await Course.saveMultiple<CourseRaw>(
+      items.map(item => {
+        const instance = new Course();
+        instance.initializeFields({ ...item, courseId: Course.generateId() });
+        return instance;
+      })
+    );
   }
 
   public static async getTeacherCourses(teacherId: String) {
-    const items = await getItemsGSI<CourseInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': Course.getGSI1PK(teacherId) }
     });
 
-    return items.map(Course.fromDB);
+    return items.map(Course.fromRawFields);
   }
 }
 
-export { Course, CourseInterface };
+export { Course };

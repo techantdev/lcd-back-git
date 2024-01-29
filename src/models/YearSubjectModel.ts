@@ -1,17 +1,24 @@
-import yearSubjectSchema, { YEARSUBJECT, YEARAREA, YearSubjectInterface } from '../schemas/YearSubjectSchema';
+import {
+  YEARSUBJECT,
+  YEARAREA,
+  yearSubjectSchemaDB,
+  YearSubjectRaw,
+  YearSubjectDB,
+  YearSubjectGrades
+} from '../schemas/YearSubjectSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class YearSubject extends DatabaseEntity {
-  private yearSubjectId: String;
-  private catalogSubjectId: String;
-  private yearAreaId: String;
-  // FALTA  yearSubjectGrades
+  private yearSubjectId: string;
+  private catalogSubjectId: string;
+  private yearAreaId: string;
+  private yearSubjectGrades: YearSubjectGrades;
 
   constructor() {
     super();
-    this.schema = yearSubjectSchema;
+    this.schema = yearSubjectSchemaDB;
   }
 
   getPK() {
@@ -30,18 +37,19 @@ class YearSubject extends DatabaseEntity {
     return `${YEARSUBJECT}_${this.yearSubjectId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: YearSubjectRaw) {
+    this.yearSubjectId = fields.yearSubjectId;
+    this.catalogSubjectId = fields.catalogSubjectId;
+    this.yearAreaId = fields.yearAreaId;
+    this.yearSubjectGrades = fields.yearSubjectGrades;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       yearSubjectId: this.yearSubjectId,
       catalogSubjectId: this.catalogSubjectId,
-      yearAreaId: this.yearAreaId
+      yearAreaId: this.yearAreaId,
+      yearSubjectGrades: this.yearSubjectGrades
     };
   }
 
@@ -62,53 +70,50 @@ class YearSubject extends DatabaseEntity {
     return `${YEARSUBJECT}_${yearSubjectId}`;
   }
 
-  public static fromDB(item: YearSubjectInterface) {
-    const newYearSubject = new YearSubject();
+  public static fromRawFields = (fields: YearSubjectDB) => {
+    const instance = new YearSubject();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newYearSubject.yearSubjectId = item.yearSubjectId;
-
-    // Attributes from params
-    newYearSubject.catalogSubjectId = item.catalogSubjectId;
-    newYearSubject.yearAreaId = item.yearAreaId;
-
-    // Partition keys
-    newYearSubject.initializePartitionKeys(newYearSubject.getPK(), newYearSubject.getSK());
-
-    return newYearSubject.toItem();
+  public static async insertOne({
+    catalogSubjectId,
+    yearAreaId,
+    yearSubjectGrades
+  }: {
+    catalogSubjectId: string;
+    yearAreaId: string;
+    yearSubjectGrades: YearSubjectGrades;
+  }) {
+    const instance = new YearSubject();
+    instance.initializeFields({
+      yearSubjectId: YearSubject.generateId(),
+      catalogSubjectId: catalogSubjectId,
+      yearAreaId: yearAreaId,
+      yearSubjectGrades: yearSubjectGrades
+    });
+    return await instance.save<YearSubjectRaw>();
   }
 
-  public static async insertOne({ catalogSubjectId, yearAreaId }: { catalogSubjectId: String; yearAreaId: String }) {
-    const newYearSubject = new YearSubject();
-
-    newYearSubject.yearSubjectId = newYearSubject.generateId();
-
-    // Attributes from params
-    newYearSubject.catalogSubjectId = catalogSubjectId;
-    newYearSubject.yearAreaId = yearAreaId;
-
-    // Partition keys
-    newYearSubject.initializePartitionKeys(newYearSubject.getPK(), newYearSubject.getSK());
-
-    await newYearSubject.save();
-
-    return newYearSubject.toItem();
-  }
-
-  public static async insertMultiple(items: Object[]) {
-    console.log(items);
-
-    return [{}];
+  public static async insertMultiple(items: YearSubjectRaw[]) {
+    return await YearSubject.saveMultiple<YearSubjectRaw>(
+      items.map(item => {
+        const instance = new YearSubject();
+        instance.initializeFields({ ...item, yearSubjectId: YearSubject.generateId() });
+        return instance;
+      })
+    );
   }
 
   public static async getYearSubjects(yearAreaId: String) {
-    const items = await getItemsGSI(GSINames.GSI1, {
+    const items = await getItemsGSI<YearSubjectDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
       ExpressionAttributeValues: { ':GSI1PK': YearSubject.getGSI1PK(yearAreaId) }
     });
 
-    return items.map(YearSubject.fromDB);
+    return items.map(YearSubject.fromRawFields);
   }
 }
 
-export { YearSubject, YearSubjectInterface };
+export { YearSubject };

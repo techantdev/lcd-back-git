@@ -61,14 +61,12 @@ const updateTracker = async () => {
     rows.forEach(row => {
       // metodo que itera sobre cada item de row
       const { trackerRowIndex, ...properties } = row; // Parte a la informacion, extrae la informacion trackerRowIndex del objeto row, y el resto de las propiedades se agrupan en un nuevo objeto llamado properties.
-      console.log(properties);
+
       Object.entries(properties).forEach(([key, value]) => {
-        console.log(key);
         const placeholder = `:${trackerRowIndex}${key}`;
-        console.log(placeholder);
+
         output.push(`trackerRows[${trackerRowIndex}].${key} = ${placeholder}`);
         aux[placeholder] = value!;
-        console.log(aux);
       });
     });
 

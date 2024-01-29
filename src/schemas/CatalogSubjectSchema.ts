@@ -4,20 +4,35 @@ import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from 
 const CATALOGSUBJECT = 'CATALOGSUBJECT';
 const CATALOGAREA = 'CATALOGAREA';
 
-const catalogSubjectSchema = object({
-  ...getPartitionKeysSchema(CATALOGSUBJECT),
-  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGAREA}_${ulidRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}`)),
+const catalogSubjectGradesSchema = array()
+  .of(object({ catalogGradeId: string().required() }))
+  .required();
+
+const catalogSubjectSchemaRaw = object({
   catalogSubjectId: string().required(),
   catalogAreaId: string().required(),
   catalogSubjectName: string().required(),
-  catalogSubjectGrades: array()
-    .of(object({ catalogGradeId: string().required() }))
-    .required()
+  catalogSubjectGrades: catalogSubjectGradesSchema
 });
 
-interface CatalogSubjectInterface extends InferType<typeof catalogSubjectSchema> {}
+const catalogSubjectSchemaDB = catalogSubjectSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(CATALOGSUBJECT),
+    GSI1PK: getGSIKeySchema(getRegex(`${CATALOGAREA}_${ulidRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}`))
+  })
+);
 
-export { CATALOGSUBJECT, CATALOGAREA, CatalogSubjectInterface };
+interface CatalogSubjectRaw extends InferType<typeof catalogSubjectSchemaRaw> {}
+interface CatalogSubjectDB extends InferType<typeof catalogSubjectSchemaDB> {}
+interface CatalogSubjectGrades extends InferType<typeof catalogSubjectGradesSchema> {}
 
-export default catalogSubjectSchema;
+export {
+  CATALOGSUBJECT,
+  CATALOGAREA,
+  catalogSubjectSchemaRaw,
+  catalogSubjectSchemaDB,
+  CatalogSubjectRaw,
+  CatalogSubjectDB,
+  CatalogSubjectGrades
+};

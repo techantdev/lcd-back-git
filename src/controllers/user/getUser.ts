@@ -2,7 +2,7 @@ import { User } from '../../models/UserModel';
 import { LCD_SCHOOL_ID } from '../../services/constants';
 import { getGWorkspaceUserByEmail } from '../../services/googleWorkspaceService';
 
-const getUser = async (userEmail: String) => {
+const getUser = async (userEmail: string) => {
   let isUserFromGWorkspace = false;
   let userWasCreated = false;
   let user = null;

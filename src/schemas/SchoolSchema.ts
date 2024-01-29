@@ -1,15 +1,21 @@
-import { object, string } from 'yup';
+import { InferType, object, string } from 'yup';
 
 import { getPartitionKeysSchema } from './schemaUtils';
 
 const SCHOOL = 'SCHOOL';
 
-const schoolSchema = object({
-  ...getPartitionKeysSchema(SCHOOL),
+const schoolSchemaRaw = object({
   schoolId: string().required(),
   schoolName: string().required()
 });
 
-export { SCHOOL };
+const schoolSchemaDB = schoolSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(SCHOOL)
+  })
+);
 
-export default schoolSchema;
+interface SchoolRaw extends InferType<typeof schoolSchemaRaw> {}
+interface SchoolDB extends InferType<typeof schoolSchemaDB> {}
+
+export { SCHOOL, SchoolRaw, SchoolDB, schoolSchemaRaw, schoolSchemaDB };

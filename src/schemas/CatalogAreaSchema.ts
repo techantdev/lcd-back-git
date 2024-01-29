@@ -5,18 +5,21 @@ import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from 
 const CATALOGAREA = 'CATALOGAREA';
 const SCHOOL = 'SCHOOL';
 
-const catalogAreaSchema = object({
-  ...getPartitionKeysSchema(CATALOGAREA),
-  GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGAREA}_${ulidRegexStr}`)),
+const catalogAreaSchemaRaw = object({
   catalogAreaId: string().required(),
   schoolId: string().required(),
   catalogAreaName: string().required()
 });
 
-interface CatalogAreaInterface extends InferType<typeof catalogAreaSchema> {}
+const catalogAreaSchemaDB = catalogAreaSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(CATALOGAREA),
+    GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${CATALOGAREA}_${ulidRegexStr}`))
+  })
+);
 
+interface CatalogAreaRaw extends InferType<typeof catalogAreaSchemaRaw> {}
+interface CatalogAreaDB extends InferType<typeof catalogAreaSchemaDB> {}
 
-export { CATALOGAREA, SCHOOL, CatalogAreaInterface };
-
-export default catalogAreaSchema;
+export { CATALOGAREA, SCHOOL, CatalogAreaRaw, CatalogAreaDB, catalogAreaSchemaRaw, catalogAreaSchemaDB };

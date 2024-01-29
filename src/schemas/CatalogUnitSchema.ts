@@ -6,18 +6,22 @@ const CATALOGUNIT = 'CATALOGUNIT';
 const CATALOGSUBJECT = 'CATALOGSUBJECT';
 const CATALOGGRADE = 'CATALOGGRADE';
 
-const catalogUnitSchema = object({
-  ...getPartitionKeysSchema(CATALOGUNIT),
-  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGUNIT}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
+const catalogUnitSchemaRaw = object({
   catalogUnitId: string().required(),
   catalogSubjectId: string().required(),
   catalogGradeId: string().required(),
   catalogUnitName: string().required()
 });
 
-interface CatalogUnitInterface extends InferType<typeof catalogUnitSchema> {}
+const catalogUnitSchemaDB = catalogUnitSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(CATALOGUNIT),
+    GSI1PK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGUNIT}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`))
+  })
+);
 
-export { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitInterface };
+interface CatalogUnitRaw extends InferType<typeof catalogUnitSchemaRaw> {}
+interface CatalogUnitDB extends InferType<typeof catalogUnitSchemaDB> {}
 
-export default catalogUnitSchema;
+export { CATALOGUNIT, CATALOGSUBJECT, CATALOGGRADE, CatalogUnitRaw, CatalogUnitDB, catalogUnitSchemaRaw, catalogUnitSchemaDB };

@@ -4,10 +4,8 @@ import { getPartitionKeysSchema, getGSIKeySchema, getRegex, emailRegexStr } from
 
 const USER = 'USER';
 const USEREMAIL = 'USEREMAIL';
-const userSchema = object({
-  ...getPartitionKeysSchema(USER),
-  GSI1PK: getGSIKeySchema(getRegex(`${USEREMAIL}_${emailRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${USEREMAIL}_${emailRegexStr}`)),
+
+const userSchemaRaw = object({
   userId: string().required(),
   teacherId: string().default(''),
   userName: string().default(''),
@@ -25,8 +23,15 @@ const userSchema = object({
     .required()
 });
 
-interface UserInterface extends InferType<typeof userSchema> {}
+const userSchemaDB = userSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(USER),
+    GSI1PK: getGSIKeySchema(getRegex(`${USEREMAIL}_${emailRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${USEREMAIL}_${emailRegexStr}`))
+  })
+);
 
-export { USER, USEREMAIL, UserInterface };
+interface UserRaw extends InferType<typeof userSchemaRaw> {}
+interface UserDB extends InferType<typeof userSchemaDB> {}
 
-export default userSchema;
+export { USER, USEREMAIL, UserRaw, UserDB, userSchemaRaw, userSchemaDB };

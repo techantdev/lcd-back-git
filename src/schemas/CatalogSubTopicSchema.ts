@@ -5,17 +5,21 @@ import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from 
 const CATALOGSUBTOPIC = 'CATALOGSUBTOPIC';
 const CATALOGTOPIC = 'CATALOGTOPIC';
 
-const catalogSubTopicSchema = object({
-  ...getPartitionKeysSchema(CATALOGSUBTOPIC),
-  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGTOPIC}_${ulidRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGSUBTOPIC}_${ulidRegexStr}`)),
+const catalogSubTopicSchemaRaw = object({
   catalogSubTopicId: string().required(),
   catalogTopicId: string().required(),
   catalogSubTopicName: string().required()
 });
 
-interface CatalogSubTopicInterface extends InferType<typeof catalogSubTopicSchema> {}
+const catalogSubTopicSchemaDB = catalogSubTopicSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(CATALOGSUBTOPIC),
+    GSI1PK: getGSIKeySchema(getRegex(`${CATALOGTOPIC}_${ulidRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${CATALOGSUBTOPIC}_${ulidRegexStr}`))
+  })
+);
 
-export { CATALOGSUBTOPIC, CATALOGTOPIC, CatalogSubTopicInterface };
+interface CatalogSubTopicRaw extends InferType<typeof catalogSubTopicSchemaRaw> {}
+interface CatalogSubTopicDB extends InferType<typeof catalogSubTopicSchemaDB> {}
 
-export default catalogSubTopicSchema;
+export { CATALOGSUBTOPIC, CATALOGTOPIC, CatalogSubTopicRaw, CatalogSubTopicDB, catalogSubTopicSchemaRaw, catalogSubTopicSchemaDB };

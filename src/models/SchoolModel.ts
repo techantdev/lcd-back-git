@@ -1,35 +1,26 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import schoolSchema, { SCHOOL } from '../schemas/SchoolSchema';
+import { SCHOOL, schoolSchemaDB } from '../schemas/SchoolSchema';
 
 class School extends DatabaseEntity {
-  schoolId: String;
-  schoolName: String;
+  schoolId: string;
+  schoolName: string;
 
-  constructor(schoolName: String) {
+  constructor() {
     super();
-    this.schoolId = this.generateId();
-    this.schoolName = schoolName;
-
-    // Schema
-    this.schema = schoolSchema;
-
-    // Partition keys
-    this.initializePartitionKeys(this.getPK(this.schoolId), this.getSK(this.schoolId));
+    this.schema = schoolSchemaDB;
   }
 
-  getPK(schoolId: String) {
-    return `${SCHOOL}_${schoolId}`;
+  getPK() {
+    return `${SCHOOL}_${this.schoolId}`;
   }
 
-  getSK(schoolId: String) {
-    return `${SCHOOL}_${schoolId}`;
+  getSK() {
+    return `${SCHOOL}_${this.schoolId}`;
   }
 
-  getGSIKeysObject() {
-    return {};
-  }
+  initializeFields() {}
 
-  toItem() {
+  getRawItem() {
     return {
       schoolId: this.schoolId,
       schoolName: this.schoolName

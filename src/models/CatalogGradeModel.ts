@@ -1,16 +1,16 @@
-import catalogGradeSchema, { CATALOGGRADE, SCHOOL, CatalogGradeInterface } from '../schemas/CatalogGradeSchema';
+import { CATALOGGRADE, CatalogGradeDB, CatalogGradeRaw, SCHOOL, catalogGradeSchemaDB } from '../schemas/CatalogGradeSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogGrade extends DatabaseEntity {
-  private catalogGradeId: String;
-  private schoolId: String;
-  private catalogGradeLabel: String;
+  private catalogGradeId: string;
+  private schoolId: string;
+  private catalogGradeLabel: string;
 
   constructor() {
     super();
-    this.schema = catalogGradeSchema;
+    this.schema = catalogGradeSchemaDB;
   }
 
   getPK() {
@@ -29,14 +29,13 @@ class CatalogGrade extends DatabaseEntity {
     return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: CatalogGradeRaw) {
+    this.catalogGradeId = fields.catalogGradeId;
+    this.schoolId = fields.schoolId;
+    this.catalogGradeLabel = fields.catalogGradeLabel;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       catalogGradeId: this.catalogGradeId,
       schoolId: this.schoolId,
@@ -61,50 +60,35 @@ class CatalogGrade extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB(item: CatalogGradeInterface) {
-    const newCatalogGrade = new CatalogGrade();
+  public static fromRawFields = (fields: CatalogGradeDB) => {
+    const instance = new CatalogGrade();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
-    newCatalogGrade.catalogGradeId = item.catalogGradeId;
+  public static async insertOne({ schoolId, catalogGradeLabel }: { schoolId: string; catalogGradeLabel: string }) {
+    const instance = new CatalogGrade();
+    instance.initializeFields({
+      catalogGradeId: CatalogGrade.generateId(),
 
-    // Attributes from params
-    newCatalogGrade.schoolId = item.schoolId;
-    newCatalogGrade.catalogGradeLabel = item.catalogGradeLabel;
-
-    // Partition keys
-    newCatalogGrade.initializePartitionKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
-
-    return newCatalogGrade.toItem();
-  }
-
-  public static async insertOne({ schoolId, catalogGradeLabel }: { schoolId: String; catalogGradeLabel: String }) {
-    const newCatalogGrade = new CatalogGrade();
-
-    newCatalogGrade.catalogGradeId = newCatalogGrade.generateId();
-
-    // Attributes from params
-    newCatalogGrade.schoolId = schoolId;
-    newCatalogGrade.catalogGradeLabel = catalogGradeLabel;
-
-    // Partition keys
-    newCatalogGrade.initializePartitionKeys(newCatalogGrade.getPK(), newCatalogGrade.getSK());
-
-    await newCatalogGrade.save();
-
-    return newCatalogGrade.toItem();
+      schoolId: schoolId,
+      catalogGradeLabel: catalogGradeLabel
+    });
+    return await instance.save<CatalogGradeRaw>();
   }
 
   public static async getCatalogGrades(schoolId: String) {
-    const items = await getItemsGSI<CatalogGradeInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogGradeDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: { ':GSI1PK': CatalogGrade.getGSI1PK(schoolId), ':GSI1SK': CatalogGrade.getGSI1SK('') }
     });
 
-    return items.map(CatalogGrade.fromDB);
+    return items.map(CatalogGrade.fromRawFields);
   }
 
   public static async updateOne(catalogGradeId: String, catalogGradeData: { catalogGradeLabel: String }) {
-    const updatedItem = await updateItem<CatalogGradeInterface>(
+    const updatedItem = await updateItem<CatalogGradeDB>(
       CatalogGrade.getPK(catalogGradeId),
       CatalogGrade.getSK(catalogGradeId),
       `SET #catalogGradeLabel=:catalogGradeLabel`,
@@ -112,7 +96,7 @@ class CatalogGrade extends DatabaseEntity {
       { ':catalogGradeLabel': catalogGradeData.catalogGradeLabel }
     );
 
-    return CatalogGrade.fromDB(updatedItem);
+    return CatalogGrade.fromRawFields(updatedItem);
   }
 }
 

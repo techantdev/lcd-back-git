@@ -1,24 +1,32 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, array } from 'yup';
 
 import { getPartitionKeysSchema, getGSIKeySchema, ulidRegexStr, getRegex } from './schemaUtils';
 
 const TEACHER = 'TEACHER';
 const SCHOOL = 'SCHOOL';
 
-const teacherSchema = object({
-  ...getPartitionKeysSchema(TEACHER),
-  GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${TEACHER}_${ulidRegexStr}`)),
+const teacherAssignedCatalogAreasSchema = array()
+  .of(object({ catalogAreaId: string().required() }))
+  .required();
+
+const teacherSchemaRaw = object({
   teacherId: string().required(),
   userId: string().required(),
   schoolId: string().required(),
   teacherName: string().required(),
-  teacherLastName: string().required()
-  // PENDIENTE COLOCAR <ARRAY>OBJECT teacherAssignedCatalogAreas
+  teacherLastName: string().required(),
+  teacherAssignedCatalogAreas: teacherAssignedCatalogAreasSchema
 });
 
-interface TeacherInterface extends InferType<typeof teacherSchema> {}
+const teacherSchemaDB = teacherSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(TEACHER),
+    GSI1PK: getGSIKeySchema(getRegex(`${SCHOOL}_${ulidRegexStr}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${TEACHER}_${ulidRegexStr}`))
+  })
+);
 
-export { TEACHER, SCHOOL, TeacherInterface };
+interface TeacherRaw extends InferType<typeof teacherSchemaRaw> {}
+interface TeacherDB extends InferType<typeof teacherSchemaDB> {}
 
-export default teacherSchema;
+export { TEACHER, SCHOOL, TeacherRaw, TeacherDB, teacherSchemaRaw, teacherSchemaDB };

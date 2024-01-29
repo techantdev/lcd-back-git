@@ -6,18 +6,30 @@ const CATALOGACHIEVEMENTINDICATOR = 'CATALOGACHIEVEMENTINDICATOR';
 const CATALOGSUBJECT = 'CATALOGSUBJECT';
 const CATALOGGRADE = 'CATALOGGRADE';
 
-const catalogAchievementIndicatorSchema = object({
-  ...getPartitionKeysSchema(CATALOGACHIEVEMENTINDICATOR),
-  GSI1PK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGACHIEVEMENTINDICATOR}`)),
-  GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`)),
+const catalogAchievementIndicatorSchemaRaw = object({
   catalogAchievementIndicatorId: string().required(),
   catalogSubjectId: string().required(),
   catalogGradeId: string().required(),
   catalogAchievementIndicatorName: string().required()
 });
 
-interface CatalogAchievementIndicatorInterface extends InferType<typeof catalogAchievementIndicatorSchema> {}
+const catalogAchievementIndicatorSchemaDB = catalogAchievementIndicatorSchemaRaw.concat(
+  object({
+    ...getPartitionKeysSchema(CATALOGACHIEVEMENTINDICATOR),
+    GSI1PK: getGSIKeySchema(getRegex(`${CATALOGSUBJECT}_${ulidRegexStr}_${CATALOGACHIEVEMENTINDICATOR}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${CATALOGGRADE}_${ulidRegexStr}`))
+  })
+);
 
-export { CATALOGACHIEVEMENTINDICATOR, CATALOGSUBJECT, CATALOGGRADE, CatalogAchievementIndicatorInterface };
+interface CatalogAchievementIndicatorRaw extends InferType<typeof catalogAchievementIndicatorSchemaRaw> {}
+interface CatalogAchievementIndicatorDB extends InferType<typeof catalogAchievementIndicatorSchemaDB> {}
 
-export default catalogAchievementIndicatorSchema;
+export {
+  CATALOGACHIEVEMENTINDICATOR,
+  CATALOGSUBJECT,
+  CATALOGGRADE,
+  CatalogAchievementIndicatorRaw,
+  CatalogAchievementIndicatorDB,
+  catalogAchievementIndicatorSchemaRaw,
+  catalogAchievementIndicatorSchemaDB
+};

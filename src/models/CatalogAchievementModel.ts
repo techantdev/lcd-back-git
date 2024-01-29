@@ -1,22 +1,24 @@
-import catalogAchievementSchema, {
+import {
   CATALOGACHIEVEMENT,
   CATALOGSUBJECT,
   CATALOGGRADE,
-  CatalogAchievementInterface
+  catalogAchievementSchemaDB,
+  CatalogAchievementRaw,
+  CatalogAchievementDB
 } from '../schemas/CatalogAchievementSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
 
 class CatalogAchievement extends DatabaseEntity {
-  private catalogAchievementId: String;
-  private catalogSubjectId: String;
-  private catalogGradeId: String;
-  private catalogAchievementName: String;
+  private catalogAchievementId: string;
+  private catalogSubjectId: string;
+  private catalogGradeId: string;
+  private catalogAchievementName: string;
 
   constructor() {
     super();
-    this.schema = catalogAchievementSchema;
+    this.schema = catalogAchievementSchemaDB;
   }
 
   getPK() {
@@ -35,14 +37,14 @@ class CatalogAchievement extends DatabaseEntity {
     return `${CATALOGGRADE}_${this.catalogGradeId}`;
   }
 
-  getGSIKeysObject() {
-    return {
-      GSI1PK: this.getGSI1PK(),
-      GSI1SK: this.getGSI1SK()
-    };
+  initializeFields(fields: CatalogAchievementRaw) {
+    this.catalogAchievementId = fields.catalogAchievementId;
+    this.catalogSubjectId = fields.catalogSubjectId;
+    this.catalogGradeId = fields.catalogGradeId;
+    this.catalogAchievementName = fields.catalogAchievementName;
   }
 
-  toItem() {
+  getRawItem() {
     return {
       catalogAchievementId: this.catalogAchievementId,
       catalogSubjectId: this.catalogSubjectId,
@@ -68,50 +70,33 @@ class CatalogAchievement extends DatabaseEntity {
     return `${CATALOGGRADE}_${catalogGradeId}`;
   }
 
-  public static fromDB(item: CatalogAchievementInterface) {
-    const newCatalogAchievement = new CatalogAchievement();
-
-    newCatalogAchievement.catalogAchievementId = item.catalogAchievementId;
-
-    // Attributes from params
-    newCatalogAchievement.catalogSubjectId = item.catalogSubjectId;
-    newCatalogAchievement.catalogGradeId = item.catalogGradeId;
-    newCatalogAchievement.catalogAchievementName = item.catalogAchievementName;
-
-    // Partition keys
-    newCatalogAchievement.initializePartitionKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
-
-    return newCatalogAchievement.toItem();
-  }
+  public static fromRawFields = (fields: CatalogAchievementDB) => {
+    const instance = new CatalogAchievement();
+    instance.initializeFields(fields);
+    return instance.getRawItem();
+  };
 
   public static async insertOne({
     catalogSubjectId,
     catalogGradeId,
     catalogAchievementName
   }: {
-    catalogSubjectId: String;
-    catalogGradeId: String;
-    catalogAchievementName: String;
+    catalogSubjectId: string;
+    catalogGradeId: string;
+    catalogAchievementName: string;
   }) {
-    const newCatalogAchievement = new CatalogAchievement();
-
-    newCatalogAchievement.catalogAchievementId = newCatalogAchievement.generateId();
-
-    // Attributes from params
-    newCatalogAchievement.catalogSubjectId = catalogSubjectId;
-    newCatalogAchievement.catalogGradeId = catalogGradeId;
-    newCatalogAchievement.catalogAchievementName = catalogAchievementName;
-
-    // Partition keys
-    newCatalogAchievement.initializePartitionKeys(newCatalogAchievement.getPK(), newCatalogAchievement.getSK());
-
-    await newCatalogAchievement.save();
-
-    return newCatalogAchievement.toItem();
+    const instance = new CatalogAchievement();
+    instance.initializeFields({
+      catalogAchievementId: CatalogAchievement.generateId(),
+      catalogSubjectId: catalogSubjectId,
+      catalogGradeId: catalogGradeId,
+      catalogAchievementName: catalogAchievementName
+    });
+    return await instance.save<CatalogAchievementRaw>();
   }
 
   public static async getCatalogAchievements(catalogSubjectId: String, catalogGradeId: String) {
-    const items = await getItemsGSI<CatalogAchievementInterface>(GSINames.GSI1, {
+    const items = await getItemsGSI<CatalogAchievementDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND #GSI1SK = :GSI1SK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {
@@ -120,7 +105,7 @@ class CatalogAchievement extends DatabaseEntity {
       }
     });
 
-    return items.map(CatalogAchievement.fromDB);
+    return items.map(CatalogAchievement.fromRawFields);
   }
 }
 
