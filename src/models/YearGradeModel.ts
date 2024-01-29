@@ -78,9 +78,12 @@ class YearGrade extends DatabaseEntity {
 
   public static async getYearGrades(academicYearId: String) {
     const items = await getItemsGSI<YearGradeDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': YearGrade.getGSI1PK(academicYearId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: {
+        ':GSI1PK': YearGrade.getGSI1PK(academicYearId),
+        ':GSI1SK': YearGrade.getGSI1SK('')
+      }
     });
 
     return items.map(YearGrade.fromRawFields);

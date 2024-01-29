@@ -70,7 +70,6 @@ class CatalogGrade extends DatabaseEntity {
     const instance = new CatalogGrade();
     instance.initializeFields({
       catalogGradeId: CatalogGrade.generateId(),
-
       schoolId: schoolId,
       catalogGradeLabel: catalogGradeLabel
     });

@@ -43,4 +43,4 @@ app.listen(port, () => {
 //   });
 // });
 
-// TODO: Implementar lógica de borrado lógico
+// TODO: Implementar toda la lógica de logros e indicadores de logros.

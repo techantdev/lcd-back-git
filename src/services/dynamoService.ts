@@ -74,3 +74,6 @@ const updateItem = async <T>(
 };
 
 export { putItem, putItems, getItem, getItemsGSI, updateItem };
+
+// TODO: Optimize GETS,POSTS,PATCHs,PUTS with transactions or batch operations in all controllers.
+// TODO: Implementar lógica de borrado lógico en los endpoints delete.

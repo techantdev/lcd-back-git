@@ -16,3 +16,5 @@ export const UserSchema = require('./UserSchema');
 export const YearAreaSchema = require('./YearAreaSchema');
 export const YearGradeSchema = require('./YearGradeSchema');
 export const YearSubjectSchema = require('./YearSubjectSchema');
+
+// TODO: Añadir a todas las operaciones update la lógica de validación de esquemas.

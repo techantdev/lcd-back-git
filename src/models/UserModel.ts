@@ -100,7 +100,6 @@ class User extends DatabaseEntity {
     return await instance.save<UserRaw>();
   }
 
-  // TODO: ajustar el nombre a getUser
   public static async getUser(userEmail: String) {
     const items = await getItemsGSI<UserDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',

@@ -76,7 +76,6 @@ class CatalogSubject extends DatabaseEntity {
     return instance.getRawItem();
   };
 
-  // TODO: Ajustar todos los insertOnes de todas las entidades para que compartan lógica con fromDB.
   public static async insertOne({
     catalogAreaId,
     catalogSubjectName,
@@ -106,7 +105,6 @@ class CatalogSubject extends DatabaseEntity {
     return items.map(CatalogSubject.fromRawFields);
   }
 
-  // TODO: Añadir a todos los update la validación esquema.
   public static async updateOne(
     catalogSubjectId: String,
     catalogGradeData: { catalogSubjectName?: String; catalogSubjectGrades?: CatalogSubjectGrades }

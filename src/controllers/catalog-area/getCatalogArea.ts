@@ -2,7 +2,6 @@ import { CatalogArea } from '../../models/CatalogAreaModel';
 import { CatalogSubject } from '../../models/CatalogSubjectModel';
 import { CatalogGrade } from '../../models/CatalogGradeModel';
 
-// TODO: Optimize multiples fetches with transactions
 const getCatalogArea = async (schoolId: String) => {
   const [catalogAreas, catalogGrades] = await Promise.all([
     CatalogArea.getCatalogAreas(schoolId),

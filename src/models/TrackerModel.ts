@@ -27,11 +27,9 @@ class Tracker extends DatabaseEntity {
     return {
       trackerId: this.trackerId,
       courseId: this.courseId
-      // FALTA trackerRows
     };
   }
 
-  // TODO: Replicar esta lógica que consulta en BD la entidad a partir de su PK y su SK en vez de los GSIs
   // STATIC
 
   public static getPK(trackerId: String) {

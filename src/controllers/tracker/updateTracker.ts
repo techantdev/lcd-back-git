@@ -1,5 +1,5 @@
 const updateTracker = async () => {
-  // TODO: Input .reduce / Object.entries() / .map forof
+  // TODO: Dejar funcional el endpoint que permite actuializar el tracker.
   // El código no puede tener más de 100 líneas. ideal  (40 lineas)
   /*
   const trackerRows = [
