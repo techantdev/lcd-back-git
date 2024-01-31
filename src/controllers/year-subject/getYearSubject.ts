@@ -5,5 +5,3 @@ const getYearSubject = async (yearAreaId: String) => {
 };
 
 export default getYearSubject;
-
-// TODO: Cris

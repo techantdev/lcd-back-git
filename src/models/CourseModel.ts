@@ -111,6 +111,7 @@ class Course extends DatabaseEntity {
   }
 
   public static async getYearGradeCourses(yearGradeId: String) {
+    // TODO añadir la condición begins_with con el gsi1sk. DAVID
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI2PK = :GSI2PK',
       ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK' },
@@ -131,6 +132,7 @@ class Course extends DatabaseEntity {
   }
 
   public static async getTeacherCourses(teacherId: String) {
+    // TODO: añadir el begins with con el gsi2sk y corregir el gsi1 por gsi2. DAVID
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },

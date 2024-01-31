@@ -2,10 +2,8 @@ import { YearArea } from '../../models/YearAreaModel';
 import { YearSubject } from '../../models/YearSubjectModel';
 
 const getYearArea = async (academicYearId: String) => {
-  // TODO: Añadir el query que trae las materias de cada area.
   const yearAreas = [];
 
-  // 1. se almacenan las areas en 1 variable
   const auxiliaryYearAreas = await YearArea.getYearAreas(academicYearId);
 
   // 2. Se implementa 1 for que itere por cada area y por cada area teniendo el yearAreaID
