@@ -8,7 +8,7 @@ import {
 } from '../schemas/CatalogAchievementSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogAchievement extends DatabaseEntity {
   private catalogAchievementId: string;
@@ -106,6 +106,18 @@ class CatalogAchievement extends DatabaseEntity {
     });
 
     return items.map(CatalogAchievement.fromRawFields);
+  }
+
+  public static async updateOne(catalogAchievementId: String, catalogGradeData: { catalogAchievementName: String }) {
+    const updatedItem = await updateItem<CatalogAchievementDB>(
+      CatalogAchievement.getPK(catalogAchievementId),
+      CatalogAchievement.getSK(catalogAchievementId),
+      `SET #catalogAchievementName=:catalogAchievementName`,
+      { '#catalogAchievementName': 'catalogAchievementName' },
+      { ':catalogAchievementName': catalogGradeData.catalogAchievementName }
+    );
+
+    return CatalogAchievement.fromRawFields(updatedItem);
   }
 }
 

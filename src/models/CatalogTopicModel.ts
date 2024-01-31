@@ -1,7 +1,7 @@
 import { CATALOGTOPIC, CATALOGUNIT, CatalogTopicDB, CatalogTopicRaw, catalogTopicSchemaDB } from '../schemas/CatalogTopicSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogTopic extends DatabaseEntity {
   private catalogTopicId: string;
@@ -84,6 +84,18 @@ class CatalogTopic extends DatabaseEntity {
     });
 
     return items.map(CatalogTopic.fromRawFields);
+  }
+
+  public static async updateOne(catalogTopicId: String, catalogGradeData: { catalogTopicName: String }) {
+    const updatedItem = await updateItem<CatalogTopicDB>(
+      CatalogTopic.getPK(catalogTopicId),
+      CatalogTopic.getSK(catalogTopicId),
+      `SET #catalogTopicName=:catalogTopicName`,
+      { '#catalogTopicName': 'catalogTopicName' },
+      { ':catalogTopicName': catalogGradeData.catalogTopicName }
+    );
+
+    return CatalogTopic.fromRawFields(updatedItem);
   }
 }
 

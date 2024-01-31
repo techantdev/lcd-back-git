@@ -14,4 +14,7 @@ export const deleteCatalogAchievement = catchAsync((/*req: Request*/) => deleteC
 export const getCatalogAchievement = catchAsync((req: Request<{}, {}, {}, { catalogSubjectId: String; catalogGradeId: String }>) =>
   getCatalogAchievementMethod(req.query.catalogSubjectId, req.query.catalogGradeId)
 );
-export const updateCatalogAchievement = catchAsync((/*req: Request*/) => updateCatalogAchievementMethod());
+export const updateCatalogAchievement = catchAsync(
+  (req: Request<{}, {}, { catalogAchievementName: String }, { catalogAchievementId: String }>) =>
+    updateCatalogAchievementMethod(req.query.catalogAchievementId, req.body.catalogAchievementName)
+);

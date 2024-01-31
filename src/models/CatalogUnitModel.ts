@@ -8,7 +8,7 @@ import {
 } from '../schemas/CatalogUnitSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class CatalogUnit extends DatabaseEntity {
   private catalogUnitId: string;
@@ -105,6 +105,18 @@ class CatalogUnit extends DatabaseEntity {
     });
 
     return items.map(CatalogUnit.fromRawFields);
+  }
+
+  public static async updateOne(catalogUnitId: String, catalogGradeData: { catalogUnitName: String }) {
+    const updatedItem = await updateItem<CatalogUnitDB>(
+      CatalogUnit.getPK(catalogUnitId),
+      CatalogUnit.getSK(catalogUnitId),
+      `SET #catalogUnitName=:catalogUnitName`,
+      { '#catalogUnitName': 'catalogUnitName' },
+      { ':catalogUnitName': catalogGradeData.catalogUnitName }
+    );
+
+    return CatalogUnit.fromRawFields(updatedItem);
   }
 }
 

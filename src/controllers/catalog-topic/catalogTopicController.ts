@@ -14,4 +14,6 @@ export const deleteCatalogTopic = catchAsync((/*req: Request*/) => deleteCatalog
 export const getCatalogTopic = catchAsync((req: Request<{}, {}, {}, { catalogUnitId: String }>) =>
   getCatalogTopicMethod(req.query.catalogUnitId)
 );
-export const updateCatalogTopic = catchAsync((/*req: Request*/) => updateCatalogTopicMethod());
+export const updateCatalogTopic = catchAsync((req: Request<{}, {}, { catalogTopicName: String }, { catalogTopicId: String }>) =>
+  updateCatalogTopicMethod(req.query.catalogTopicId, req.body.catalogTopicName)
+);

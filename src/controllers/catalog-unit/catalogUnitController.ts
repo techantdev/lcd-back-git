@@ -14,4 +14,6 @@ export const deleteCatalogUnit = catchAsync((/*req: Request*/) => deleteCatalogU
 export const getCatalogUnits = catchAsync((req: Request<{}, {}, {}, { catalogSubjectId: String; catalogGradeId: String }>) =>
   getCatalogUnitsMethod(req.query.catalogSubjectId, req.query.catalogGradeId)
 );
-export const updateCatalogUnit = catchAsync((/*req: Request*/) => updateCatalogUnitMethod());
+export const updateCatalogUnit = catchAsync((req: Request<{}, {}, { catalogUnitName: String }, { catalogUnitId: String }>) =>
+  updateCatalogUnitMethod(req.query.catalogUnitId, req.body.catalogUnitName)
+);

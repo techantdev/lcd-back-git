@@ -1,7 +1,7 @@
 import { COURSE, YEARGRADE, TEACHER, courseSchemaDB, CourseRaw, CourseDB } from '../schemas/CourseSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, updateItem } from '../services/dynamoService';
 
 class Course extends DatabaseEntity {
   private courseId: string;
@@ -138,6 +138,18 @@ class Course extends DatabaseEntity {
     });
 
     return items.map(Course.fromRawFields);
+  }
+
+  public static async updateOne(courseId: String, catalogGradeData: { courseLabel: String }) {
+    const updatedItem = await updateItem<CourseDB>(
+      Course.getPK(courseId),
+      Course.getSK(courseId),
+      `SET #courseLabel=:courseLabel`,
+      { '#courseLabel': 'courseLabel' },
+      { ':courseLabel': catalogGradeData.courseLabel }
+    );
+
+    return Course.fromRawFields(updatedItem);
   }
 }
 

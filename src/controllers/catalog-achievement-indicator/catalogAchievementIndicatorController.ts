@@ -15,4 +15,7 @@ export const getCatalogAchievementIndicators = catchAsync(
   (req: Request<{}, {}, {}, { catalogSubjectId: String; catalogGradeId: String }>) =>
     getCatalogAchievementIndicatorMethod(req.query.catalogSubjectId, req.query.catalogGradeId)
 );
-export const updateCatalogAchievementIndicator = catchAsync((/*req: Request*/) => updateCatalogAchievementIndicatorMethod());
+export const updateCatalogAchievementIndicator = catchAsync(
+  (req: Request<{}, {}, { catalogAchievementIndicatorName: String }, { catalogAchievementIndicatorId: String }>) =>
+    updateCatalogAchievementIndicatorMethod(req.query.catalogAchievementIndicatorId, req.body.catalogAchievementIndicatorName)
+);

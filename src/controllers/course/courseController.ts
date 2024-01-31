@@ -16,4 +16,6 @@ export const getCourse = catchAsync((req: Request<{}, {}, {}, { yearGradeId: Str
 export const getTeacherCourse = catchAsync((req: Request<{}, {}, {}, { teacherId: String }>) =>
   getTeacherCourseMethod(req.query.teacherId)
 );
-export const updateCourse = catchAsync((/*req: Request*/) => updateCourseMethod());
+export const updateCourse = catchAsync((req: Request<{}, {}, { courseLabel: String }, { courseId: String }>) =>
+  updateCourseMethod(req.query.courseId, req.body.courseLabel)
+);
