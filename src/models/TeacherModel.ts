@@ -1,4 +1,4 @@
-import { TEACHER, SCHOOL, teacherSchemaDB, TeacherRaw, TeacherDB } from '../schemas/TeacherSchema';
+import { TEACHER, SCHOOL, teacherSchemaDB, TeacherRaw, TeacherDB, TeacherAssignedCatalogAreas } from '../schemas/TeacherSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI } from '../services/dynamoService';
@@ -9,7 +9,7 @@ class Teacher extends DatabaseEntity {
   private userId: string;
   private teacherName: string;
   private teacherLastName: string;
-  // FALTA teacherAssignedCatalogAreas
+  private teacherAssignedCatalogAreas: TeacherAssignedCatalogAreas;
 
   constructor() {
     super();
@@ -35,9 +35,10 @@ class Teacher extends DatabaseEntity {
   initializeFields(fields: TeacherRaw) {
     this.teacherId = fields.teacherId;
     this.schoolId = fields.schoolId;
-    this.userId = fields.userId;
+    this.userId = fields.userId || '';
     this.teacherName = fields.teacherName;
-    this.teacherLastName = fields.teacherLastName;
+    this.teacherLastName = fields.teacherLastName || '';
+    this.teacherAssignedCatalogAreas = fields.teacherAssignedCatalogAreas;
   }
 
   getRawItem() {
@@ -46,7 +47,8 @@ class Teacher extends DatabaseEntity {
       schoolId: this.schoolId,
       userId: this.userId,
       teacherName: this.teacherName,
-      teacherLastName: this.teacherLastName
+      teacherLastName: this.teacherLastName,
+      teacherAssignedCatalogAreas: this.teacherAssignedCatalogAreas
     };
   }
 
@@ -77,12 +79,14 @@ class Teacher extends DatabaseEntity {
     schoolId,
     userId,
     teacherName,
-    teacherLastName
+    teacherLastName,
+    teacherAssignedCatalogAreas
   }: {
     schoolId: string;
     userId: string;
     teacherName: string;
     teacherLastName: string;
+    teacherAssignedCatalogAreas: TeacherAssignedCatalogAreas;
   }) {
     const instance = new Teacher();
     instance.initializeFields({
@@ -91,7 +95,7 @@ class Teacher extends DatabaseEntity {
       userId: userId,
       teacherName: teacherName,
       teacherLastName: teacherLastName,
-      teacherAssignedCatalogAreas: []
+      teacherAssignedCatalogAreas
     });
     return await instance.save<TeacherRaw>();
   }
@@ -108,9 +112,9 @@ class Teacher extends DatabaseEntity {
 
   public static async getTeachers(schoolId: String) {
     const items = await getItemsGSI<TeacherDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': Teacher.getGSI1PK(schoolId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': Teacher.getGSI1PK(schoolId), ':GSI1SK': Teacher.getGSI1SK('') }
     });
 
     return items.map(Teacher.fromRawFields);

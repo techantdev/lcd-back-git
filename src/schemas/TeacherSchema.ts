@@ -11,10 +11,10 @@ const teacherAssignedCatalogAreasSchema = array()
 
 const teacherSchemaRaw = object({
   teacherId: string().required(),
-  userId: string().required(),
+  userId: string(),
   schoolId: string().required(),
   teacherName: string().required(),
-  teacherLastName: string().required(),
+  teacherLastName: string(),
   teacherAssignedCatalogAreas: teacherAssignedCatalogAreasSchema
 });
 
@@ -28,5 +28,6 @@ const teacherSchemaDB = teacherSchemaRaw.concat(
 
 interface TeacherRaw extends InferType<typeof teacherSchemaRaw> {}
 interface TeacherDB extends InferType<typeof teacherSchemaDB> {}
+interface TeacherAssignedCatalogAreas extends InferType<typeof teacherAssignedCatalogAreasSchema> {}
 
-export { TEACHER, SCHOOL, TeacherRaw, TeacherDB, teacherSchemaRaw, teacherSchemaDB };
+export { TEACHER, SCHOOL, TeacherRaw, TeacherDB, teacherSchemaRaw, teacherSchemaDB, TeacherAssignedCatalogAreas };
