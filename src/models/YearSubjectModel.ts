@@ -114,6 +114,14 @@ class YearSubject extends DatabaseEntity {
 
     return items.map(YearSubject.fromRawFields);
   }
+
+  // SE CREA METODO PARA 1 elemento YearSubject a partir del yearSubjectId
+
+  public static async getYearSubject(yearSubjectId: string) {
+    const yearSubject = new YearSubject();
+    yearSubject.yearSubjectId = yearSubjectId;
+    return await yearSubject.get<YearSubjectDB>();
+  }
 }
 
 export { YearSubject };

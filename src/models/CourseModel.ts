@@ -111,11 +111,11 @@ class Course extends DatabaseEntity {
   }
 
   public static async getYearGradeCourses(yearGradeId: String) {
-    // TODO añadir la condición begins_with con el gsi1sk. DAVID
+    // TODO añadir la condición begins_with con el gsi1sk. DAVID-----OK
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI2PK = :GSI2PK',
-      ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK' },
-      ExpressionAttributeValues: { ':GSI2PK': Course.getGSI2PK(yearGradeId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': Course.getGSI1PK(yearGradeId), ':GSI1SK': Course.getGSI1SK('') }
     });
 
     return items.map(Course.fromRawFields);
@@ -132,11 +132,11 @@ class Course extends DatabaseEntity {
   }
 
   public static async getTeacherCourses(teacherId: String) {
-    // TODO: añadir el begins with con el gsi2sk y corregir el gsi1 por gsi2. DAVID
+    // TODO: añadir el begins with con el gsi2sk y corregir el gsi1 por gsi2. DAVID----OK
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': Course.getGSI1PK(teacherId) }
+      KeyConditionExpression: '#GSI2PK = :GSI2PK AND begins_with(#GSI2SK,:GSI2SK)',
+      ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK', '#GSI2SK': 'GSI2SK' },
+      ExpressionAttributeValues: { ':GSI2PK': Course.getGSI2PK(teacherId), ':GSI2SK': Course.getGSI2SK('') }
     });
 
     return items.map(Course.fromRawFields);

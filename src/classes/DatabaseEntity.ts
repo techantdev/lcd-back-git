@@ -80,11 +80,11 @@ abstract class DatabaseEntity {
     return this.getRawItem() as T;
   }
 
-  async get() {
+  async get<T>() {
     this.initializePartitionKeys();
     const gettedItem = await getItem(this.PK, this.SK);
     this.initializeFields(gettedItem);
-    return this.getRawItem();
+    return this.getRawItem() as T;
   }
 
   toDBItem() {

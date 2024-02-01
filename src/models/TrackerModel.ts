@@ -69,7 +69,7 @@ class Tracker extends DatabaseEntity {
   public static async getTracker(trackerId: string) {
     const tracker = new Tracker();
     tracker.trackerId = trackerId;
-    return await tracker.get();
+    return await tracker.get<TrackerDB>();
   }
 }
 

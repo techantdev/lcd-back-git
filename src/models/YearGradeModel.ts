@@ -99,6 +99,7 @@ class YearGrade extends DatabaseEntity {
     );
   }
 
+  // PREGUNTAR SI EL GET SE DEJA
   public static async getSubjectYearGrades(yearSubjectId: String) {
     const items = await getItemsGSI<YearGradeDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -107,6 +108,12 @@ class YearGrade extends DatabaseEntity {
     });
 
     return items.map(YearGrade.fromRawFields);
+  }
+  // SE CREA METODO PARA 1 ELEMENTO YEARGRADE A PARTIR DE YEARGRADEID
+  public static async getYearGrade(yearGradeId: string) {
+    const yearGrade = new YearGrade();
+    yearGrade.yearGradeId = yearGradeId;
+    return await yearGrade.get<YearGradeDB>();
   }
 }
 
