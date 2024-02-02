@@ -1,11 +1,10 @@
 import { COURSE, YEARGRADE, TEACHER, courseSchemaDB, CourseRaw, CourseDB } from '../schemas/CourseSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI, updateItem } from '../services/dynamoService';
+import { getItemsGSI, getUpdateFields, updateItem } from '../services/dynamoService';
 
 class Course extends DatabaseEntity {
   private courseId: string;
-  private teacherId: string;
   private yearGradeId: string;
   private trackerId: string;
   private courseLabel: string;
@@ -31,17 +30,8 @@ class Course extends DatabaseEntity {
     return `${COURSE}_${this.courseId}`;
   }
 
-  getGSI2PK() {
-    return `${TEACHER}_${this.teacherId}`;
-  }
-
-  getGSI2SK() {
-    return `${COURSE}_${this.courseId}`;
-  }
-
   initializeFields(fields: CourseRaw) {
     this.courseId = fields.courseId;
-    this.teacherId = fields.teacherId;
     this.yearGradeId = fields.yearGradeId;
     this.trackerId = fields.trackerId;
     this.courseLabel = fields.courseLabel;
@@ -50,7 +40,6 @@ class Course extends DatabaseEntity {
   getRawItem() {
     return {
       courseId: this.courseId,
-      teacherId: this.teacherId,
       yearGradeId: this.yearGradeId,
       trackerId: this.trackerId,
       courseLabel: this.courseLabel
@@ -89,20 +78,17 @@ class Course extends DatabaseEntity {
   };
 
   public static async insertOne({
-    teacherId,
     yearGradeId,
-    trackerId,
-    courseLabel
+    courseLabel,
+    trackerId
   }: {
-    teacherId: string;
     yearGradeId: string;
-    trackerId: string;
     courseLabel: string;
+    trackerId: string;
   }) {
     const instance = new Course();
     instance.initializeFields({
       courseId: Course.generateId(),
-      teacherId: teacherId,
       yearGradeId: yearGradeId,
       trackerId: trackerId,
       courseLabel: courseLabel
@@ -111,7 +97,6 @@ class Course extends DatabaseEntity {
   }
 
   public static async getYearGradeCourses(yearGradeId: String) {
-    // TODO añadir la condición begins_with con el gsi1sk. DAVID-----OK
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
@@ -132,7 +117,6 @@ class Course extends DatabaseEntity {
   }
 
   public static async getTeacherCourses(teacherId: String) {
-    // TODO: añadir el begins with con el gsi2sk y corregir el gsi1 por gsi2. DAVID----OK
     const items = await getItemsGSI<CourseDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI2PK = :GSI2PK AND begins_with(#GSI2SK,:GSI2SK)',
       ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK', '#GSI2SK': 'GSI2SK' },
@@ -142,15 +126,9 @@ class Course extends DatabaseEntity {
     return items.map(Course.fromRawFields);
   }
 
-  public static async updateOne(courseId: String, catalogGradeData: { courseLabel: String }) {
-    const updatedItem = await updateItem<CourseDB>(
-      Course.getPK(courseId),
-      Course.getSK(courseId),
-      `SET #courseLabel=:courseLabel`,
-      { '#courseLabel': 'courseLabel' },
-      { ':courseLabel': catalogGradeData.courseLabel }
-    );
-
+  public static async updateOne(courseId: String, courseData: { courseLabel: String; teacherId: string }) {
+    const { set, keys, values } = getUpdateFields(courseData);
+    const updatedItem = await updateItem<CourseDB>(Course.getPK(courseId), Course.getSK(courseId), `SET ${set}`, keys, values);
     return Course.fromRawFields(updatedItem);
   }
 }

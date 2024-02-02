@@ -18,6 +18,4 @@ export const createTeacher = catchAsync((req: Request) =>
 );
 export const deleteTeacher = catchAsync((/*req: Request*/) => deleteTeacherMethod());
 export const getTeacher = catchAsync((req: Request<{}, {}, {}, { schoolId: String }>) => getTeacherMethod(req.query.schoolId));
-export const updateTeacher = catchAsync((/*req: Request*/) => updateTeacherMethod());
-
-// TODO: implementar la lógica de los profesores. CRUD.
+export const updateTeacher = catchAsync((req: Request) => updateTeacherMethod(req.params.teacherId, req.body));

@@ -97,6 +97,12 @@ class CatalogGrade extends DatabaseEntity {
 
     return CatalogGrade.fromRawFields(updatedItem);
   }
+
+  public static async getCatalogGrade(catalogGradeId: string) {
+    const instance = new CatalogGrade();
+    instance.catalogGradeId = catalogGradeId;
+    return await instance.get<CatalogGradeDB>();
+  }
 }
 
 export { CatalogGrade };

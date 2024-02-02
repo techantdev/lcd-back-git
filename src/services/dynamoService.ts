@@ -60,20 +60,34 @@ const updateItem = async <T>(
   ExpressionAttributeNames: Record<string, string>,
   ExpressionAttributeValues: Object
 ) => {
+  // console.log({ PK, SK, UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues });
+
   const { Attributes = {} } = await dbclientV3.send(
     new UpdateCommand({
       TableName: TEST_TABLE_NAME,
       Key: { PK, SK },
       UpdateExpression: UpdateExpression.toString(),
-      ExpressionAttributeNames,
-      ExpressionAttributeValues,
+      ...(ExpressionAttributeNames && { ExpressionAttributeNames }),
+      ...(ExpressionAttributeValues && { ExpressionAttributeValues }),
       ReturnValues: 'ALL_NEW'
     })
   );
   return Attributes as T;
 };
 
-export { putItem, putItems, getItem, getItemsGSI, updateItem };
+// Utils
+
+const getUpdateFields = (data: Record<string, any>) => {
+  return {
+    set: Object.keys(data)
+      .map(key => `#${key}=:${key}`)
+      .join(','),
+    keys: Object.keys(data).reduce((prev, key) => ({ ...prev, [`#${key}`]: key }), {}),
+    values: Object.entries(data).reduce((prev, [key, value]) => ({ ...prev, [`:${key}`]: value }), {})
+  };
+};
+
+export { putItem, putItems, getItem, getItemsGSI, updateItem, getUpdateFields };
 
 // TODO: Optimize GETS,POSTS,PATCHs,PUTS with transactions or batch operations in all controllers.
 // TODO: Implementar lógica de borrado lógico en los endpoints delete.

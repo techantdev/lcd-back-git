@@ -8,7 +8,7 @@ import {
 } from '../schemas/CatalogSubjectSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI, updateItem } from '../services/dynamoService';
+import { getItemsGSI, getUpdateFields, updateItem } from '../services/dynamoService';
 
 class CatalogSubject extends DatabaseEntity {
   private catalogSubjectId: string;
@@ -109,17 +109,23 @@ class CatalogSubject extends DatabaseEntity {
     catalogSubjectId: String,
     catalogGradeData: { catalogSubjectName?: String; catalogSubjectGrades?: CatalogSubjectGrades }
   ) {
+    const { set, keys, values } = getUpdateFields(catalogGradeData);
+
     const updatedItem = await updateItem<CatalogSubjectDB>(
       CatalogSubject.getPK(catalogSubjectId),
       CatalogSubject.getSK(catalogSubjectId),
-      `SET ${Object.keys(catalogGradeData)
-        .map(key => `#${key}=:${key}`)
-        .join(',')}`,
-      Object.keys(catalogGradeData).reduce((prev, key) => ({ ...prev, [`#${key}`]: key }), {}),
-      Object.entries(catalogGradeData).reduce((prev, [key, value]) => ({ ...prev, [`:${key}`]: value }), {})
+      `SET ${set}`,
+      keys,
+      values
     );
 
     return CatalogSubject.fromRawFields(updatedItem);
+  }
+
+  public static async getCatalogSubject(catalogSubjectId: string) {
+    const instance = new CatalogSubject();
+    instance.catalogSubjectId = catalogSubjectId;
+    return await instance.get<CatalogSubjectDB>();
   }
 }
 

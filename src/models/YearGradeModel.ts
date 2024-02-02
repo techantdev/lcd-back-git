@@ -57,7 +57,7 @@ class YearGrade extends DatabaseEntity {
   }
 
   public static getGSI1SK(yearGradeId: String) {
-    return `${ACADEMICYEAR}_${yearGradeId}`;
+    return `${YEARGRADE}_${yearGradeId}`;
   }
 
   public static fromRawFields = (fields: YearGradeDB) => {
@@ -78,7 +78,7 @@ class YearGrade extends DatabaseEntity {
 
   public static async getYearGrades(academicYearId: String) {
     const items = await getItemsGSI<YearGradeDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK:GSI1SK)',
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
       ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
       ExpressionAttributeValues: {
         ':GSI1PK': YearGrade.getGSI1PK(academicYearId),

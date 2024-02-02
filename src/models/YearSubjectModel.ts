@@ -107,9 +107,9 @@ class YearSubject extends DatabaseEntity {
 
   public static async getYearSubjects(yearAreaId: String) {
     const items = await getItemsGSI<YearSubjectDB>(GSINames.GSI1, {
-      KeyConditionExpression: '#GSI1PK = :GSI1PK',
-      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK' },
-      ExpressionAttributeValues: { ':GSI1PK': YearSubject.getGSI1PK(yearAreaId) }
+      KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK,:GSI1SK)',
+      ExpressionAttributeNames: { '#GSI1PK': 'GSI1PK', '#GSI1SK': 'GSI1SK' },
+      ExpressionAttributeValues: { ':GSI1PK': YearSubject.getGSI1PK(yearAreaId), ':GSI1SK': YearSubject.getGSI1SK('') }
     });
 
     return items.map(YearSubject.fromRawFields);

@@ -42,5 +42,3 @@ app.listen(port, () => {
 //     console.log('💥 Process terminated!');
 //   });
 // });
-
-// TODO: Implementar toda la lógica de logros e indicadores de logros.

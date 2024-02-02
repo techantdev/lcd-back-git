@@ -96,6 +96,12 @@ class CatalogArea extends DatabaseEntity {
 
     return CatalogArea.fromRawFields(updatedItem);
   }
+
+  public static async getCatalogArea(catalogAreaId: string) {
+    const instance = new CatalogArea();
+    instance.catalogAreaId = catalogAreaId;
+    return await instance.get<CatalogAreaDB>();
+  }
 }
 
 export { CatalogArea };

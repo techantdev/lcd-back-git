@@ -1,7 +1,7 @@
 import { TEACHER, SCHOOL, teacherSchemaDB, TeacherRaw, TeacherDB, TeacherAssignedCatalogAreas } from '../schemas/TeacherSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, getUpdateFields, updateItem } from '../services/dynamoService';
 
 class Teacher extends DatabaseEntity {
   private teacherId: string;
@@ -118,6 +118,12 @@ class Teacher extends DatabaseEntity {
     });
 
     return items.map(Teacher.fromRawFields);
+  }
+
+  public static async updateOne(teacherId: String, data: { teacherName: string }) {
+    const { set, keys, values } = getUpdateFields(data);
+    const updatedItem = await updateItem<TeacherDB>(Teacher.getPK(teacherId), Teacher.getSK(teacherId), `SET ${set}`, keys, values);
+    return Teacher.fromRawFields(updatedItem);
   }
 }
 

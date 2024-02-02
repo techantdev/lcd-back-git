@@ -35,22 +35,27 @@ const createYearBasedOnPreviousYear = async (previousAcademicYearId: string, new
     previousYearAreas.map(area => ({ ...area, academicYearId: newAcademicYearId }))
   );
 
-  for (let index = 0; index < previousYearAreas.length; index++) {
-    const previousYearArea = previousYearAreas[index];
-    const previousYearSubjects = await YearSubject.getYearSubjects(previousYearArea.yearAreaId);
+  const createdYearAreasToReturn = await Promise.all(
+    previousYearAreas.map(async (_, index) => {
+      // for (let index = 0; index < previousYearAreas.length; index++) {
+      const previousYearArea = previousYearAreas[index];
+      const previousYearSubjects = await YearSubject.getYearSubjects(previousYearArea.yearAreaId);
 
-    await YearSubject.insertMultiple(
-      previousYearSubjects.map(subject => {
-        const yearSubjectGrades = subject.yearSubjectGrades.map(yearSubjectGrade => {
-          const index = previousYearGrades.findIndex(prev => prev.yearGradeId === yearSubjectGrade.yearGradeId);
-          return { yearGradeId: createdYearGrades[index].yearGradeId };
-        });
-        return { ...subject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades };
-      })
-    );
-  }
+      const subjects = await YearSubject.insertMultiple(
+        previousYearSubjects.map(subject => {
+          const yearSubjectGrades = subject.yearSubjectGrades.map(yearSubjectGrade => {
+            const index = previousYearGrades.findIndex(prev => prev.yearGradeId === yearSubjectGrade.yearGradeId);
+            return { yearGradeId: createdYearGrades[index].yearGradeId };
+          });
+          return { ...subject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades };
+        })
+      );
 
-  return { createdYearGrades, createdYearAreas };
+      return { ...createdYearAreas[index], subjects };
+    })
+  );
+
+  return { createdYearGrades, createdYearAreas: createdYearAreasToReturn };
 };
 
 const createYearBasedOnCatalog = async (schoolId: string, newAcademicYearId: string) => {
@@ -64,24 +69,28 @@ const createYearBasedOnCatalog = async (schoolId: string, newAcademicYearId: str
     catalogAreas.map(area => ({ ...area, academicYearId: newAcademicYearId, yearAreaId: '' }))
   );
 
-  for (let index = 0; index < catalogAreas.length; index++) {
-    const catalogArea = catalogAreas[index];
-    const catalogSubjects = await CatalogSubject.getCatalogSubjects(catalogArea.catalogAreaId);
+  const createdYearAreasToReturn = await Promise.all(
+    catalogAreas.map(async (_, index) => {
+      const catalogArea = catalogAreas[index];
+      const catalogSubjects = await CatalogSubject.getCatalogSubjects(catalogArea.catalogAreaId);
 
-    await YearSubject.insertMultiple(
-      catalogSubjects.map(catalogSubject => {
-        const yearSubjectGrades = catalogSubject.catalogSubjectGrades.map(catalogSubjectGrade => {
-          const createdYearGrade = createdYearGrades.find(
-            currentCreatedYearGrade => currentCreatedYearGrade.catalogGradeId === catalogSubjectGrade.catalogGradeId
-          );
-          return { yearGradeId: createdYearGrade?.yearGradeId || '' };
-        });
-        return { ...catalogSubject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades, yearSubjectId: '' };
-      })
-    );
-  }
+      const subjects = await YearSubject.insertMultiple(
+        catalogSubjects.map(catalogSubject => {
+          const yearSubjectGrades = catalogSubject.catalogSubjectGrades.map(catalogSubjectGrade => {
+            const createdYearGrade = createdYearGrades.find(
+              currentCreatedYearGrade => currentCreatedYearGrade.catalogGradeId === catalogSubjectGrade.catalogGradeId
+            );
+            return { yearGradeId: createdYearGrade?.yearGradeId || '' };
+          });
+          return { ...catalogSubject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades, yearSubjectId: '' };
+        })
+      );
 
-  return { createdYearGrades, createdYearAreas };
+      return { ...createdYearAreas[index], subjects };
+    })
+  );
+
+  return { createdYearGrades, createdYearAreas: createdYearAreasToReturn };
 };
 
 const createAcademicYear = async (
@@ -103,7 +112,7 @@ const createAcademicYear = async (
     ({ createdYearGrades, createdYearAreas } = await createYearBasedOnCatalog(schoolId, createdAcademicYear.academicYearId));
   }
 
-  return { createdAcademicYear, createdYearGrades, createdYearAreas };
+  return { ...createdAcademicYear, yearGrades: createdYearGrades, yearAreas: createdYearAreas };
 };
 
 export default createAcademicYear;

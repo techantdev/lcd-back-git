@@ -104,7 +104,7 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // // Test middleware
 // app.use((req, res, next) => {
 //   req.requestTime = new Date().toISOString();
-//   // console.log(req.cookies);
+//
 //   next();
 // });
 

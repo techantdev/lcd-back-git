@@ -108,8 +108,6 @@ class CatalogUnit extends DatabaseEntity {
   }
 
   public static async updateOne(catalogUnitId: String, catalogGradeData: { catalogUnitName: String }) {
-    console.log({ catalogUnitId });
-
     const updatedItem = await updateItem<CatalogUnitDB>(
       CatalogUnit.getPK(catalogUnitId),
       CatalogUnit.getSK(catalogUnitId),

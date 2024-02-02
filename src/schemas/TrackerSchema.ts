@@ -1,4 +1,4 @@
-import { object, string, InferType, array } from 'yup';
+import { object, string, InferType, array, number } from 'yup';
 
 import { getPartitionKeysSchema } from './schemaUtils';
 
@@ -7,7 +7,8 @@ const TRACKER = 'TRACKER';
 const trackerRowsSchema = array()
   .of(
     object({
-      catalogAreaId: string().required(),
+      trackerRowIndex: number().required(),
+      // trackerRowId: string().required(),
       trackerRowWeekNumber: string().required(),
       trackerRowStartDate: string().required(),
       trackerRowEndDate: string().required(),
@@ -24,7 +25,7 @@ const trackerRowsSchema = array()
 
 const trackerSchemaRaw = object({
   trackerId: string().required(),
-  courseId: string().required(),
+  courseId: string(),
   trackerRows: trackerRowsSchema
 });
 
@@ -36,5 +37,6 @@ const trackerSchemaDB = trackerSchemaRaw.concat(
 
 interface TrackerRaw extends InferType<typeof trackerSchemaRaw> {}
 interface TrackerDB extends InferType<typeof trackerSchemaDB> {}
+interface TrackerRows extends InferType<typeof trackerRowsSchema> {}
 
-export { TRACKER, TrackerRaw, TrackerDB, trackerSchemaRaw, trackerSchemaDB };
+export { TRACKER, TrackerRaw, TrackerDB, trackerSchemaRaw, trackerSchemaDB, TrackerRows };

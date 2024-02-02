@@ -60,10 +60,10 @@ abstract class DatabaseEntity {
 
   getGSIKeysObject() {
     return {
-      GSI1PK: this.GSI1PK,
-      GSI1SK: this.GSI1SK,
-      GSI2PK: this.GSI2PK,
-      GSI2SK: this.GSI2SK
+      ...(this.GSI1PK && { GSI1PK: this.GSI1PK }),
+      ...(this.GSI1SK && { GSI1SK: this.GSI1SK }),
+      ...(this.GSI2PK && { GSI2PK: this.GSI2PK }),
+      ...(this.GSI2SK && { GSI2SK: this.GSI2SK })
     };
   }
 
@@ -98,18 +98,23 @@ abstract class DatabaseEntity {
   }
 
   public static async saveMultiple<T>(instances: DatabaseEntity[]) {
-    const itemsToSave = await Promise.all(
-      instances.map(async instance => {
-        instance.initializePartitionKeys();
-        instance.initializeGSIsKeys();
-        const itemToSave = instance.toDBItem();
-        await instance.schema.validate(itemToSave);
-        const itemRaw = instance.getRawItem();
-        return { itemRaw, itemToSave };
-      })
-    );
-    await putItems(itemsToSave.map(({ itemToSave }) => itemToSave));
-    return itemsToSave.map(({ itemRaw }) => itemRaw) as T[];
+    if (instances.length > 0) {
+      const itemsToSave = await Promise.all(
+        instances.map(async instance => {
+          instance.initializePartitionKeys();
+          instance.initializeGSIsKeys();
+          const itemToSave = instance.toDBItem();
+          await instance.schema.validate(itemToSave);
+          const itemRaw = instance.getRawItem();
+          return { itemRaw, itemToSave };
+        })
+      );
+
+      await putItems(itemsToSave.map(({ itemToSave }) => itemToSave));
+      return itemsToSave.map(({ itemRaw }) => itemRaw) as T[];
+    } else {
+      return [] as T[];
+    }
   }
 }
 

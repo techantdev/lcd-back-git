@@ -1,9 +1,11 @@
 import { DatabaseEntity } from '../classes/classesIndex';
-import { TRACKER, TrackerDB, TrackerRaw, trackerSchemaDB } from '../schemas/TrackerSchema';
+import { TRACKER, TrackerDB, TrackerRaw, TrackerRows, trackerSchemaDB } from '../schemas/TrackerSchema';
+import { getUpdateFields, updateItem } from '../services/dynamoService';
 
 class Tracker extends DatabaseEntity {
   private trackerId: string;
   private courseId: string;
+  private trackerRows: TrackerRows;
 
   constructor() {
     super();
@@ -20,13 +22,15 @@ class Tracker extends DatabaseEntity {
 
   initializeFields(fields: TrackerRaw) {
     this.trackerId = fields.trackerId;
-    this.courseId = fields.courseId;
+    this.courseId = fields.courseId || '';
+    this.trackerRows = fields.trackerRows;
   }
 
   getRawItem() {
     return {
       trackerId: this.trackerId,
-      courseId: this.courseId
+      courseId: this.courseId,
+      trackerRows: this.trackerRows
     };
   }
 
@@ -46,12 +50,12 @@ class Tracker extends DatabaseEntity {
     return instance.getRawItem();
   };
 
-  public static async insertOne({ courseId }: { courseId: string }) {
+  public static async insertOne({ courseId, rows }: { courseId?: string; rows?: TrackerRows }) {
     const instance = new Tracker();
     instance.initializeFields({
       trackerId: Tracker.generateId(),
-      courseId: courseId,
-      trackerRows: []
+      courseId: courseId || '',
+      trackerRows: rows || []
     });
     return await instance.save<TrackerRaw>();
   }
@@ -67,10 +71,51 @@ class Tracker extends DatabaseEntity {
   }
 
   public static async getTracker(trackerId: string) {
-    const tracker = new Tracker();
-    tracker.trackerId = trackerId;
-    return await tracker.get<TrackerDB>();
+    const instance = new Tracker();
+    instance.trackerId = trackerId;
+    return await instance.get<TrackerDB>();
+  }
+
+  public static async updateOne(trackerId: string, data: { trackerRows: TrackerRows }) {
+    // const setArray: string[] = [];
+    // const keys = rows.reduce(
+    //   (prev, { trackerRowIndex: _, ...properties }) => {
+    //     Object.keys(properties).forEach(key => {
+    //       if (!prev[`#${key}`]) {
+    //         prev[`#${key}`] = key;
+    //       }
+    //     });
+    //     return prev;
+    //   },
+    //   { '#trackerRows': 'trackerRows' } as Record<string, string>
+    // );
+    // const values: Record<string, any> = {};
+    // rows.forEach(row => {
+    //   const { trackerRowIndex, ...properties } = row;
+    //   Object.entries(properties).forEach(([key, value]) => {
+    //     const fieldKey = `#trackerRows[${trackerRowIndex}].#${key}`;
+    //     const valueKey = `:${trackerRowIndex}${key}`;
+    //     setArray.push(`${fieldKey} = ${valueKey}`);
+    //     values[valueKey] = value;
+    //   });
+    // });
+
+    // const updatedItem = await updateItem<TrackerDB>(
+    //   Tracker.getPK(trackerId),
+    //   Tracker.getSK(trackerId),
+    //   `SET ${setArray.join(', ')}`,
+    //   keys,
+    //   values
+    // );
+
+    const { set, keys, values } = getUpdateFields(data);
+
+    const updatedItem = await updateItem<TrackerDB>(Tracker.getPK(trackerId), Tracker.getSK(trackerId), `SET ${set}`, keys, values);
+
+    // console.log({ updatedItem });
+
+    return Tracker.fromRawFields(updatedItem);
   }
 }
 
-export { Tracker };
+export { Tracker, TrackerRows };
