@@ -88,6 +88,3 @@ const getUpdateFields = (data: Record<string, any>) => {
 };
 
 export { putItem, putItems, getItem, getItemsGSI, updateItem, getUpdateFields };
-
-// TODO: Optimize GETS,POSTS,PATCHs,PUTS with transactions or batch operations in all controllers.
-// TODO: Implementar lógica de borrado lógico en los endpoints delete.
