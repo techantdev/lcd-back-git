@@ -116,6 +116,11 @@ abstract class DatabaseEntity {
       return [] as T[];
     }
   }
+
+  public static async deleteMany<T>(params: String[]) {
+    console.log(params);
+    return [] as T[];
+  }
 }
 
 export default DatabaseEntity;
