@@ -97,6 +97,16 @@ class CatalogArea extends DatabaseEntity {
     return CatalogArea.fromRawFields(updatedItem);
   }
 
+  public static async deleteMany(catalogAreasIds: string[]) {
+    const PKsSKSList = catalogAreasIds.map(catalogAreaId => {
+      const instance = new CatalogArea();
+      instance.catalogAreaId = catalogAreaId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogArea.deleteManyByPartitionKeys(PKsSKSList);
+  }
+
   public static async getCatalogArea(catalogAreaId: string) {
     const instance = new CatalogArea();
     instance.catalogAreaId = catalogAreaId;

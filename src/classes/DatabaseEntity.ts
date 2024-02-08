@@ -4,20 +4,20 @@ import { ObjectSchema } from 'yup';
 import { putItem, putItems, getItem } from '../services/dynamoService';
 
 abstract class DatabaseEntity {
-  private PK: String;
-  private SK: String;
-  private GSI1PK?: String;
-  private GSI1SK?: String;
-  private GSI2PK?: String;
-  private GSI2SK?: String;
+  private PK: string;
+  private SK: string;
+  private GSI1PK?: string;
+  private GSI1SK?: string;
+  private GSI2PK?: string;
+  private GSI2SK?: string;
 
   schema: ObjectSchema<{}>;
 
   // ABSTRACT METHODS
 
-  abstract getPK(): String;
+  abstract getPK(): string;
 
-  abstract getSK(): String;
+  abstract getSK(): string;
 
   abstract getRawItem(): Object;
 
@@ -117,7 +117,7 @@ abstract class DatabaseEntity {
     }
   }
 
-  public static async deleteMany<T>(params: String[]) {
+  public static async deleteManyByPartitionKeys<T>(params: { PK: string; SK: string }[]) {
     console.log(params);
     return [] as T[];
   }
