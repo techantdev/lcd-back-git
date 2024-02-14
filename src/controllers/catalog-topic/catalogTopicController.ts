@@ -10,7 +10,9 @@ import { catchAsync } from '../../middleware/middleware';
 export const createCatalogTopic = catchAsync((req: Request) =>
   createCatalogTopicMethod(req.body.catalogUnitId, req.body.catalogTopicName)
 );
-export const deleteCatalogTopic = catchAsync((/*req: Request*/) => deleteCatalogTopicMethod());
+export const deleteCatalogTopic = catchAsync((req: Request<{}, {}, {}, { catalogTopicsIds: String }>) =>
+  deleteCatalogTopicMethod(req.query.catalogTopicsIds)
+);
 export const getCatalogTopic = catchAsync((req: Request<{}, {}, {}, { catalogUnitId: String }>) =>
   getCatalogTopicMethod(req.query.catalogUnitId)
 );

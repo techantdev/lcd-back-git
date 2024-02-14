@@ -119,6 +119,16 @@ class CatalogAchievement extends DatabaseEntity {
 
     return CatalogAchievement.fromRawFields(updatedItem);
   }
+
+  public static async deleteMany(catalogAchievementsIds: string[]) {
+    const PKsSKSList = catalogAchievementsIds.map(catalogAchievementId => {
+      const instance = new CatalogAchievement();
+      instance.catalogAchievementId = catalogAchievementId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogAchievement.deleteManyByPartitionKeys(PKsSKSList);
+  }
 }
 
 export { CatalogAchievement };

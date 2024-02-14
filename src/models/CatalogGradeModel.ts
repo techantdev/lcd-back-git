@@ -98,6 +98,16 @@ class CatalogGrade extends DatabaseEntity {
     return CatalogGrade.fromRawFields(updatedItem);
   }
 
+  public static async deleteMany(catalogGradesIds: string[]) {
+    const PKsSKSList = catalogGradesIds.map(catalogGradeId => {
+      const instance = new CatalogGrade();
+      instance.catalogGradeId = catalogGradeId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogGrade.deleteManyByPartitionKeys(PKsSKSList);
+  }
+
   public static async getCatalogGrade(catalogGradeId: string) {
     const instance = new CatalogGrade();
     instance.catalogGradeId = catalogGradeId;

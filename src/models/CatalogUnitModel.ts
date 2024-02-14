@@ -118,6 +118,16 @@ class CatalogUnit extends DatabaseEntity {
 
     return CatalogUnit.fromRawFields(updatedItem);
   }
+
+  public static async deleteMany(catalogUnitsIds: string[]) {
+    const PKsSKSList = catalogUnitsIds.map(catalogUnitId => {
+      const instance = new CatalogUnit();
+      instance.catalogUnitId = catalogUnitId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogUnit.deleteManyByPartitionKeys(PKsSKSList);
+  }
 }
 
 export { CatalogUnit };

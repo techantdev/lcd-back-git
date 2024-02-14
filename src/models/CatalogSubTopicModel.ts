@@ -82,6 +82,16 @@ class CatalogSubTopic extends DatabaseEntity {
     return await instance.save<CatalogSubTopicRaw>();
   }
 
+  public static async deleteMany(catalogSubTopicsIds: string[]) {
+    const PKsSKSList = catalogSubTopicsIds.map(catalogSubTopicId => {
+      const instance = new CatalogSubTopic();
+      instance.catalogSubTopicId = catalogSubTopicId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogSubTopic.deleteManyByPartitionKeys(PKsSKSList);
+  }
+
   public static async getCatalogSubTopics(catalogTopicId: String) {
     const items = await getItemsGSI<CatalogSubTopicDB>(GSINames.GSI1, {
       KeyConditionExpression: '#GSI1PK = :GSI1PK',

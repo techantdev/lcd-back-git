@@ -122,6 +122,16 @@ class CatalogSubject extends DatabaseEntity {
     return CatalogSubject.fromRawFields(updatedItem);
   }
 
+  public static async deleteMany(catalogSubjectsIds: string[]) {
+    const PKsSKSList = catalogSubjectsIds.map(catalogSubjectId => {
+      const instance = new CatalogSubject();
+      instance.catalogSubjectId = catalogSubjectId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogSubject.deleteManyByPartitionKeys(PKsSKSList);
+  }
+
   public static async getCatalogSubject(catalogSubjectId: string) {
     const instance = new CatalogSubject();
     instance.catalogSubjectId = catalogSubjectId;

@@ -11,7 +11,9 @@ import { catchAsync } from '../../middleware/middleware';
 export const createCatalogSubject = catchAsync((req: Request) =>
   createCatalogSubjectMethod(req.body.catalogAreaId, req.body.catalogSubjectName)
 );
-export const deleteCatalogSubject = catchAsync((/*req: Request*/) => deleteCatalogSubjectMethod());
+export const deleteCatalogSubject = catchAsync((req: Request<{}, {}, {}, { catalogSubjectsIds: String }>) =>
+  deleteCatalogSubjectMethod(req.query.catalogSubjectsIds)
+);
 export const getCatalogSubject = catchAsync((req: Request<{}, {}, {}, { catalogAreaId: String }>) =>
   getCatalogSubjectMethod(req.query.catalogAreaId)
 );

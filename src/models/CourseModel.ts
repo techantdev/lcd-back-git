@@ -126,10 +126,26 @@ class Course extends DatabaseEntity {
     return items.map(Course.fromRawFields);
   }
 
+  public static async getCourse(courseId: string) {
+    const instance = new Course();
+    instance.courseId = courseId;
+    return await instance.get<CourseDB>();
+  }
+
   public static async updateOne(courseId: String, courseData: { courseLabel: String; teacherId: string }) {
     const { set, keys, values } = getUpdateFields(courseData);
     const updatedItem = await updateItem<CourseDB>(Course.getPK(courseId), Course.getSK(courseId), `SET ${set}`, keys, values);
     return Course.fromRawFields(updatedItem);
+  }
+
+  public static async deleteMany(coursesIds: string[]) {
+    const PKsSKSList = coursesIds.map(courseId => {
+      const instance = new Course();
+      instance.courseId = courseId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await Course.deleteManyByPartitionKeys(PKsSKSList);
   }
 }
 

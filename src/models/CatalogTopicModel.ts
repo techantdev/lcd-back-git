@@ -97,6 +97,16 @@ class CatalogTopic extends DatabaseEntity {
 
     return CatalogTopic.fromRawFields(updatedItem);
   }
+
+  public static async deleteMany(catalogTopicsIds: string[]) {
+    const PKsSKSList = catalogTopicsIds.map(catalogTopicId => {
+      const instance = new CatalogTopic();
+      instance.catalogTopicId = catalogTopicId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogTopic.deleteManyByPartitionKeys(PKsSKSList);
+  }
 }
 
 export { CatalogTopic };

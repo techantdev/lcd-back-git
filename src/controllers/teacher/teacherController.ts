@@ -16,6 +16,8 @@ export const createTeacher = catchAsync((req: Request) =>
     req.body.teacherAssignedCatalogAreasIds
   )
 );
-export const deleteTeacher = catchAsync((/*req: Request*/) => deleteTeacherMethod());
+export const deleteTeacher = catchAsync((req: Request<{}, {}, {}, { teachersIds: String }>) =>
+  deleteTeacherMethod(req.query.teachersIds)
+);
 export const getTeacher = catchAsync((req: Request<{}, {}, {}, { schoolId: String }>) => getTeacherMethod(req.query.schoolId));
 export const updateTeacher = catchAsync((req: Request) => updateTeacherMethod(req.params.teacherId, req.body));

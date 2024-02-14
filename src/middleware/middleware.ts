@@ -18,9 +18,9 @@ const catchAsync = (fn: any): RequestHandler => {
   };
 };
 
-// const unhandledRoutes = (req, res) => {
-//   sendQueryResponse(res, 404, 'Can not find ' + req.originalUrl);
-// };
+const unhandledRoutes: RequestHandler = (req, res) => {
+  sendQueryResponse(res, 404, 'Can not find ' + req.originalUrl);
+};
 
 const decodeURL: RequestHandler = (req, _, next) => {
   // req.query = Object.keys(req.query).reduce((prev, key) => ({ ...prev, [key]: req.query[key].replace(/\$/g, '#') }), {});
@@ -34,12 +34,8 @@ const decodeURL: RequestHandler = (req, _, next) => {
 // };
 
 const logMiddlerware: RequestHandler = (req, _, next) => {
-  const businessId = req.body?.businessId || req.params?.businessId;
-  console.log(
-    `LOG API ${businessId || ''}`,
-    JSON.stringify({ path: req.path, params: req.params, query: req.query, body: req.body, method: req.method })
-  );
+  console.log(JSON.stringify({ path: req.path, params: req.params, query: req.query, body: req.body, method: req.method }));
   next();
 };
 
-export { sendQueryResponse, catchAsync, /*unhandledRoutes*/ decodeURL, /*globalMiddelwares,*/ logMiddlerware };
+export { sendQueryResponse, catchAsync, unhandledRoutes, decodeURL, /*globalMiddelwares,*/ logMiddlerware };

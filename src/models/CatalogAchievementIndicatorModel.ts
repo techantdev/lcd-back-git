@@ -119,5 +119,15 @@ class CatalogAchievementIndicator extends DatabaseEntity {
 
     return CatalogAchievementIndicator.fromRawFields(updatedItem);
   }
+
+  public static async deleteMany(catalogAchievementIndicatorsIds: string[]) {
+    const PKsSKSList = catalogAchievementIndicatorsIds.map(catalogAchievementIndicatorId => {
+      const instance = new CatalogAchievementIndicator();
+      instance.catalogAchievementIndicatorId = catalogAchievementIndicatorId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await CatalogAchievementIndicator.deleteManyByPartitionKeys(PKsSKSList);
+  }
 }
 export { CatalogAchievementIndicator };

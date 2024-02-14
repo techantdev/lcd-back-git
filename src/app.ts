@@ -9,6 +9,8 @@ import express from 'express';
 // const cookieParser from 'cookie-parser'
 // const bodyParser from 'body-parser'
 // const compression from 'compression'
+import globalErrorHandler from './middleware/errorController';
+import { unhandledRoutes, logMiddlerware } from './middleware/middleware';
 import cors from 'cors';
 
 // Se hace el import de las rutas, una por cada entidad.
@@ -33,6 +35,9 @@ import userRouter from './routes/userRoutes';
 import yearAreaRouter from './routes/yearAreaRoutes';
 import yearGradeRouter from './routes/yearGradeRoutes';
 import YearSubjectRouter from './routes/YearSubjectRoutes';
+import TeacherSubjectCourse from './routes/TeacherSubjectCourseRoutes';
+import competence from './routes/competenceRoutes';
+import task from './routes/taskRoutes';
 // const userRouter from './routes/userRoutes'
 // const reviewRouter from './routes/reviewRoutes'
 // const bookingRouter from './routes/bookingRoutes'
@@ -108,6 +113,9 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 //   next();
 // });
 
+// Log middleware
+app.use(logMiddlerware);
+
 // 3) ROUTES
 // Crear una ruta por cada entidad
 app.use('/api/v1/academic-year', academicYearRouter);
@@ -128,6 +136,14 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/year-area', yearAreaRouter);
 app.use('/api/v1/year-grade', yearGradeRouter);
 app.use('/api/v1/year-subject', YearSubjectRouter);
+app.use('/api/v1/teacher-subject-course', TeacherSubjectCourse);
+app.use('/api/v1/competence', competence);
+app.use('/api/v1/task', task);
+// Unhandled routes
+app.all('*', unhandledRoutes);
+
+// Error handling
+app.use(globalErrorHandler);
 
 // app.all('*', (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

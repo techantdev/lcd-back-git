@@ -125,6 +125,16 @@ class Teacher extends DatabaseEntity {
     const updatedItem = await updateItem<TeacherDB>(Teacher.getPK(teacherId), Teacher.getSK(teacherId), `SET ${set}`, keys, values);
     return Teacher.fromRawFields(updatedItem);
   }
+
+  public static async deleteMany(teachersIds: string[]) {
+    const PKsSKSList = teachersIds.map(teacherId => {
+      const instance = new Teacher();
+      instance.teacherId = teacherId;
+      return instance.getPartitionKeysObject();
+    });
+
+    return await Teacher.deleteManyByPartitionKeys(PKsSKSList);
+  }
 }
 
 export { Teacher };
