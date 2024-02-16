@@ -16,12 +16,19 @@ const getUser = async (userEmail: string) => {
     if (existingUser) {
       user = existingUser;
     } else {
-      user = await User.insertOne({ teacherId: '', userEmail, userLastName: '', userName: '', schoolId: LCD_SCHOOL_ID });
+      user = await User.insertOne({
+        teacherId: '',
+        userEmail,
+        userLastName: '',
+        userName: '',
+        catalogRoles: [],
+        schoolId: LCD_SCHOOL_ID
+      });
       userWasCreated = true;
     }
   }
 
-  return { isUserFromGWorkspace, userWasCreated, user: { ...user, schoolId: user?.userSchools[0].schoolId } };
+  return { isUserFromGWorkspace, userWasCreated, user };
 };
 
 export default getUser;

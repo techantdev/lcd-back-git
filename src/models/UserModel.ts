@@ -1,7 +1,7 @@
-import { USER, USEREMAIL, UserDB, UserRaw, userSchemaDB } from '../schemas/UserSchema';
+import { USER, USEREMAIL, SCHOOL, UserDB, UserRaw, userSchemaDB, CatalogRoles } from '../schemas/UserSchema';
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
-import { getItemsGSI } from '../services/dynamoService';
+import { getItemsGSI, getUpdateFields, updateItem } from '../services/dynamoService';
 
 class User extends DatabaseEntity {
   private userId: string;
@@ -9,7 +9,8 @@ class User extends DatabaseEntity {
   private userName: string;
   private userLastName: string;
   private userEmail: string;
-  private userSchools: { schoolId: string; catalogRoles: { catalogRoleId: string }[] }[];
+  private catalogRoles: CatalogRoles;
+  private schooId: string;
 
   constructor() {
     super();
@@ -32,13 +33,22 @@ class User extends DatabaseEntity {
     return `${USEREMAIL}_${this.userEmail}`;
   }
 
+  getGSI2PK() {
+    return `${SCHOOL}_${this.schooId}`;
+  }
+
+  getGSI2SK() {
+    return `${USER}_${this.userId}`;
+  }
+
   initializeFields(fields: UserRaw) {
     this.userId = fields.userId;
     this.teacherId = fields.teacherId;
     this.userName = fields.userName;
     this.userLastName = fields.userLastName;
     this.userEmail = fields.userEmail;
-    this.userSchools = fields.userSchools;
+    this.catalogRoles = fields.catalogRoles;
+    this.schooId = fields.schoolId;
   }
 
   getRawItem() {
@@ -48,7 +58,8 @@ class User extends DatabaseEntity {
       userName: this.userName,
       userLastName: this.userLastName,
       userEmail: this.userEmail,
-      userSchools: this.userSchools
+      catalogRoles: this.catalogRoles,
+      schooId: this.schooId
     };
   }
 
@@ -65,7 +76,15 @@ class User extends DatabaseEntity {
     return `${USEREMAIL}_${userEmail}`;
   }
 
-  public static getGSI1SK(userId: String) {
+  public static getGSI1SK(userEmail: String) {
+    return `${USEREMAIL}_${userEmail}`;
+  }
+
+  public static getGSI2PK(schoolId: String) {
+    return `${SCHOOL}_${schoolId}`;
+  }
+
+  public static getGSI2SK(userId: String) {
     return `${USER}_${userId}`;
   }
 
@@ -80,12 +99,14 @@ class User extends DatabaseEntity {
     userName,
     userLastName,
     userEmail,
+    catalogRoles,
     schoolId
   }: {
     teacherId: string;
     userName: string;
     userLastName: string;
     userEmail: string;
+    catalogRoles: CatalogRoles;
     schoolId: string;
   }) {
     const instance = new User();
@@ -95,7 +116,8 @@ class User extends DatabaseEntity {
       userName: userName,
       userLastName: userLastName,
       userEmail: userEmail,
-      userSchools: [{ schoolId, catalogRoles: [] }]
+      catalogRoles: catalogRoles,
+      schoolId: schoolId
     });
     return await instance.save<UserRaw>();
   }
@@ -108,6 +130,24 @@ class User extends DatabaseEntity {
     });
 
     return items[0] ? User.fromRawFields(items[0]) : null;
+  }
+
+  public static async getUsers(schoolId: String) {
+    const items = await getItemsGSI<UserDB>(GSINames.GSI2, {
+      KeyConditionExpression: '#GSI2PK = :GSI2PK AND begins_with(#GSI2SK,:GSI2SK)',
+      ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK', '#GSI2SK': 'GSI2SK' },
+      ExpressionAttributeValues: { ':GSI2PK': User.getGSI2PK(schoolId), ':GSI2SK': User.getGSI2SK('') }
+    });
+
+    return items.map(User.fromRawFields);
+  }
+
+  public static async updateOne(userId: String, userData: { catalogRoles?: CatalogRoles }) {
+    const { set, keys, values } = getUpdateFields(userData);
+
+    const updatedItem = await updateItem<UserDB>(User.getPK(userId), User.getSK(userId), `SET ${set}`, keys, values);
+
+    return User.fromRawFields(updatedItem);
   }
 }
 

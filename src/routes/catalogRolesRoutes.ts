@@ -1,10 +1,10 @@
 import express from 'express';
-// const academicYearController = require('./../controllers/academic-year/academicYearController');
+import { createCatalogRole, deleteCatalogRole, getCatalogRole } from './../controllers/catalog-role/catalogRoleController';
 
 const router = express.Router();
 
-// router.route('').get(academicYearController.getAcademicYears).post(academicYearController.createAcademicYear);
+router.route('').get(getCatalogRole).post(createCatalogRole);
 
-// router.route('/:academicYearId').patch(academicYearController.updateAcademicYear);
+router.route('/:catalogRoleId').delete(deleteCatalogRole);
 
 export default router;
