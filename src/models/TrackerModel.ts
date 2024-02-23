@@ -107,7 +107,10 @@ class Tracker extends DatabaseEntity {
     //   keys,
     //   values
     // );
-
+    // TODO El porcentaje se calcula con la formula 100*numero_semanas_en_DONE/total_filas_tracker (data.trackerRows)
+    // Para calcular las semanas en DONE utilizar .filter y .length
+    //  Una vez se calcule este dato, crear un objeto que combine la informacion de la variable data junto con el porcentaje calculado.
+    // Pasarlo por parametro en la linea 114
     const { set, keys, values } = getUpdateFields(data);
 
     const updatedItem = await updateItem<TrackerDB>(Tracker.getPK(trackerId), Tracker.getSK(trackerId), `SET ${set}`, keys, values);
