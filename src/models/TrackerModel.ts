@@ -6,6 +6,7 @@ class Tracker extends DatabaseEntity {
   private trackerId: string;
   private courseId: string;
   private trackerRows: TrackerRows;
+  private trackerCompletenessPercentage: number;
 
   constructor() {
     super();
@@ -24,13 +25,15 @@ class Tracker extends DatabaseEntity {
     this.trackerId = fields.trackerId;
     this.courseId = fields.courseId || '';
     this.trackerRows = fields.trackerRows;
+    this.trackerCompletenessPercentage = fields.trackerCompletenessPercentage;
   }
 
   getRawItem() {
     return {
       trackerId: this.trackerId,
       courseId: this.courseId,
-      trackerRows: this.trackerRows
+      trackerRows: this.trackerRows,
+      trackerCompletenessPercentage: this.trackerCompletenessPercentage
     };
   }
 
@@ -50,12 +53,21 @@ class Tracker extends DatabaseEntity {
     return instance.getRawItem();
   };
 
-  public static async insertOne({ courseId, rows }: { courseId?: string; rows?: TrackerRows }) {
+  public static async insertOne({
+    courseId,
+    rows,
+    trackerCompletenessPercentage
+  }: {
+    courseId?: string;
+    rows?: TrackerRows;
+    trackerCompletenessPercentage: number;
+  }) {
     const instance = new Tracker();
     instance.initializeFields({
       trackerId: Tracker.generateId(),
       courseId: courseId || '',
-      trackerRows: rows || []
+      trackerRows: rows || [],
+      trackerCompletenessPercentage: trackerCompletenessPercentage
     });
     return await instance.save<TrackerRaw>();
   }
@@ -107,8 +119,18 @@ class Tracker extends DatabaseEntity {
     //   keys,
     //   values
     // );
+    // TODO El porcentaje se calcula con la formula 100*numero_semanas_en_DONE/total_filas_tracker (data.trackerRows)
+    // Para calcular las semanas en DONE utilizar .filter y .length
+    //  Una vez se calcule este dato, crear un objeto que combine la informacion de la variable data junto con el porcentaje calculado.
+    // Pasarlo por parametro en la linea 114
 
-    const { set, keys, values } = getUpdateFields(data);
+    const weeksDone = data.trackerRows.filter(dato => dato.trackerRowStatus === 'DONE');
+    const numberWeeksDone = weeksDone.length;
+    const numberRowsTrackerRows = data.trackerRows.length;
+    const percentage = (100 * numberWeeksDone) / numberRowsTrackerRows;
+    const dataToUpdate = { ...data, trackerCompletenessPercentage: percentage };
+
+    const { set, keys, values } = getUpdateFields(dataToUpdate);
 
     const updatedItem = await updateItem<TrackerDB>(Tracker.getPK(trackerId), Tracker.getSK(trackerId), `SET ${set}`, keys, values);
 

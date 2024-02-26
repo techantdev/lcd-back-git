@@ -26,7 +26,10 @@ const trackerRowsSchema = array()
 const trackerSchemaRaw = object({
   trackerId: string().required(),
   courseId: string(),
-  trackerRows: trackerRowsSchema
+  trackerRows: trackerRowsSchema,
+  trackerCompletenessPercentage: number().required().min(0).max(100)
+  //TODO Crear campo trackerCompletenessPercentage de tipo:number minimo 0, maximo 100(yup). Añadirlo el campo a trackerModel
+  //Ajustar el la logica del Update Tracker para que se calcule el campo trackerCompletenessPercentage
 });
 
 const trackerSchemaDB = trackerSchemaRaw.concat(
