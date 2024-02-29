@@ -35,7 +35,7 @@ import userRouter from './routes/userRoutes';
 import yearAreaRouter from './routes/yearAreaRoutes';
 import yearGradeRouter from './routes/yearGradeRoutes';
 import YearSubjectRouter from './routes/YearSubjectRoutes';
-import TeacherSubjectCourse from './routes/TeacherSubjectCourseRoutes';
+import YearSubjectCourse from './routes/YearSubjectCourseRoutes';
 import competence from './routes/competenceRoutes';
 import task from './routes/taskRoutes';
 // const userRouter from './routes/userRoutes'
@@ -136,7 +136,7 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/year-area', yearAreaRouter);
 app.use('/api/v1/year-grade', yearGradeRouter);
 app.use('/api/v1/year-subject', YearSubjectRouter);
-app.use('/api/v1/teacher-subject-course', TeacherSubjectCourse);
+app.use('/api/v1/year-subject-course', YearSubjectCourse);
 app.use('/api/v1/competence', competence);
 app.use('/api/v1/task', task);
 // Unhandled routes

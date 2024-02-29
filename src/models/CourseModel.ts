@@ -33,7 +33,6 @@ class Course extends DatabaseEntity {
   initializeFields(fields: CourseRaw) {
     this.courseId = fields.courseId;
     this.yearGradeId = fields.yearGradeId;
-    this.trackerId = fields.trackerId;
     this.courseLabel = fields.courseLabel;
   }
 
@@ -77,20 +76,11 @@ class Course extends DatabaseEntity {
     return instance.getRawItem();
   };
 
-  public static async insertOne({
-    yearGradeId,
-    courseLabel,
-    trackerId
-  }: {
-    yearGradeId: string;
-    courseLabel: string;
-    trackerId: string;
-  }) {
+  public static async insertOne({ yearGradeId, courseLabel }: { yearGradeId: string; courseLabel: string }) {
     const instance = new Course();
     instance.initializeFields({
       courseId: Course.generateId(),
       yearGradeId: yearGradeId,
-      trackerId: trackerId,
       courseLabel: courseLabel
     });
     return await instance.save<CourseRaw>();

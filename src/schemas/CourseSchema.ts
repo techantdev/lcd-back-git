@@ -8,7 +8,6 @@ const TEACHER = 'TEACHER';
 const courseSchemaRaw = object({
   courseId: string().required(),
   yearGradeId: string().required(),
-  trackerId: string().required(),
   courseLabel: string().required()
 });
 
