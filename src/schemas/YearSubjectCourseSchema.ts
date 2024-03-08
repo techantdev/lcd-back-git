@@ -7,13 +7,16 @@ const TEACHER = 'TEACHER';
 const ACADEMICYEAR = 'ACADEMICYEAR';
 const YEARSUBJECT = 'YEARSUBJECT';
 const COURSE = 'COURSE';
+const YEARGRADE = 'YEARGRADE';
 
 const yearSubjectCourseSchemaRaw = object({
   teacherId: string().required(),
   academicYearId: string().required(),
   yearSubjectId: string().required(),
   courseId: string().required(),
-  yearSubjectCourseId: string().required()
+  yearSubjectCourseId: string().required(),
+  yearGradeId: string().required(),
+  trackerId: string().required()
 });
 
 const yearSubjectCourseSchemaDB = yearSubjectCourseSchemaRaw.concat(
@@ -22,7 +25,7 @@ const yearSubjectCourseSchemaDB = yearSubjectCourseSchemaRaw.concat(
     GSI1PK: getGSIKeySchema(getRegex(`${TEACHER}_${ulidRegexStr}`)),
     GSI1SK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}`)),
     GSI2PK: getGSIKeySchema(getRegex(`${YEARSUBJECT}_${ulidRegexStr}`)),
-    GSI2SK: getGSIKeySchema(getRegex(`${COURSE}_${ulidRegexStr}`))
+    GSI2SK: getGSIKeySchema(getRegex(`${YEARGRADE}_${ulidRegexStr}_${COURSE}_${ulidRegexStr}`))
   })
 );
 

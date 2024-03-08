@@ -11,6 +11,7 @@ import {
 import { DatabaseEntity } from '../classes/classesIndex';
 import { GSINames } from '../schemas/schemaUtils';
 import { getItemsGSI, updateItem } from '../services/dynamoService';
+import { YEARGRADE } from '../schemas/YearGradeSchema';
 
 class YearSubjectCourse extends DatabaseEntity {
   private teacherId: string;
@@ -18,6 +19,8 @@ class YearSubjectCourse extends DatabaseEntity {
   private yearSubjectId: string;
   private courseId: string;
   private yearSubjectCourseId: string;
+  private yearGradeId: string;
+  private trackerId: string;
 
   constructor() {
     super();
@@ -25,27 +28,27 @@ class YearSubjectCourse extends DatabaseEntity {
   }
 
   getPK() {
-    return `${YEARSUBJECTCOURSE}_${this.yearSubjectCourseId}`;
+    return YearSubjectCourse.getPK(this.yearSubjectCourseId);
   }
 
   getSK() {
-    return `${YEARSUBJECTCOURSE}_${this.yearSubjectCourseId}`;
+    return YearSubjectCourse.getSK(this.yearSubjectCourseId);
   }
 
   getGSI1PK() {
-    return `${TEACHER}_${this.teacherId}`;
+    return YearSubjectCourse.getGSI1PK(this.teacherId);
   }
 
   getGSI1SK() {
-    return `${ACADEMICYEAR}_${this.academicYearId}`;
+    return YearSubjectCourse.getGSI1SK(this.academicYearId);
   }
 
   getGSI2PK() {
-    return `${YEARSUBJECT}_${this.yearSubjectId}`;
+    return YearSubjectCourse.getGSI2PK(this.yearSubjectId);
   }
 
   getGSI2SK() {
-    return `${COURSE}_${this.courseId}`;
+    return YearSubjectCourse.getGSI2SK(this.yearGradeId, this.courseId);
   }
 
   initializeFields(fields: YearSubjectCourseRaw) {
@@ -54,6 +57,8 @@ class YearSubjectCourse extends DatabaseEntity {
     this.yearSubjectId = fields.yearSubjectId;
     this.courseId = fields.courseId;
     this.yearSubjectCourseId = fields.yearSubjectCourseId;
+    this.yearGradeId = fields.yearGradeId;
+    this.trackerId = fields.trackerId;
   }
 
   getRawItem() {
@@ -62,7 +67,9 @@ class YearSubjectCourse extends DatabaseEntity {
       academicYearId: this.academicYearId,
       yearSubjectId: this.yearSubjectId,
       courseId: this.courseId,
-      yearSubjectCourseId: this.yearSubjectCourseId
+      yearSubjectCourseId: this.yearSubjectCourseId,
+      yearGradeId: this.yearGradeId,
+      trackerId: this.trackerId
     };
   }
 
@@ -87,8 +94,8 @@ class YearSubjectCourse extends DatabaseEntity {
     return `${YEARSUBJECT}_${yearSubjectId}`;
   }
 
-  public static getGSI2SK(courseId: String) {
-    return `${COURSE}_${courseId}`;
+  public static getGSI2SK(yearGradeId: string, courseId: String) {
+    return `${YEARGRADE}_${yearGradeId}_${COURSE}_${courseId}`;
   }
 
   public static fromRawFields = (fields: YearSubjectCourseDB) => {
@@ -101,12 +108,16 @@ class YearSubjectCourse extends DatabaseEntity {
     teacherId,
     academicYearId,
     yearSubjectId,
-    courseId
+    courseId,
+    yearGradeId,
+    trackerId
   }: {
     teacherId: string;
     academicYearId: string;
     yearSubjectId: string;
     courseId: string;
+    yearGradeId: string;
+    trackerId: string;
   }) {
     const instance = new YearSubjectCourse();
     instance.initializeFields({
@@ -114,9 +125,21 @@ class YearSubjectCourse extends DatabaseEntity {
       teacherId: teacherId,
       academicYearId: academicYearId,
       yearSubjectId: yearSubjectId,
-      courseId: courseId
+      courseId: courseId,
+      yearGradeId,
+      trackerId
     });
     return await instance.save<YearSubjectCourseRaw>();
+  }
+
+  public static async insertMultiple(items: YearSubjectCourseRaw[]) {
+    return await YearSubjectCourse.saveMultiple<YearSubjectCourseRaw>(
+      items.map(item => {
+        const instance = new YearSubjectCourse();
+        instance.initializeFields({ ...item, yearSubjectCourseId: YearSubjectCourse.generateId() });
+        return instance;
+      })
+    );
   }
 
   public static async getYearSubjectCourses(teacherId: String, academicYearId: String) {
@@ -128,20 +151,18 @@ class YearSubjectCourse extends DatabaseEntity {
         ':GSI1SK': YearSubjectCourse.getGSI1SK(academicYearId)
       }
     });
-
     return items.map(YearSubjectCourse.fromRawFields);
   }
 
-  public static async getYearSubjectCoursesDos(yearSubjectId: String, courseId: String) {
+  public static async getYearSubjectCoursesByUniqueIds(yearSubjectId: String, courseId: String, yearGradeId: string) {
     const items = await getItemsGSI<YearSubjectCourseDB>(GSINames.GSI2, {
-      KeyConditionExpression: '#GSI2PK = :GSI2PK AND #GSI2SK = :GSI2SK',
+      KeyConditionExpression: '#GSI2PK = :GSI2PK AND begins_with(#GSI2SK,:GSI2SK)',
       ExpressionAttributeNames: { '#GSI2PK': 'GSI2PK', '#GSI2SK': 'GSI2SK' },
       ExpressionAttributeValues: {
-        ':GSI1PK': YearSubjectCourse.getGSI2PK(yearSubjectId),
-        ':GSI1SK': YearSubjectCourse.getGSI2SK(courseId)
+        ':GSI2PK': YearSubjectCourse.getGSI2PK(yearSubjectId),
+        ':GSI2SK': YearSubjectCourse.getGSI2SK(yearGradeId, courseId)
       }
     });
-
     return items.map(YearSubjectCourse.fromRawFields);
   }
 
@@ -153,7 +174,6 @@ class YearSubjectCourse extends DatabaseEntity {
       { '#teacherId': 'teacherId' },
       { ':teacherId': catalogGradeData.teacherId }
     );
-
     return YearSubjectCourse.fromRawFields(updatedItem);
   }
 

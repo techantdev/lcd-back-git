@@ -3,10 +3,12 @@ import { YearArea } from '../../models/YearAreaModel';
 import { YearGrade } from '../../models/YearGradeModel';
 import { YearSubject } from '../../models/YearSubjectModel';
 import { Course } from '../../models/CourseModel';
-import { Tracker } from '../../models/TrackerModel';
+// import { Tracker } from '../../models/TrackerModel';
 import { CatalogArea } from '../../models/CatalogAreaModel';
 import { CatalogGrade } from '../../models/CatalogGradeModel';
 import { CatalogSubject } from '../../models/CatalogSubjectModel';
+import { YearSubjectCourse } from '../../models/YearSubjectCourseModel';
+import { YearSubjectCourseRaw } from '../../schemas/YearSubjectCourseSchema';
 
 const createYearBasedOnPreviousYear = async (previousAcademicYearId: string, newAcademicYearId: string) => {
   const previousYearGrades = await YearGrade.getYearGrades(previousAcademicYearId);
@@ -14,21 +16,18 @@ const createYearBasedOnPreviousYear = async (previousAcademicYearId: string, new
     previousYearGrades.map(grade => ({ ...grade, academicYearId: newAcademicYearId }))
   );
 
-  for (let index = 0; index < previousYearGrades.length; index++) {
-    const previousYearGrade = previousYearGrades[index];
-    const previousGradeCourses = await Course.getYearGradeCourses(previousYearGrade.yearGradeId);
-    const createdCoursesGrade = await Course.insertMultiple(
-      previousGradeCourses.map(gradeCourse => ({
-        ...gradeCourse,
-        yearGradeId: createdYearGrades[index].yearGradeId
-      }))
-    );
-    for (let index = 0; index < previousGradeCourses.length; index++) {
-      const previousGradeCourse = previousGradeCourses[index];
-      const previousTracker = await Tracker.getTracker(previousGradeCourse.trackerId);
-      await Tracker.insertOne({ ...previousTracker, courseId: createdCoursesGrade[index].courseId });
-    }
-  }
+  const createdYearGradesToReturn = await Promise.all(
+    previousYearGrades.map(async (previousYearGrade, index) => {
+      const previousGradeCourses = await Course.getYearGradeCourses(previousYearGrade.yearGradeId);
+      const courses = await Course.insertMultiple(
+        previousGradeCourses.map(gradeCourse => ({
+          ...gradeCourse,
+          yearGradeId: createdYearGrades[index].yearGradeId
+        }))
+      );
+      return { ...createdYearGrades[index], courses };
+    })
+  );
 
   const previousYearAreas = await YearArea.getYearAreas(previousAcademicYearId);
   const createdYearAreas = await YearArea.insertMultiple(
@@ -36,26 +35,50 @@ const createYearBasedOnPreviousYear = async (previousAcademicYearId: string, new
   );
 
   const createdYearAreasToReturn = await Promise.all(
-    previousYearAreas.map(async (_, index) => {
-      // for (let index = 0; index < previousYearAreas.length; index++) {
-      const previousYearArea = previousYearAreas[index];
+    previousYearAreas.map(async (previousYearArea, index) => {
       const previousYearSubjects = await YearSubject.getYearSubjects(previousYearArea.yearAreaId);
 
-      const subjects = await YearSubject.insertMultiple(
-        previousYearSubjects.map(subject => {
-          const yearSubjectGrades = subject.yearSubjectGrades.map(yearSubjectGrade => {
+      const yearSubjects = await YearSubject.insertMultiple(
+        previousYearSubjects.map(previousYearSubject => {
+          const yearSubjectGrades = previousYearSubject.yearSubjectGrades.map(yearSubjectGrade => {
             const index = previousYearGrades.findIndex(prev => prev.yearGradeId === yearSubjectGrade.yearGradeId);
             return { yearGradeId: createdYearGrades[index].yearGradeId };
           });
-          return { ...subject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades };
+          return { ...previousYearSubject, yearAreaId: createdYearAreas[index].yearAreaId, yearSubjectGrades };
         })
       );
 
-      return { ...createdYearAreas[index], subjects };
+      return { ...createdYearAreas[index], yearSubjects };
     })
   );
 
-  return { createdYearGrades, createdYearAreas: createdYearAreasToReturn };
+  const yearSubjectCourseItems: YearSubjectCourseRaw[] = [];
+
+  createdYearAreasToReturn.forEach(createdYearArea => {
+    createdYearArea.yearSubjects.forEach(createdYearSubject => {
+      createdYearSubject.yearSubjectGrades.forEach(createdYearSubjectGrade => {
+        const { yearGradeId } = createdYearSubjectGrade;
+        const createdYearGrade = createdYearGradesToReturn.find(createdYearGrade => createdYearGrade.yearGradeId === yearGradeId)!;
+        createdYearGrade.courses.forEach(createdCourse => {
+          yearSubjectCourseItems.push({
+            academicYearId: newAcademicYearId,
+            courseId: createdCourse.courseId,
+            teacherId: '',
+            yearSubjectId: createdYearSubject.yearSubjectId,
+            yearSubjectCourseId: '',
+            yearGradeId,
+            trackerId: ''
+          });
+        });
+      });
+    });
+  });
+
+  // TODO: Añadir la duplicación de los trackers
+
+  await YearSubjectCourse.insertMultiple(yearSubjectCourseItems);
+
+  return { createdYearGrades: createdYearGradesToReturn, createdYearAreas: createdYearAreasToReturn };
 };
 
 const createYearBasedOnCatalog = async (schoolId: string, newAcademicYearId: string) => {
@@ -74,7 +97,7 @@ const createYearBasedOnCatalog = async (schoolId: string, newAcademicYearId: str
       const catalogArea = catalogAreas[index];
       const catalogSubjects = await CatalogSubject.getCatalogSubjects(catalogArea.catalogAreaId);
 
-      const subjects = await YearSubject.insertMultiple(
+      const yearSubjects = await YearSubject.insertMultiple(
         catalogSubjects.map(catalogSubject => {
           const yearSubjectGrades = catalogSubject.catalogSubjectGrades.map(catalogSubjectGrade => {
             const createdYearGrade = createdYearGrades.find(
@@ -86,7 +109,7 @@ const createYearBasedOnCatalog = async (schoolId: string, newAcademicYearId: str
         })
       );
 
-      return { ...createdYearAreas[index], subjects };
+      return { ...createdYearAreas[index], yearSubjects };
     })
   );
 

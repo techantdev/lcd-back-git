@@ -1,8 +1,10 @@
 import { object, string, InferType, array, number } from 'yup';
 
-import { getPartitionKeysSchema } from './schemaUtils';
+import { getGSIKeySchema, getPartitionKeysSchema, getRegex, ulidRegexStr } from './schemaUtils';
 
 const TRACKER = 'TRACKER';
+const ACADEMICYEAR = 'ACADEMICYEAR';
+const YEARGRADE = 'YEARGRADE';
 
 const trackerRowsSchema = array()
   .of(
@@ -27,12 +29,18 @@ const trackerSchemaRaw = object({
   trackerId: string().required(),
   courseId: string(),
   trackerRows: trackerRowsSchema,
-  trackerCompletenessPercentage: number().required().min(0).max(100)
+  trackerCompletenessPercentage: number().required().min(0).max(100),
+  catalogSubjectId: string().required(),
+  catalogGradeId: string().required(),
+  academicYearId: string().required(),
+  yearGradeId: string().required()
 });
 
 const trackerSchemaDB = trackerSchemaRaw.concat(
   object({
-    ...getPartitionKeysSchema(TRACKER)
+    ...getPartitionKeysSchema(TRACKER),
+    GSI1PK: getGSIKeySchema(getRegex(`${ACADEMICYEAR}_${ulidRegexStr}_${TRACKER}`)),
+    GSI1SK: getGSIKeySchema(getRegex(`${YEARGRADE}_${ulidRegexStr}`))
   })
 );
 

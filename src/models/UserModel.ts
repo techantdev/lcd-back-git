@@ -10,7 +10,7 @@ class User extends DatabaseEntity {
   private userLastName: string;
   private userEmail: string;
   private catalogRoles: CatalogRoles;
-  private schooId: string;
+  private schoolId: string;
 
   constructor() {
     super();
@@ -34,7 +34,7 @@ class User extends DatabaseEntity {
   }
 
   getGSI2PK() {
-    return `${SCHOOL}_${this.schooId}`;
+    return `${SCHOOL}_${this.schoolId}`;
   }
 
   getGSI2SK() {
@@ -48,7 +48,7 @@ class User extends DatabaseEntity {
     this.userLastName = fields.userLastName;
     this.userEmail = fields.userEmail;
     this.catalogRoles = fields.catalogRoles;
-    this.schooId = fields.schoolId;
+    this.schoolId = fields.schoolId;
   }
 
   getRawItem() {
@@ -59,7 +59,7 @@ class User extends DatabaseEntity {
       userLastName: this.userLastName,
       userEmail: this.userEmail,
       catalogRoles: this.catalogRoles,
-      schooId: this.schooId
+      schoolId: this.schoolId
     };
   }
 

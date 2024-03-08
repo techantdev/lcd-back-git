@@ -33,8 +33,8 @@ const decodeURL: RequestHandler = (req, _, next) => {
 //   app.use(decodeURL);
 // };
 
-const logMiddlerware: RequestHandler = (req, _, next) => {
-  console.log(JSON.stringify({ path: req.path, params: req.params, query: req.query, body: req.body, method: req.method }));
+const logMiddlerware: RequestHandler = ({ method, path, params, query, body }, _, next) => {
+  console.log({ method, path, params, query, body });
   next();
 };
 

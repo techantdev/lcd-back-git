@@ -35,8 +35,8 @@ const sendErrorProd = (err: any, res: any) => {
 };
 
 const logError = (error: any, parsedError: any) => {
-  console.log('ERROR LAMBDA API', error);
-  console.log('ERROR LAMBDA API parsed', parsedError);
+  console.log('ERROR API', error);
+  console.log('ERROR API parsed', parsedError);
 };
 
 /*
